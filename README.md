@@ -1,2 +1,2 @@
-# Y0KAI_BatchML_Task_Scheduler
- A task scheduler GUI made with WPF in C#
+# My thesis made for Pannon University of Nagykanizsa, Cyclic Economic University Center
+ A BatchML task viewer and scheduler GUI made with WPF in C#
