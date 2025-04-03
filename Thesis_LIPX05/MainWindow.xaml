@@ -50,6 +50,9 @@
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
+            <TabItem Header="_S-Graph">
+                <Canvas Name="SGraphCanvas" Background="White"/>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>

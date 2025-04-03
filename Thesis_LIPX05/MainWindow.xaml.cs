@@ -25,8 +25,9 @@ namespace Thesis_LIPX05
 
         private void SolveClick(object sender, RoutedEventArgs e)
         {
-            MenuItem menuItem = sender as MenuItem;
-            MessageBox.Show($"{menuItem.Tag}", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            var menuItem = sender as MenuItem;
+            string NullMSG = "Unknown";
+            MessageBox.Show($"{menuItem?.Tag ?? NullMSG}", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void About_Click(object sender, RoutedEventArgs e) => new AboutWindow().Show();
