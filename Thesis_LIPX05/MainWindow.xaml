@@ -17,10 +17,6 @@
                 <Separator />
                 <MenuItem Header="_Exit" Click="Exit_Click" />
             </MenuItem>
-            <MenuItem Header="_Database">
-                <MenuItem Header="_Load from database" Click="LoadFromDB_Click"/>
-                <MenuItem Header="_Save to database" Click="Save2DB_Click"/>
-            </MenuItem>
             <MenuItem Header="_Solver">
                 <MenuItem Header="_Solve heuristically" Tag="Heuristic" Click="SolveClick"/>
                 <MenuItem Header="_Solve with MINLP" Tag="MINLP" Click="SolveClick"/>
@@ -35,11 +31,8 @@
         </Menu>
 
         <TabControl Name="MainTab">
-            <TabItem Header="_Product data">
-                <DataGrid Name="ProductGrid" AutoGenerateColumns="True"/>
-            </TabItem>
-            <TabItem Header="_Equipment data">
-                <DataGrid Name="EquipmentGrid" AutoGenerateColumns="True"/>
+            <TabItem Header="Data Tables">
+                
             </TabItem>
             <TabItem Header="_Schedule Gantt">
                 <DockPanel>

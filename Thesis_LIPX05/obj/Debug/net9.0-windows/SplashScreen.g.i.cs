@@ -53,7 +53,7 @@ namespace Thesis_LIPX05 {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Thesis_LIPX05;component/splashscreen.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Thesis_LIPX05;V1.0.0.0;component/splashscreen.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\SplashScreen.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

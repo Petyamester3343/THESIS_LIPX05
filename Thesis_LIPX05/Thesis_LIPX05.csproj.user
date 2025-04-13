@@ -5,7 +5,7 @@
     <Compile Update="AboutWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="SplashScreen.xaml.cs">
+    <Compile Update="LoadingWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

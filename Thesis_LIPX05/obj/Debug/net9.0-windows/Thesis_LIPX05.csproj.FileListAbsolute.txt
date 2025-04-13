@@ -37,5 +37,5 @@ C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\re
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.pdb
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.genruntimeconfig.cache
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\ref\Thesis_LIPX05.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\SplashScreen.g.cs
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\SplashScreen.baml
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\LoadingWindow.g.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\LoadingWindow.baml
