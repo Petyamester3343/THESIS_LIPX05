@@ -63,9 +63,9 @@ namespace Thesis_LIPX05
         {
             MessageBox.Show("Please load a BatchML file first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             var graph = new SGraph();
-            graph.AddNode("Start", new System.Drawing.Point(50, 50));
-            graph.AddNode("Mix", new System.Drawing.Point(200, 50));
-            graph.AddNode("End", new System.Drawing.Point(350, 50));
+            graph.AddNode("Start", new Point(50, 50));
+            graph.AddNode("Mix", new Point(50, 200));
+            graph.AddNode("End", new Point(50, 350));
             graph.AddEdge("Start", "Mix");
             graph.AddEdge("Mix", "End");
             graph.Render(SGraphCanvas);
@@ -94,7 +94,7 @@ namespace Thesis_LIPX05
             int i = 0, j = 0;
             foreach (var step in steps)
             {
-                graph.AddNode(step, new System.Drawing.Point(50, 50));
+                graph.AddNode(step, new Point(j + 50, i + 50));
                 i += 100;
                 if (i % 3 == 0) j += 100;
             }

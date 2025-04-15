@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -49,14 +49,16 @@ namespace Thesis_LIPX05.Util
                 startX = 50,
                 startY = 50;
 
+            // nodes
             var sortedNodes = nodes.Values.ToList();
+            int rowLimit = 5; // a custom limit on the nodes appearing horizontally
             for (int i = 0; i < sortedNodes.Count; i++)
             {
                 var node = sortedNodes[i];
                 node.Position = new()
                 {
-                    X = (int)startX,
-                    Y = (int)(startY + (i * spacing))
+                    X = (int)(startX + i % rowLimit * spacing + radius),
+                    Y = (int)(startY + i / rowLimit * spacing + radius)
                 };
 
                 // node
@@ -76,22 +78,30 @@ namespace Thesis_LIPX05.Util
                 var textBlock = new TextBlock
                 {
                     Text = node.ID,
-                    Foreground = Brushes.White,
-                    FontSize = 14
+                    Foreground = Brushes.Black,
+                    FontSize = 12,
+                    TextAlignment = TextAlignment.Center,
+                    Width = radius,
+                    Height = radius / 2
                 };
-                Canvas.SetLeft(textBlock, node.Position.X + radius + 5);
-                Canvas.SetTop(textBlock, node.Position.Y + radius / 2);
+                Canvas.SetLeft(textBlock, node.Position.X - (radius / 2) + 30);
+                Canvas.SetTop(textBlock, node.Position.Y + (radius / 1.333));
                 cv.Children.Add(textBlock);
             }
 
+            // edges
             foreach (var edge in edges)
             {
+                Point
+                    start = new(edge.From.Position.X + (2 * radius), edge.From.Position.Y + radius),
+                    end = new(edge.To.Position.X - (radius / 128), edge.To.Position.Y + radius);
+
                 var line = new Line
                 {
-                    X1 = edge.From.Position.X + radius,
-                    Y1 = edge.From.Position.Y + radius,
-                    X2 = edge.To.Position.X + radius,
-                    Y2 = edge.To.Position.Y + radius,
+                    X1 = start.X,
+                    Y1 = start.Y,
+                    X2 = end.X,
+                    Y2 = end.Y,
                     Stroke = Brushes.DarkSlateBlue,
                     StrokeThickness = 2
                 };
