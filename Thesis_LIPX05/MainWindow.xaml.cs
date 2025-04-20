@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml.Linq;
-
 using Thesis_LIPX05.Util;
 
 namespace Thesis_LIPX05
@@ -16,6 +15,7 @@ namespace Thesis_LIPX05
     public partial class MainWindow : Window
     {
         private double currentZoom = 1;
+        private bool fileLoaded = false;
 
         public MainWindow()
         {
@@ -35,7 +35,8 @@ namespace Thesis_LIPX05
 
         private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (GanttCanvas != null) GanttCanvas.LayoutTransform = new ScaleTransform(e.NewValue, 1)
+            if (GanttCanvas != null)
+                GanttCanvas.LayoutTransform = new ScaleTransform(e.NewValue, 1)
                     ?? throw new Exception("GanttCanvas is null.");
         }
 
@@ -54,10 +55,8 @@ namespace Thesis_LIPX05
             }
         }
 
-        private void SaveFile_Click(object sender, RoutedEventArgs e)
-        {
+        private void SaveFile_Click(object sender, RoutedEventArgs e) =>
             MessageBox.Show("Save functionality not implemented yet.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
 
         private void DrawGraph_Click(object sender, RoutedEventArgs e)
         {
@@ -118,12 +117,26 @@ namespace Thesis_LIPX05
                 var header = master.Element(batchML + "Header")
                     ?? throw new Exception("Header element not found in BatchML file.");
 
+                var id = master.Element(batchML + "ID")?.Value;
+                var ver = master.Element(batchML + "Version")?.Value;
+                var desc = master.Elements(batchML + "Description").LastOrDefault()?.Value;
+                var prodName = header.Element(batchML + "ProductName")?.Value;
+
                 var batchSize = header?.Element(batchML + "BatchSize")
                     ?? throw new Exception("BatchSize element not found in BatchML file.");
 
-                var masterTable = new DataTable("MasterRecipe");
+                var nominal = batchSize.Element(batchML + "Nominal")?.Value;
+                var min = batchSize.Element(batchML + "Min")?.Value;
+                var max = batchSize.Element(batchML + "Max")?.Value;
+                var unit = batchSize.Element(batchML + "UnitOfMeasure")?.Value;
+
+                var masterTable = new DataTable()
+                {
+                    TableName = "Master Recipe"
+                };
                 masterTable.Columns.Add("RecipeID");
                 masterTable.Columns.Add("Version");
+                masterTable.Columns.Add("Description");
                 masterTable.Columns.Add("ProductName");
                 masterTable.Columns.Add("NominalBatchSize");
                 masterTable.Columns.Add("MinBatchSize");
@@ -131,13 +144,7 @@ namespace Thesis_LIPX05
                 masterTable.Columns.Add("UnitOfMeasure");
 
                 masterTable.Rows.Add(
-                    header?.Attribute("ID")?.Value,
-                    header?.Attribute("Version")?.Value,
-                    header?.Element(batchML + "ProductName")?.Value,
-                    batchSize?.Attribute("Nominal")?.Value,
-                    batchSize?.Attribute("Min")?.Value,
-                    batchSize?.Attribute("Max")?.Value,
-                    batchSize?.Attribute("UnitOfMeasure")?.Value
+                    id, ver, desc, prodName, nominal, min, max, unit
                 );
 
                 DisplayDataTable(masterTable);

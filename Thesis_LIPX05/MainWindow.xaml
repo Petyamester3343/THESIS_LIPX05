@@ -31,9 +31,6 @@
         </Menu>
 
         <TabControl Name="MainTab">
-            <TabItem Header="Data Tables">
-                
-            </TabItem>
             <TabItem Header="_Schedule Gantt">
                 <DockPanel>
                     <Slider Name="ZoomSlider" Minimum="0.5" Maximum="2.0" Value="1.0" TickFrequency="0.1"
@@ -44,7 +41,9 @@
                 </DockPanel>
             </TabItem>
             <TabItem Header="_S-Graph">
-                <Canvas Name="SGraphCanvas" Background="White"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Canvas Name="SGraphCanvas" Background="White"/>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </DockPanel>
