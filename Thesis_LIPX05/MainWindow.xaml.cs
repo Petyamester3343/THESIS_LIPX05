@@ -7,6 +7,8 @@ using System.Windows.Media;
 using System.Xml.Linq;
 using Thesis_LIPX05.Util;
 
+using static Thesis_LIPX05.Util.SGraph;
+
 namespace Thesis_LIPX05
 {
     /// <summary>
@@ -14,9 +16,6 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class MainWindow : Window
     {
-        private double currentZoom = 1;
-        private bool fileLoaded = false;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -62,12 +61,23 @@ namespace Thesis_LIPX05
         {
             MessageBox.Show("Please load a BatchML file first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             var graph = new SGraph();
-            graph.AddNode("Start", new Point(50, 50));
-            graph.AddNode("Mix", new Point(50, 200));
-            graph.AddNode("End", new Point(50, 350));
-            graph.AddEdge("Start", "Mix");
-            graph.AddEdge("Mix", "End");
-            graph.Render(SGraphCanvas);
+
+            int i = 0, j = 0, k = 1;
+            for (int x = 1; x <= 9; x++) // Example nodes
+            {
+                AddNode($"Eq{x}", new Point(i, j));
+                i += 50;
+                if (x % 3 == 0)
+                {
+                    AddNode($"Prod{k++}", new Point(i + 200, j));
+                    i = 0; j += 50;
+                }
+            }
+
+            for (int x = 1; x <= GetNodes().Count - 1; x++) // Example edges
+                graph.AddEdge($"Eq{x}", (x % 3 != 0) ? $"Eq{x + 1}" : $"Prod{x / 3}");
+
+            graph.Render(SGraphCanvas, 4);
         }
 
         protected void BuildSGraphFromXml(XElement master)
@@ -93,13 +103,13 @@ namespace Thesis_LIPX05
             int i = 0, j = 0;
             foreach (var step in steps)
             {
-                graph.AddNode(step, new Point(j + 50, i + 50));
+                AddNode(step, new Point(j + 50, i + 50));
                 i += 100;
                 if (i % 3 == 0) j += 100;
             }
             foreach (var link in links) graph.AddEdge(link.From, link.To);
 
-            graph.Render(SGraphCanvas);
+            graph.Render(SGraphCanvas, 15);
         }
 
         private void LoadBatchML(string path)

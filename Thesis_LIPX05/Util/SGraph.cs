@@ -21,11 +21,12 @@ namespace Thesis_LIPX05.Util
             public required Node To { get; set; }
         }
 
-        private readonly Dictionary<string, Node> nodes = [];
+        private readonly static Dictionary<string, Node> nodes = [];
         private readonly List<Edge> edges = [];
-        private readonly double radius = 30;
 
-        public void AddNode(string id, Point position)
+        public static Dictionary<string, Node> GetNodes() => nodes;
+
+        public static void AddNode(string id, Point position)
         {
             if (!nodes.ContainsKey(id))
                 nodes[id] = new() { ID = id, Position = position };
@@ -33,11 +34,11 @@ namespace Thesis_LIPX05.Util
 
         public void AddEdge(string fromID, string toID)
         {
-            if (nodes.TryGetValue(fromID, out var from) && nodes.TryGetValue(toID, out var to))
+            if (nodes.TryGetValue(fromID, out var from) && nodes.TryGetValue(toID, out var to) && from != null && to != null)
                 edges.Add(new() { From = from, To = to });
         }
 
-        public void Render(Canvas cv)
+        public void Render(Canvas cv, int RowLimit)
         {
             cv.Children.Clear();
             double
@@ -48,14 +49,13 @@ namespace Thesis_LIPX05.Util
 
             // nodes
             var sortedNodes = nodes.Values.ToList();
-            int rowLimit = 10; // a custom limit on the nodes appearing horizontally
             for (int i = 0; i < sortedNodes.Count; i++)
             {
                 var node = sortedNodes[i];
                 node.Position = new()
                 {
-                    X = (int)(startX + i % rowLimit * spacing + radius),
-                    Y = (int)(startY + i / rowLimit * spacing + radius)
+                    X = (int)(startX + i % RowLimit * spacing + radius),
+                    Y = (int)(startY + i / RowLimit * spacing + radius)
                 };
 
                 // node
@@ -101,7 +101,7 @@ namespace Thesis_LIPX05.Util
 
         private static void DrawArrow(Canvas cv, Point from, Point to, Brush color, double thickness = 2)
         {
-            double radius = 30;
+            double radius = 35;
 
             var line = new Line
             {
@@ -131,7 +131,7 @@ namespace Thesis_LIPX05.Util
             {
                 Points = [to, base1, base2],
                 Fill = color,
-                RenderTransform = new TranslateTransform(1, radius)
+                RenderTransform = new TranslateTransform(0, radius)
             };
             cv.Children.Add(head);
         }
