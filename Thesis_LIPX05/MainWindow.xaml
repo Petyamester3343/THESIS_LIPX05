@@ -14,8 +14,11 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Click="OpenFile_Click" />
                 <MenuItem Header="_Save" Click="SaveFile_Click"/>
-                <Separator />
-                <MenuItem Header="_Exit" Click="Exit_Click" />
+                <MenuItem Header="_Close" Click="CloseFile_Click"/>
+                <MenuItem Header="_Export Gantt Chart" Click="ExportGantt_Click"/>
+                <MenuItem Header="_Export SGraph" Click="ExportSGraph_Click"/>
+                <Separator/>
+                <MenuItem Header="_Exit" Click="Exit_Click"/>
             </MenuItem>
             <MenuItem Header="_Solver">
                 <MenuItem Header="_Solve heuristically" Tag="Heuristic" Click="SolveClick"/>

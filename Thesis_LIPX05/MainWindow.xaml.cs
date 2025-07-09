@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml.Linq;
-using Thesis_LIPX05.Util;
 
 using static Thesis_LIPX05.Util.SGraph;
 
@@ -16,6 +15,9 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool isFileLoaded = false;
+        private XElement masterRecipe = new("MasterRecipe");
+
         public MainWindow()
         {
             InitializeComponent();
@@ -51,6 +53,7 @@ namespace Thesis_LIPX05
             if (res == true)
             {
                 LoadBatchML(dlg.FileName);
+                isFileLoaded = true;
             }
         }
 
@@ -59,57 +62,107 @@ namespace Thesis_LIPX05
 
         private void DrawGraph_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Please load a BatchML file first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-            var graph = new SGraph();
-
-            int i = 0, j = 0, k = 1;
-            for (int x = 1; x <= 9; x++) // Example nodes
+            if (isFileLoaded)
             {
-                AddNode($"Eq{x}", new Point(i, j));
-                i += 50;
-                if (x % 3 == 0)
+                SGraphCanvas.Children.Clear();
+                try
                 {
-                    AddNode($"Prod{k++}", new Point(i + 200, j));
-                    i = 0; j += 50;
+                    if (MainTab.Items[0] is TabItem) BuildSGraphFromXml();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"{ex}", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No BatchML File loaded! Drawing example graph...", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DrawExampleGraph();
+            }
+        }
+
+        private void DrawExampleGraph()
+        {
+            int
+                i = 0,
+                j = 0,
+                eqID = 1;
+
+            for (int prodID = 1; prodID <= 9; prodID++) // Example nodes
+            {
+                AddNode($"Eq{prodID}", new(i, j));
+                i += 50;
+                if (prodID % 3 == 0)
+                {
+                    AddNode($"Prod{eqID++}", new(i + 200, j));
+                    i = 0;
+                    j += 50;
                 }
             }
 
-            for (int x = 1; x <= GetNodes().Count - 1; x++) // Example edges
-                graph.AddEdge($"Eq{x}", (x % 3 != 0) ? $"Eq{x + 1}" : $"Prod{x / 3}");
+            int x = 0;
+            bool xm3f = x % 3 != 0;
+            var rnd = new Random();
+            for (x = 1; x <= GetNodes().Count - 1; x++) // Example edges
+                AddEdge($"Eq{x}", (xm3f) ? $"Eq{x + 1}" : $"Prod{x / 3}", rnd.Next(5, 45));
 
-            graph.Render(SGraphCanvas, 4);
+            Render(SGraphCanvas, 4);
         }
 
-        protected void BuildSGraphFromXml(XElement master)
+        protected void BuildSGraphFromXml()
         {
             SGraphCanvas.Children.Clear();
+
             var batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02")
                 ?? throw new Exception("BatchML namespace not found.");
-            var steps = master.Descendants(batchML + "Step")
-                .Select(x => x.Element(batchML + "ID")?.Value)
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Distinct().ToList();
 
-            var links = master.Descendants(batchML + "Link")
-                .Select(x => new
-                {
-                    From = x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value,
-                    To = x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value
-                })
-                .Where(x => !string.IsNullOrEmpty(x.From) && !string.IsNullOrEmpty(x.To))
-                .ToList();
+            var steps = masterRecipe.Descendants(batchML + "Step")
+                                    .Select(x => x.Element(batchML + "RecipeElementID")?.Value)
+                                    .Where(x => !string.IsNullOrEmpty(x))
+                                    .Distinct().ToList();
 
-            var graph = new SGraph();
+            var links = masterRecipe.Descendants(batchML + "Link")
+                                    .Select(x =>
+                                    {
+                                        var durEl = x.Element(batchML + "Extension")?
+                                                     .Elements()
+                                                     .FirstOrDefault(e => e.Name.LocalName == "Duration");
+
+                                        double cost = double.NaN;
+
+                                        if (durEl != null && TimeSpan.TryParse(durEl.Value, out var ts))
+                                            cost = ts.TotalMinutes; // Convert from ISO 8601 to minutes
+                    
+
+                                        return new
+                                        {
+                                            From = x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value,
+                                            To = x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value,
+                                            Cost = cost
+                                        };
+                                    })
+                                    .Where(x => !string.IsNullOrEmpty(x.From) && 
+                                                !string.IsNullOrEmpty(x.To) && 
+                                                !double.IsNaN(x.Cost))
+                                    .ToList();
+
             int i = 0, j = 0;
+
             foreach (var step in steps)
             {
-                AddNode(step, new Point(j + 50, i + 50));
-                i += 100;
-                if (i % 3 == 0) j += 100;
+                if (step != null)
+                {
+                    AddNode(step, new Point(j + 50, i + 50));
+                    i += 100;
+                    if (i % 3 == 0) j += 100;
+                }
             }
-            foreach (var link in links) graph.AddEdge(link.From, link.To);
 
-            graph.Render(SGraphCanvas, 15);
+            foreach (var link in links)
+                if (link.From != null && link.To != null && !double.IsNaN(link.Cost))
+                    AddEdge(link.From, link.To, link.Cost);
+
+            Render(SGraphCanvas, 15);
         }
 
         private void LoadBatchML(string path)
@@ -121,17 +174,17 @@ namespace Thesis_LIPX05
 
                 var doc = XDocument.Load(path);
 
-                var master = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
+                masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
                     ?? throw new Exception("Master element not found in BatchML file.");
 
-                var header = master.Element(batchML + "Header")
+                var id = masterRecipe.Element(batchML + "ID")?.Value;
+                var ver = masterRecipe.Element(batchML + "Version")?.Value;
+                var desc = masterRecipe.Elements(batchML + "Description").LastOrDefault()?.Value;
+
+                var header = masterRecipe.Element(batchML + "Header")
                     ?? throw new Exception("Header element not found in BatchML file.");
 
-                var id = master.Element(batchML + "ID")?.Value;
-                var ver = master.Element(batchML + "Version")?.Value;
-                var desc = master.Elements(batchML + "Description").LastOrDefault()?.Value;
                 var prodName = header.Element(batchML + "ProductName")?.Value;
-
                 var batchSize = header?.Element(batchML + "BatchSize")
                     ?? throw new Exception("BatchSize element not found in BatchML file.");
 
@@ -158,11 +211,24 @@ namespace Thesis_LIPX05
                 );
 
                 DisplayDataTable(masterTable);
-                BuildSGraphFromXml(master);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading BatchML file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CloseFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SGraphCanvas.Children.Clear();
+                MainTab.Items.Clear();
+                isFileLoaded = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error closing BatchML: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -185,6 +251,16 @@ namespace Thesis_LIPX05
             };
             MainTab.Items.Insert(0, tab);
             MainTab.SelectedIndex = 0;
+        }
+
+        private void ExportSGraph_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement S-Graph export functionality (targetting the JPEG format)
+        }
+
+        private void ExportGantt_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement Gantt chart export functionality (targetting the JPEG format)
         }
     }
 }
