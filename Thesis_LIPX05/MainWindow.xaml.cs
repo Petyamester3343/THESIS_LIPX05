@@ -4,6 +4,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Xml;
 using System.Xml.Linq;
 
 using static Thesis_LIPX05.Util.SGraph;
@@ -17,6 +18,7 @@ namespace Thesis_LIPX05
     {
         private bool isFileLoaded = false;
         private XElement masterRecipe = new("MasterRecipe");
+        private DataTable masterTable = new("Master Recipe Table");
 
         public MainWindow()
         {
@@ -81,86 +83,117 @@ namespace Thesis_LIPX05
             }
         }
 
+        private void ClearUp()
+        {
+            SGraphCanvas.Children.Clear();
+            GetNodes().Clear();
+            GetEdges().Clear();
+        }
+
         private void DrawExampleGraph()
         {
+            ClearUp();
+
             int
                 i = 0,
                 j = 0,
-                eqID = 1;
+                prodID = 1;
 
-            for (int prodID = 1; prodID <= 9; prodID++) // Example nodes
+            for (int eqID = 1; eqID <= 9; eqID++) // Example nodes
             {
-                AddNode($"Eq{prodID}", new(i, j));
+                AddNode($"Eq{eqID}", $"Eq{eqID}", new(i, j));
                 i += 50;
-                if (prodID % 3 == 0)
+                if (eqID % 3 == 0)
                 {
-                    AddNode($"Prod{eqID++}", new(i + 200, j));
+                    AddNode($"Prod{prodID++}", $"Prod{prodID}", new(i + 200, j += 50));
                     i = 0;
-                    j += 50;
                 }
             }
 
-            int x = 0;
-            bool xm3f = x % 3 != 0;
             var rnd = new Random();
-            for (x = 1; x <= GetNodes().Count - 1; x++) // Example edges
-                AddEdge($"Eq{x}", (xm3f) ? $"Eq{x + 1}" : $"Prod{x / 3}", rnd.Next(5, 45));
+            for (int x = 1; x < GetNodes().Count; x++) // Example edges
+                AddEdge($"Eq{x}", (x % 3 != 0) ? $"Eq{x + 1}" : $"Prod{x / 3}", rnd.Next(5, 45));
 
             Render(SGraphCanvas, 4);
         }
 
         protected void BuildSGraphFromXml()
         {
-            SGraphCanvas.Children.Clear();
+            ClearUp();
 
             var batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02")
                 ?? throw new Exception("BatchML namespace not found.");
 
+            var customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom")
+                ?? throw new Exception("Custom namespace not found.");
+
             var steps = masterRecipe.Descendants(batchML + "Step")
-                                    .Select(x => x.Element(batchML + "RecipeElementID")?.Value)
+                                    .Select(x => x.Element(batchML + "ID")?.Value.Trim().ToLower())
                                     .Where(x => !string.IsNullOrEmpty(x))
-                                    .Distinct().ToList();
-
-            var links = masterRecipe.Descendants(batchML + "Link")
-                                    .Select(x =>
-                                    {
-                                        var durEl = x.Element(batchML + "Extension")?
-                                                     .Elements()
-                                                     .FirstOrDefault(e => e.Name.LocalName == "Duration");
-
-                                        double cost = double.NaN;
-
-                                        if (durEl != null && TimeSpan.TryParse(durEl.Value, out var ts))
-                                            cost = ts.TotalMinutes; // Convert from ISO 8601 to minutes
-                    
-
-                                        return new
-                                        {
-                                            From = x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value,
-                                            To = x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value,
-                                            Cost = cost
-                                        };
-                                    })
-                                    .Where(x => !string.IsNullOrEmpty(x.From) && 
-                                                !string.IsNullOrEmpty(x.To) && 
-                                                !double.IsNaN(x.Cost))
+                                    .Distinct()
                                     .ToList();
+
+            var stepDescs = masterRecipe.Descendants(batchML + "Step")
+                .Select(x => x.Element(batchML + "RecipeElementID")?.Value)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Distinct()
+                .ToList();
 
             int i = 0, j = 0;
 
-            foreach (var step in steps)
+            for (int a = 0; a < steps.Count && a < stepDescs.Count; a++)
             {
-                if (step != null)
+                var node = new Node
                 {
-                    AddNode(step, new Point(j + 50, i + 50));
-                    i += 100;
-                    if (i % 3 == 0) j += 100;
-                }
+                    ID = steps[a]!,
+                    Desc = stepDescs[a]!,
+                    Position = new(j + 50, i + 50)
+                };
+
+                GetNodes().Add(node.ID, node);
+
+                i += 100;
+                if (i % 300 == 0) j += 100;
             }
 
+            var links = masterRecipe.Descendants(batchML + "Link")
+                .Select(x =>
+                {
+                    var fromID = x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value.Trim();
+                    var toID = x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value.Trim();
+                    var durEl = x.Element(batchML + "Extension")?.Descendants(customNS + "Duration").FirstOrDefault()?.Value;
+
+                    double cost = 0;
+                    if (durEl != null)
+                    {
+                        try
+                        {
+                            cost = XmlConvert.ToTimeSpan(durEl).TotalMinutes; // ISO 8601 -> minutes
+                        }
+                        catch
+                        {
+                            cost = double.NaN; // Invalid duration, set cost to NaN
+                        }
+                    }
+
+                    return new { fromID, toID, cost };
+                })
+                .Where(x => !string.IsNullOrEmpty(x.fromID) && !string.IsNullOrEmpty(x.toID) && !double.IsNaN(x.cost))
+                .ToList();
+
             foreach (var link in links)
-                if (link.From != null && link.To != null && !double.IsNaN(link.Cost))
-                    AddEdge(link.From, link.To, link.Cost);
+            {
+                bool fromExists = GetNodes().TryGetValue(link.fromID!, out Node? fromNode);
+                bool toExists = GetNodes().TryGetValue(link.toID!, out Node? toNode);
+                MessageBox.Show($"From Node: {fromExists}, ID: {link.fromID}");
+                MessageBox.Show($"To Node: {toExists}, ID: {link.toID}");
+                GetEdges().Add(new Edge
+                {
+                    From = fromNode!,
+                    To = toNode!,
+                    Cost = link.cost
+                });
+            }
 
             Render(SGraphCanvas, 15);
         }
@@ -223,7 +256,17 @@ namespace Thesis_LIPX05
             try
             {
                 SGraphCanvas.Children.Clear();
-                MainTab.Items.Clear();
+                masterTable.Clear();
+
+                for (int i = MainTab.Items.Count - 1; i >= 0; i--)
+                {
+                    if (MainTab.Items[i] is TabItem tab && tab.Header.ToString() == "Master Recipe")
+                    {
+                        MainTab.Items.RemoveAt(i);
+                        break;
+                    }
+                }
+
                 isFileLoaded = false;
             }
             catch (Exception ex)

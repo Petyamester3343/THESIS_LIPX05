@@ -69,6 +69,8 @@ namespace Thesis_LIPX05
                 ts_app.Show();
                 ts_app.Activate();
             });
+            
+            jumper.Close();
         }
 
         public static LoadingStatusHelper DecideRang(int i)

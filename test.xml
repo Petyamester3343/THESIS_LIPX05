@@ -1,0 +1,97 @@
+<batchML:BatchInformation xmlns:batchML="http://www.wbf.org/xml/BatchML-V02"
+                          xmlns:custom="http://lipx05.y0kai.com/batchml/custom">
+  <batchML:MasterRecipe>
+    <batchML:ID>Example-MR-001</batchML:ID>
+    <batchML:Version>1.0</batchML:Version>
+    <batchML:Description>Master Recipe example for thesis</batchML:Description>
+
+    <batchML:Header>
+        <batchML:ModificationLog>
+            <batchML:ModifiedDate />
+            <batchML:Author>Tóth Péter (LIPX05)</batchML:Author>
+        </batchML:ModificationLog>
+        <batchML:ProductID>EXAMPLE-THESIS-001</batchML:ProductID>
+        <batchML:ProductName>MRE Demo</batchML:ProductName>
+        <batchML:BatchSize>
+            <batchML:Nominal>5000</batchML:Nominal>
+            <batchML:Normal />
+            <batchML:Min>1000</batchML:Min>
+            <batchML:Max>10000</batchML:Max>
+            <batchML:ScaleReference />
+            <batchML:ScaledSize />
+            <batchML:UnitOfMeasure>Kilograms</batchML:UnitOfMeasure>
+        </batchML:BatchSize>
+    </batchML:Header>
+    
+    <!-- Recipe Elements -->
+    <batchML:RecipeElement>
+      <batchML:ID>Mix-Phase</batchML:ID>
+      <batchML:RecipeElementType>Phase</batchML:RecipeElementType>
+      <batchML:Description>Mix ingredients</batchML:Description>
+    </batchML:RecipeElement>
+
+    <batchML:RecipeElement>
+      <batchML:ID>Heat-Phase</batchML:ID>
+      <batchML:RecipeElementType>Phase</batchML:RecipeElementType>
+      <batchML:Description>Heat mixture</batchML:Description>
+    </batchML:RecipeElement>
+
+    <batchML:RecipeElement>
+      <batchML:ID>Cool-Phase</batchML:ID>
+      <batchML:RecipeElementType>Phase</batchML:RecipeElementType>
+      <batchML:Description>Cool down</batchML:Description>
+    </batchML:RecipeElement>
+
+    <!-- Procedure Logic -->
+    <batchML:ProcedureLogic>
+      
+      <!-- Steps that reference RecipeElements -->
+      <batchML:Step>
+        <batchML:ID>Step1</batchML:ID>
+        <batchML:RecipeElementID>Mix-Phase</batchML:RecipeElementID>
+      </batchML:Step>
+      <batchML:Step>
+        <batchML:ID>Step2</batchML:ID>
+        <batchML:RecipeElementID>Heat-Phase</batchML:RecipeElementID>
+      </batchML:Step>
+      <batchML:Step>
+        <batchML:ID>Step3</batchML:ID>
+        <batchML:RecipeElementID>Cool-Phase</batchML:RecipeElementID>
+      </batchML:Step>
+
+      <!-- Links representing precedence (S-Graph edges) -->
+      <batchML:Link>
+        <batchML:ID>Link1</batchML:ID>
+        <batchML:FromID>
+          <batchML:FromIDValue>Step1</batchML:FromIDValue>
+          <batchML:FromType>Step</batchML:FromType>
+        </batchML:FromID>
+        <batchML:ToID>
+          <batchML:ToIDValue>Step2</batchML:ToIDValue>
+          <batchML:ToType>Step</batchML:ToType>
+        </batchML:ToID>
+        <batchML:LinkType>ControlLink</batchML:LinkType>
+        <batchML:Extension>
+          <custom:Duration>PT10M</custom:Duration> <!-- 10 minutes -->
+        </batchML:Extension>
+      </batchML:Link>
+
+      <batchML:Link>
+        <batchML:ID>Link2</batchML:ID>
+        <batchML:FromID>
+          <batchML:FromIDValue>Step2</batchML:FromIDValue>
+          <batchML:FromType>Step</batchML:FromType>
+        </batchML:FromID>
+        <batchML:ToID>
+          <batchML:ToIDValue>Step3</batchML:ToIDValue>
+          <batchML:ToType>Step</batchML:ToType>
+        </batchML:ToID>
+        <batchML:LinkType>ControlLink</batchML:LinkType>
+        <batchML:Extension>
+          <custom:Duration>PT7M</custom:Duration> <!-- 7 minutes -->
+        </batchML:Extension>
+      </batchML:Link>
+
+    </batchML:ProcedureLogic>
+  </batchML:MasterRecipe>
+</batchML:BatchInformation>

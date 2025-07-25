@@ -12,7 +12,8 @@ namespace Thesis_LIPX05.Util
         public class Node
         {
             public required string ID { get; set; } // unique ID of the node
-            public Point Position { get; set; } // position of the node in the graph
+            public required string Desc { get; set; } // description of the node
+            public Point Position { get; set; } // position of the node on the canvas
         }
 
         public class Edge // controlled edge between two or more nodes
@@ -22,24 +23,25 @@ namespace Thesis_LIPX05.Util
             public required double Cost { get; set; }
         }
 
-        private readonly static Dictionary<string, Node> nodes = [];
+        private readonly static Dictionary<string, Node> nodes = new(StringComparer.OrdinalIgnoreCase);
         private readonly static List<Edge> edges = [];
 
         public static Dictionary<string, Node> GetNodes() => nodes;
+        public static List<Edge> GetEdges() => edges;
 
-        public static void AddNode(string id, Point position)
+        public static void AddNode(string id, string desc, Point position)
         {
-             if (!nodes.ContainsKey(id))
-                nodes[id] = new() { ID = id, Position = position };
+            if (!nodes.ContainsKey(id))
+                nodes.Add(id, new() { ID = id, Desc = desc, Position = position });
         }
 
         public static void AddEdge(string fromID, string toID, double cost)
         {
-            if (nodes.TryGetValue(fromID, out var from)
-                && nodes.TryGetValue(toID, out var to)
-                && from != null
-                && to != null
-                && !double.IsNaN(cost)) edges.Add(new() { From = from, To = to, Cost = cost });
+            if (nodes.TryGetValue(fromID, out var from) && nodes.TryGetValue(toID, out var to) &&
+                from != null && to != null && !double.IsNaN(cost))
+            {
+                edges.Add(new() { From = from, To = to, Cost = cost });
+            }
         }
 
         public static void Render(Canvas cv, int RowLimit)
@@ -69,7 +71,7 @@ namespace Thesis_LIPX05.Util
                     Height = 100,
                     Content = new TextBlock
                     {
-                        Text = $"ID: {node.ID}",
+                        Text = $"ID: {node.Desc}",
                         FontSize = 12,
                         Foreground = Brushes.Black
                     }
@@ -96,7 +98,6 @@ namespace Thesis_LIPX05.Util
                     TextAlignment = TextAlignment.Center,
                     Width = radius * 2,
                     Height = radius / 2,
-                    ToolTip = graphToolTip
                 };
 
                 Canvas.SetLeft(graphNode, node.Position.X);
@@ -137,7 +138,7 @@ namespace Thesis_LIPX05.Util
 
             var weightBlock = new TextBlock
             {
-                Text = weight.ToString("F2"),
+                Text = Convert.ToInt32(weight).ToString(),
                 Foreground = Brushes.Black,
                 FontSize = 10,
                 FontWeight = FontWeights.Bold,
@@ -166,8 +167,8 @@ namespace Thesis_LIPX05.Util
                 RenderTransform = new TranslateTransform(0, radius)
             };
 
-            Canvas.SetLeft(weightBlock, base1.X + 10);
-            Canvas.SetTop(weightBlock, base1.Y + 10);
+            Canvas.SetLeft(weightBlock, from.X + 70);
+            Canvas.SetTop(weightBlock, from.Y + 8);
             cv.Children.Add(head);
             cv.Children.Add(weightBlock);
         }
