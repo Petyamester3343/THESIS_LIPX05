@@ -29,21 +29,26 @@
                 <MenuItem Header="_Draw S-Graph" Click="DrawGraph_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="_About" Click="About_Click" />
+                <MenuItem Header="_About" Click="About_Click"/>
             </MenuItem>
         </Menu>
 
         <TabControl Name="MainTab">
-            <TabItem Header="_Schedule Gantt">
+            <TabItem Header="_Gantt chart" Tag="Gantt">
                 <DockPanel>
-                    <Slider Name="ZoomSlider" Minimum="0.5" Maximum="2.0" Value="1.0" TickFrequency="0.1"
-                            DockPanel.Dock="Top" ValueChanged="ZoomSlider_ValueChanged"/>
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <Canvas Name="GanttCanvas" Background="White"/>
+                    <Slider Name="ZoomSlider" Minimum="-2" Maximum="2" Value="0" TickFrequency="0.1"
+                            IsSnapToTickEnabled="False" Width="1000" HorizontalAlignment="Center"
+                            DockPanel.Dock="Top" PreviewMouseDown="ZoomSlider_PreviewMouseDown"
+                            ValueChanged="ZoomSlider_ValueChanged"/>
+                    <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                        <StackPanel Orientation="Vertical">
+                            <Canvas Name="RulerCanvas" Height="30"/>
+                            <Canvas Name="GanttCanvas" Background="White"/>
+                        </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="_S-Graph">
+            <TabItem Header="_S-Graph" Tag="SGraph">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <Canvas Name="SGraphCanvas" Background="White"/>
                 </ScrollViewer>

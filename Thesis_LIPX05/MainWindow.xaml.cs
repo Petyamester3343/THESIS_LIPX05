@@ -3,10 +3,12 @@
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
-
+using Thesis_LIPX05.Util;
 using static Thesis_LIPX05.Util.SGraph;
 
 namespace Thesis_LIPX05
@@ -19,6 +21,9 @@ namespace Thesis_LIPX05
         private bool isFileLoaded = false;
         private XElement masterRecipe = new("MasterRecipe");
         private DataTable masterTable = new("Master Recipe Table");
+        private List<Gantt.GanttItem> ganttData = [];
+        private double zoom = 1.0;
+        private const double baseTimeScale = 10.0;
 
         public MainWindow()
         {
@@ -29,18 +34,80 @@ namespace Thesis_LIPX05
 
         private void SolveClick(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            string NullMSG = "Unknown";
-            MessageBox.Show($"{menuItem?.Tag ?? NullMSG} is not yet implemented!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (sender is MenuItem menuItem)
+            {
+                if (menuItem.Tag.ToString() == "Heuristic")
+                {
+                    if (SGraphCanvas.Children.Count == 0)
+                    {
+                        MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    var optimizer = new HeuristicOptimizer(GetNodes(), GetEdges());
+                    var path = optimizer.Optimize();
+
+                    ganttData = Gantt.BuildFromPath(path, GetEdges());
+                    double totalTime = ganttData.Max(x => x.Start + x.Duration);
+                    int rowC = ganttData.Count;
+                    double tScale = baseTimeScale * zoom;
+
+                    Gantt.Render(GanttCanvas, ganttData, tScale);
+                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale, rowH: 30, rowC);
+                }
+                else if (menuItem.Tag.ToString() == "BnB")
+                {
+                    if (SGraphCanvas.Children.Count == 0)
+                    {
+                        MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    var optimizer = new BranchBoundOptimizer(GetNodes(), GetEdges());
+                    var path = optimizer.Optimize();
+
+                    ganttData = Gantt.BuildFromPath(path, GetEdges());
+                    double totalTime = ganttData.Max(x => x.Start + x.Duration);
+                    int rowC = ganttData.Count;
+                    double tScale = baseTimeScale * zoom;
+
+                    Gantt.Render(GanttCanvas, ganttData, tScale);
+                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale, rowH: 30, rowC);
+                }
+                else MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void About_Click(object sender, RoutedEventArgs e) => new AboutWindow().Show();
 
+        private void ZoomSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not Slider slider) return;
+
+            if (e.OriginalSource is FrameworkElement element && element.TemplatedParent is not Thumb)
+            {
+                Point pos = e.GetPosition(slider);
+                double ratio = pos.X / slider.ActualWidth;
+                double newValue = slider.Minimum + (slider.Maximum - slider.Minimum) * ratio;
+                slider.Value = newValue;
+                e.Handled = true; // Prevents slider from moving
+            }
+        }
         private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (GanttCanvas != null)
-                GanttCanvas.LayoutTransform = new ScaleTransform(e.NewValue, 1)
-                    ?? throw new Exception("GanttCanvas is null.");
+            if (ganttData == null || ganttData.Count == 0) return;
+
+            zoom = Math.Pow(2, e.NewValue);
+            double scale = baseTimeScale * zoom;
+
+            double totalTime = ganttData.Max(x => x.Start + x.Duration);
+            int rowC = ganttData.Count;
+
+            GanttCanvas.LayoutTransform = Transform.Identity;
+
+            GanttCanvas.Width = totalTime * scale + 100; // +100 for padding
+            RulerCanvas.Width = GanttCanvas.Width;
+
+            Gantt.Render(GanttCanvas, ganttData, scale);
+            Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale: scale, rowH: 30, rowC);
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -86,6 +153,8 @@ namespace Thesis_LIPX05
         private void ClearUp()
         {
             SGraphCanvas.Children.Clear();
+            GanttCanvas.Children.Clear();
+            RulerCanvas.Children.Clear();
             GetNodes().Clear();
             GetEdges().Clear();
         }
@@ -183,10 +252,13 @@ namespace Thesis_LIPX05
 
             foreach (var link in links)
             {
+
                 bool fromExists = GetNodes().TryGetValue(link.fromID!, out Node? fromNode);
                 bool toExists = GetNodes().TryGetValue(link.toID!, out Node? toNode);
+                /*
                 MessageBox.Show($"From Node: {fromExists}, ID: {link.fromID}");
                 MessageBox.Show($"To Node: {toExists}, ID: {link.toID}");
+                */
                 GetEdges().Add(new Edge
                 {
                     From = fromNode!,
@@ -195,7 +267,7 @@ namespace Thesis_LIPX05
                 });
             }
 
-            Render(SGraphCanvas, 15);
+            Render(SGraphCanvas, 3);
         }
 
         private void LoadBatchML(string path)
@@ -255,7 +327,7 @@ namespace Thesis_LIPX05
         {
             try
             {
-                SGraphCanvas.Children.Clear();
+                ClearUp();
                 masterTable.Clear();
 
                 for (int i = MainTab.Items.Count - 1; i >= 0; i--)
@@ -298,12 +370,35 @@ namespace Thesis_LIPX05
 
         private void ExportSGraph_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Implement S-Graph export functionality (targetting the JPEG format)
+            var selectedTab = MainTab.SelectedItem as TabItem;
+
+            if (selectedTab?.Tag?.ToString() == "SGraph")
+            {
+                if (SGraphCanvas.Children.Count == 0)
+                {
+                    MessageBox.Show("No S-Graph to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                else JPEGExporter.ExportCanvas(SGraphCanvas, "S-Graph");
+            }
+            else MessageBox.Show("Please select the S-Graph tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void ExportGantt_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Implement Gantt chart export functionality (targetting the JPEG format)
+            var selectedTab = MainTab.SelectedItem as TabItem;
+
+            if (selectedTab?.Tag?.ToString() == "Gantt")
+            {
+                if (GanttCanvas.Children.Count == 0)
+                {
+                    MessageBox.Show("No Gantt chart to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                else JPEGExporter.ExportCanvas(GanttCanvas, "Gantt Chart");
+            }
+            else MessageBox.Show("Please select the Gantt chart tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
+
     }
 }

@@ -5,7 +5,7 @@ using System.Windows.Shapes;
 
 namespace Thesis_LIPX05.Util
 {
-    internal class SGraph
+    public class SGraph
     {
         // TODO: define, build, and render to a canvas an S-graph
         // with task nodes and edges as unidirectional transitions from one node to another
@@ -24,6 +24,7 @@ namespace Thesis_LIPX05.Util
         }
 
         private readonly static Dictionary<string, Node> nodes = new(StringComparer.OrdinalIgnoreCase);
+        private readonly static Dictionary<Point, int> edgeCountFromNode = [];
         private readonly static List<Edge> edges = [];
 
         public static Dictionary<string, Node> GetNodes() => nodes;
@@ -47,6 +48,8 @@ namespace Thesis_LIPX05.Util
         public static void Render(Canvas cv, int RowLimit)
         {
             cv.Children.Clear();
+            edgeCountFromNode.Clear();
+
             double
                 spacing = 150,
                 radius = 35,
@@ -111,7 +114,7 @@ namespace Thesis_LIPX05.Util
 
             // edges
             foreach (var edge in edges)
-                DrawArrow(cv, edge.From.Position, edge.To.Position, Brushes.DarkBlue, edge.Cost);
+                DrawCurvedArrow(cv, edge.From.Position, edge.To.Position, Brushes.DarkBlue, edge.Cost);
 
             double
                 maxHorSize = nodes.Values.Max(nHor => nHor.Position.X),
@@ -120,56 +123,93 @@ namespace Thesis_LIPX05.Util
             cv.Width = maxHorSize + 100;
             cv.Height = maxVertSize + 100;
         }
-        
-        private static void DrawArrow(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
+
+        private static void DrawCurvedArrow(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
             double radius = 35;
 
-            var line = new Line
-            {
-                X1 = from.X + 2.0 * radius,
-                Y1 = from.Y + radius,
-                X2 = to.X,
-                Y2 = to.Y + radius,
-                Stroke = color,
-                StrokeThickness = thickness
-            };
-            cv.Children.Add(line);
+            // offset starting point to the right edge of the source node
+            Point start = new(from.X + 2 * radius, from.Y + radius);
+            Point end = new(to.X, to.Y + radius);
 
+            // how many edges are drawn from this starting point
+            if (!edgeCountFromNode.TryGetValue(from, out int edgeIndex))
+                edgeCountFromNode[from] = 1;
+            else
+                edgeCountFromNode[from] = ++edgeIndex;
+
+            // first is straight, rest are curved
+            double curveOffset = (edgeIndex > 1) ? 20 * (edgeIndex - 1) : 0;
+
+            // midpoint and curve control
+            Vector direction = end - start;
+            direction.Normalize();
+            Vector normal = new(-direction.Y, direction.X);
+
+            Point mid = new((start.X + end.X) / 2, (start.Y + end.Y) / 2);
+            Point control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
+
+            // path is quadratic Bezier
+            var figure = new PathFigure { StartPoint = start };
+            var segment = new QuadraticBezierSegment { Point1 = control, Point2 = end };
+            figure.Segments.Add(segment);
+
+            var geometry = new PathGeometry();
+            geometry.Figures.Add(figure);
+
+            var path = new Path
+            {
+                Stroke = color,
+                StrokeThickness = thickness,
+                Data = geometry
+            };
+
+            cv.Children.Add(path);
+
+            // arrowhead
+            Vector arrowDir = start - end;
+            arrowDir.Normalize();
+            Vector arrowNorm = new(-arrowDir.Y, arrowDir.X);
+
+            double headLength = 10;
+            double headWidth = 5;
+
+            Point base1 = end + arrowDir * headLength + arrowNorm * headWidth;
+            Point base2 = end + arrowDir * headLength - arrowNorm * headWidth;
+
+            var arrowHead = new Polygon
+            {
+                Points = [end, base1, base2],
+                Fill = color,
+                RenderTransform = new RotateTransform(0, to.X, to.Y)
+            };
+
+            cv.Children.Add(arrowHead);
+
+            // midpoint of the quadratic Bezier curve at t = 0.5            
+            // B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
+            double t = 0.5;
+            Point midCurve = new(
+                (1-t) * (1-t) * start.X + 2 * (1-t) * t * control.X + t * t * end.X,
+                (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
+                );
+            
+            // the weight of the path at the center of the arrow
             var weightBlock = new TextBlock
             {
                 Text = Convert.ToInt32(weight).ToString(),
                 Foreground = Brushes.Black,
-                FontSize = 10,
+                Background = Brushes.White,
+                FontSize = 8,
                 FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center,
-                Width = 20,
-                Height = 15,
+                Width = 18,
+                Height = 12
             };
 
-            // unidirectional arrow's head
-            var dir = from - to;
-            dir.Normalize();
-            Vector normal = new(-dir.Y, dir.X);
+            Canvas.SetLeft(weightBlock, midCurve.X - weightBlock.Width / 2);
+            Canvas.SetTop(weightBlock, midCurve.Y - weightBlock.Height / 2);
 
-            double
-                length = 10,
-                width = 5;
-
-            Point
-                base1 = to + dir * length + normal * width,
-                base2 = to + dir * length - normal * width;
-
-            var head = new Polygon
-            {
-                Points = [to, base1, base2],
-                Fill = color,
-                RenderTransform = new TranslateTransform(0, radius)
-            };
-
-            Canvas.SetLeft(weightBlock, from.X + 70);
-            Canvas.SetTop(weightBlock, from.Y + 8);
-            cv.Children.Add(head);
             cv.Children.Add(weightBlock);
         }
     }
