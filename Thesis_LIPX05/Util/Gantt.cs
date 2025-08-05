@@ -18,7 +18,6 @@ namespace Thesis_LIPX05.Util
             public double Duration { get; set; } // duration of the task in minutes
         }
 
-
         public static List<GanttItem> BuildFromPath(List<SGraph.Node> path, List<SGraph.Edge> edges)
         {
             var ganttItems = new List<GanttItem>();
@@ -46,22 +45,22 @@ namespace Thesis_LIPX05.Util
             return ganttItems;
         }
 
-        public static void DrawRuler(Canvas cv1, Canvas cv2, double totalTime, double scale, double rowH = 30, int rowC = 5)
+        public static void DrawRuler(Canvas gcv, Canvas scv, double totalTime, double scale)
         {
-            cv1.Children.Clear();
+            gcv.Children.Clear();
             int tickCount = (int)Math.Ceiling(totalTime);
 
             for (int i = 0; i <= tickCount; i++)
             {
                 double x = i * scale;
 
-                // vert tick line across both canvases
+                // vertical tick line across both canvases
                 var tick = new Line
                 {
                     X1 = x,
                     Y1 = 0,
                     X2 = x,
-                    Y2 = rowH * rowC + 5, // extended below the rulewr by 5 pixels
+                    Y2 = gcv.ActualHeight, // extended below the ruler to the end of GanttCanvas
                     Stroke = Brushes.LightGray,
                     StrokeThickness = 1
                 };
@@ -80,16 +79,16 @@ namespace Thesis_LIPX05.Util
                     };
                     Canvas.SetLeft(label, x + 2);
                     Canvas.SetTop(label, 0);
-                    cv1.Children.Add(label);
+                    gcv.Children.Add(label);
                 }
                 
-                cv1.Children.Add(tick);
+                gcv.Children.Add(tick);
             }
 
             double cvW = totalTime * scale + 100;
 
-            cv1.Width = cvW;
-            cv2.Width = cvW;
+            gcv.Width = cvW;
+            scv.Width = cvW;
         }
 
         public static void Render(Canvas cv, List<GanttItem> items, double scale)

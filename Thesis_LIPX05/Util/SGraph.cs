@@ -114,7 +114,7 @@ namespace Thesis_LIPX05.Util
 
             // edges
             foreach (var edge in edges)
-                DrawCurvedArrow(cv, edge.From.Position, edge.To.Position, Brushes.DarkBlue, edge.Cost);
+                DrawEdge(cv, edge.From.Position, edge.To.Position, Brushes.DarkBlue, edge.Cost);
 
             double
                 maxHorSize = nodes.Values.Max(nHor => nHor.Position.X),
@@ -124,28 +124,27 @@ namespace Thesis_LIPX05.Util
             cv.Height = maxVertSize + 100;
         }
 
-        private static void DrawCurvedArrow(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
+        private static void DrawEdge(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
-            double radius = 35;
+            double r = 35;
 
             // offset starting point to the right edge of the source node
-            Point start = new(from.X + 2 * radius, from.Y + radius);
-            Point end = new(to.X, to.Y + radius);
+            Point start = new(from.X + 2 * r, from.Y + r);
+            Point end = new(to.X, to.Y + r);
 
             // how many edges are drawn from this starting point
-            if (!edgeCountFromNode.TryGetValue(from, out int edgeIndex))
-                edgeCountFromNode[from] = 1;
-            else
-                edgeCountFromNode[from] = ++edgeIndex;
+            if (!edgeCountFromNode.TryGetValue(from, out int edgeIndex)) edgeCountFromNode[from] = 1;
+            else edgeCountFromNode[from] = ++edgeIndex;
 
             // first is straight, rest are curved
             double curveOffset = (edgeIndex > 1) ? 20 * (edgeIndex - 1) : 0;
 
-            // midpoint and curve control
-            Vector direction = end - start;
-            direction.Normalize();
-            Vector normal = new(-direction.Y, direction.X);
+            // direction of the arrow
+            Vector dir = end - start;
+            dir.Normalize();
+            Vector normal = new(-dir.Y, dir.X);
 
+            // midpoint and curve control
             Point mid = new((start.X + end.X) / 2, (start.Y + end.Y) / 2);
             Point control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
 
@@ -154,14 +153,14 @@ namespace Thesis_LIPX05.Util
             var segment = new QuadraticBezierSegment { Point1 = control, Point2 = end };
             figure.Segments.Add(segment);
 
-            var geometry = new PathGeometry();
-            geometry.Figures.Add(figure);
+            var geo = new PathGeometry();
+            geo.Figures.Add(figure);
 
             var path = new Path
             {
                 Stroke = color,
                 StrokeThickness = thickness,
-                Data = geometry
+                Data = geo
             };
 
             cv.Children.Add(path);
@@ -186,7 +185,7 @@ namespace Thesis_LIPX05.Util
 
             cv.Children.Add(arrowHead);
 
-            // midpoint of the quadratic Bezier curve at t = 0.5            
+            // midpoint of the quadratic Bézier curve at t = 0.5            
             // B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
             double t = 0.5;
             Point midCurve = new(
@@ -194,7 +193,7 @@ namespace Thesis_LIPX05.Util
                 (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
                 );
             
-            // the weight of the path at the center of the arrow
+            // the weight of the path at the midpoint of the curve
             var weightBlock = new TextBlock
             {
                 Text = Convert.ToInt32(weight).ToString(),

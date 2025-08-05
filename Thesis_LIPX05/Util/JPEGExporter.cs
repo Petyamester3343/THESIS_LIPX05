@@ -27,9 +27,7 @@ namespace Thesis_LIPX05.Util
                 cv.Measure(size);
                 cv.Arrange(new(size));
 
-                var rtb = new RenderTargetBitmap(
-                    (int)size.Width, (int)size.Height,
-                    dpi, dpi, PixelFormats.Pbgra32);
+                var rtb = new RenderTargetBitmap((int)size.Width, (int)size.Height, dpi, dpi, PixelFormats.Pbgra32);
 
                 rtb.Render(cv);
 
@@ -39,11 +37,9 @@ namespace Thesis_LIPX05.Util
                 using var stream = new FileStream(saveDialog.FileName, FileMode.Create);
                 encoder.Save(stream);
 
-                MessageBox.Show($"Canvas exported as {saveDialog.FileName}",
-                                "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Canvas exported as {saveDialog.FileName}", "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else
-                MessageBox.Show("Export cancelled.", "Export Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show("Export cancelled.", "Export Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }

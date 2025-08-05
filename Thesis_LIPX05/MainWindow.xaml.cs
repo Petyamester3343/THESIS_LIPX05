@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +19,13 @@ namespace Thesis_LIPX05
     {
         private bool isFileLoaded = false;
         private XElement masterRecipe = new("MasterRecipe");
-        private DataTable masterTable = new("Master Recipe Table");
+
+        private readonly DataTable
+            masterTable = new("Master Recipe Table"),
+            recipeElementTable = new("Recipe Element Table"),
+            stepTable = new("Steps Table"),
+            linkTable = new("Links Table");
+
         private List<Gantt.GanttItem> ganttData = [];
         private double zoom = 1.0;
         private const double baseTimeScale = 10.0;
@@ -52,7 +57,7 @@ namespace Thesis_LIPX05
                     double tScale = baseTimeScale * zoom;
 
                     Gantt.Render(GanttCanvas, ganttData, tScale);
-                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale, rowH: 30, rowC);
+                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale);
                 }
                 else if (menuItem.Tag.ToString() == "BnB")
                 {
@@ -70,7 +75,7 @@ namespace Thesis_LIPX05
                     double tScale = baseTimeScale * zoom;
 
                     Gantt.Render(GanttCanvas, ganttData, tScale);
-                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale, rowH: 30, rowC);
+                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale);
                 }
                 else MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -107,7 +112,7 @@ namespace Thesis_LIPX05
             RulerCanvas.Width = GanttCanvas.Width;
 
             Gantt.Render(GanttCanvas, ganttData, scale);
-            Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale: scale, rowH: 30, rowC);
+            Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale);
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -277,45 +282,25 @@ namespace Thesis_LIPX05
                 var batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02")
                     ?? throw new Exception("BatchML namespace not found.");
 
+                var customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom")
+                    ?? throw new Exception("Custom namespace not found.");
+
                 var doc = XDocument.Load(path);
 
                 masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
                     ?? throw new Exception("Master element not found in BatchML file.");
 
-                var id = masterRecipe.Element(batchML + "ID")?.Value;
-                var ver = masterRecipe.Element(batchML + "Version")?.Value;
-                var desc = masterRecipe.Elements(batchML + "Description").LastOrDefault()?.Value;
+                // Master Recipe + Header datatable
+                DisplayMasterTable(masterTable, batchML);
 
-                var header = masterRecipe.Element(batchML + "Header")
-                    ?? throw new Exception("Header element not found in BatchML file.");
+                // Recipe Element datatable
+                DisplayRecipeElementTable(recipeElementTable, batchML);
 
-                var prodName = header.Element(batchML + "ProductName")?.Value;
-                var batchSize = header?.Element(batchML + "BatchSize")
-                    ?? throw new Exception("BatchSize element not found in BatchML file.");
+                // Steps datatable
+                DisplayStepTable(stepTable, batchML);
 
-                var nominal = batchSize.Element(batchML + "Nominal")?.Value;
-                var min = batchSize.Element(batchML + "Min")?.Value;
-                var max = batchSize.Element(batchML + "Max")?.Value;
-                var unit = batchSize.Element(batchML + "UnitOfMeasure")?.Value;
-
-                var masterTable = new DataTable()
-                {
-                    TableName = "Master Recipe"
-                };
-                masterTable.Columns.Add("RecipeID");
-                masterTable.Columns.Add("Version");
-                masterTable.Columns.Add("Description");
-                masterTable.Columns.Add("ProductName");
-                masterTable.Columns.Add("NominalBatchSize");
-                masterTable.Columns.Add("MinBatchSize");
-                masterTable.Columns.Add("MaxBatchSize");
-                masterTable.Columns.Add("UnitOfMeasure");
-
-                masterTable.Rows.Add(
-                    id, ver, desc, prodName, nominal, min, max, unit
-                );
-
-                DisplayDataTable(masterTable);
+                // Links datatable
+                DisplayLinkTable(linkTable, batchML, customNS);
             }
             catch (Exception ex)
             {
@@ -400,5 +385,131 @@ namespace Thesis_LIPX05
             else MessageBox.Show("Please select the Gantt chart tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
+        private void DisplayMasterTable(DataTable mdt, XNamespace batchML)
+        {
+            var id = masterRecipe.Element(batchML + "ID")?.Value;
+            var ver = masterRecipe.Element(batchML + "Version")?.Value;
+            var desc = masterRecipe.Elements(batchML + "Description").LastOrDefault()?.Value;
+
+            var header = masterRecipe.Element(batchML + "Header")
+                ?? throw new Exception("Header element not found in BatchML file.");
+
+            var prodID = header.Element(batchML + "ProductID")?.Value
+                ?? throw new Exception("ProductID element not found in BatchML file.");
+            var prodName = header.Element(batchML + "ProductName")?.Value
+                ?? throw new Exception("ProductName element not found in BatchML file.");
+            var batchSize = header?.Element(batchML + "BatchSize")
+                ?? throw new Exception("BatchSize element not found in BatchML file.");
+
+            var nominal = batchSize.Element(batchML + "Nominal")?.Value;
+            var min = batchSize.Element(batchML + "Min")?.Value;
+            var max = batchSize.Element(batchML + "Max")?.Value;
+            var unit = batchSize.Element(batchML + "UnitOfMeasure")?.Value;
+
+            mdt.Columns.Add("RecipeID");
+            mdt.Columns.Add("Version");
+            mdt.Columns.Add("Description");
+            mdt.Columns.Add("ProductName");
+            mdt.Columns.Add("ProductID");
+            mdt.Columns.Add("NominalBatchSize");
+            mdt.Columns.Add("MinBatchSize");
+            mdt.Columns.Add("MaxBatchSize");
+            mdt.Columns.Add("UnitOfMeasure");
+
+            mdt.Rows.Add(
+                id, ver, desc, prodName, prodID, nominal, min, max, unit
+            );
+
+            DisplayDataTable(mdt);
+        }
+
+        private void DisplayRecipeElementTable(DataTable redt, XNamespace batchML)
+        {
+            var recipeElements = masterRecipe.Descendants(batchML + "RecipeElement")
+                .Select(x => new
+                {
+                    ID = x.Element(batchML + "ID")?.Value.Trim(),
+                    Desc = x.Element(batchML + "Description")?.Value.Trim()
+                })
+                .Where(x => !string.IsNullOrEmpty(x.ID) && !string.IsNullOrEmpty(x.Desc))
+                .ToList();
+
+            redt.Columns.Add("ID");
+            redt.Columns.Add("Description");
+
+            foreach (var re in recipeElements)
+            {
+                var dr = redt.NewRow();
+                dr["ID"] = re.ID;
+                dr["Description"] = re.Desc;
+                redt.Rows.Add(dr);
+            }
+
+            DisplayDataTable(redt);
+        }
+
+        private void DisplayStepTable(DataTable sdt, XNamespace batchML)
+        {
+            var procLogic = masterRecipe.Element(batchML + "ProcedureLogic")
+                    ?? throw new Exception("ProcedureLogic element not found in BatchML file.");
+
+            var steps = procLogic.Descendants(batchML + "Step")
+                .Select(x => new
+                {
+                    ID = x.Element(batchML + "ID")?.Value.Trim(),
+                    REID = x.Element(batchML + "RecipeElementID")?.Value.Trim()
+                })
+                .Where(x => !string.IsNullOrEmpty(x.ID) && !string.IsNullOrEmpty(x.REID))
+                .ToList();
+
+            sdt.Columns.Add("ID");
+            sdt.Columns.Add("RecipeElementID");
+
+            foreach (var step in steps)
+            {
+                var dr = sdt.NewRow();
+                dr["ID"] = step.ID;
+                dr["RecipeElementID"] = step.REID;
+                sdt.Rows.Add(dr);
+            }
+
+            DisplayDataTable(sdt);
+        }
+
+        private void DisplayLinkTable(DataTable ldt, XNamespace batchML, XNamespace customNS)
+        {
+            var procLogic = masterRecipe.Element(batchML + "ProcedureLogic")
+                    ?? throw new Exception("ProcedureLogic element not found in BatchML file.");
+
+            var links = procLogic.Descendants(batchML + "Link")
+                .Select(x => new
+                {
+                    ID = x.Element(batchML + "ID")?.Value.Trim(),
+                    FromID = x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value.Trim(),
+                    ToID = x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value.Trim(),
+                    Duration = x.Element(batchML + "Extension")?.Descendants(customNS + "Duration").FirstOrDefault()?.Value
+                })
+                .Where(x => !string.IsNullOrEmpty(x.ID)
+                && !string.IsNullOrEmpty(x.FromID)
+                && !string.IsNullOrEmpty(x.ToID)
+                && !string.IsNullOrEmpty(x.Duration))
+                .ToList();
+
+            ldt.Columns.Add("ID");
+            ldt.Columns.Add("FromID");
+            ldt.Columns.Add("ToID");
+            ldt.Columns.Add("Duration");
+
+            foreach (var link in links)
+            {
+                var dr = ldt.NewRow();
+                dr["ID"] = link.ID;
+                dr["FromID"] = link.FromID;
+                dr["ToID"] = link.ToID;
+                dr["Duration"] = XmlConvert.ToTimeSpan(link.Duration).TotalMinutes + " min"; // ISO 8601 to minutes to string via its operator
+                ldt.Rows.Add(dr);
+            }
+            DisplayDataTable(ldt);
+        }
     }
 }
