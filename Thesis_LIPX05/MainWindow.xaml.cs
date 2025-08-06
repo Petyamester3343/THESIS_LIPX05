@@ -51,7 +51,7 @@ namespace Thesis_LIPX05
                     var optimizer = new HeuristicOptimizer(GetNodes(), GetEdges());
                     var path = optimizer.Optimize();
 
-                    ganttData = Gantt.BuildFromPath(path, GetEdges());
+                    ganttData = Gantt.BuildChartFromPath(path, GetEdges());
                     double totalTime = ganttData.Max(x => x.Start + x.Duration);
                     int rowC = ganttData.Count;
                     double tScale = baseTimeScale * zoom;
@@ -66,10 +66,10 @@ namespace Thesis_LIPX05
                         MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-                    var optimizer = new BranchBoundOptimizer(GetNodes(), GetEdges());
+                    var optimizer = new BnBOptimizer(GetNodes(), GetEdges());
                     var path = optimizer.Optimize();
 
-                    ganttData = Gantt.BuildFromPath(path, GetEdges());
+                    ganttData = Gantt.BuildChartFromPath(path, GetEdges());
                     double totalTime = ganttData.Max(x => x.Start + x.Duration);
                     int rowC = ganttData.Count;
                     double tScale = baseTimeScale * zoom;
@@ -332,7 +332,7 @@ namespace Thesis_LIPX05
             }
         }
 
-        private void DisplayDataTable(DataTable dataTable)
+        private void DisplayDataTable(DataTable dataTable, string tag)
         {
             var grid = new DataGrid
             {
@@ -347,7 +347,8 @@ namespace Thesis_LIPX05
             var tab = new TabItem
             {
                 Header = dataTable.TableName,
-                Content = container
+                Content = container,
+                Tag = tag
             };
             MainTab.Items.Insert(0, tab);
             MainTab.SelectedIndex = 0;
@@ -420,7 +421,7 @@ namespace Thesis_LIPX05
                 id, ver, desc, prodName, prodID, nominal, min, max, unit
             );
 
-            DisplayDataTable(mdt);
+            DisplayDataTable(mdt, "MasterRecipe");
         }
 
         private void DisplayRecipeElementTable(DataTable redt, XNamespace batchML)
@@ -445,7 +446,7 @@ namespace Thesis_LIPX05
                 redt.Rows.Add(dr);
             }
 
-            DisplayDataTable(redt);
+            DisplayDataTable(redt, "RecipeElements");
         }
 
         private void DisplayStepTable(DataTable sdt, XNamespace batchML)
@@ -473,7 +474,7 @@ namespace Thesis_LIPX05
                 sdt.Rows.Add(dr);
             }
 
-            DisplayDataTable(sdt);
+            DisplayDataTable(sdt, "Steps");
         }
 
         private void DisplayLinkTable(DataTable ldt, XNamespace batchML, XNamespace customNS)
@@ -506,10 +507,10 @@ namespace Thesis_LIPX05
                 dr["ID"] = link.ID;
                 dr["FromID"] = link.FromID;
                 dr["ToID"] = link.ToID;
-                dr["Duration"] = XmlConvert.ToTimeSpan(link.Duration).TotalMinutes + " min"; // ISO 8601 to minutes to string via its operator
+                dr["Duration"] = (link.Duration != null) ? $"{XmlConvert.ToTimeSpan(link.Duration).TotalMinutes} min" : "N/A"; // ISO 8601 to minutes to string via its operator if not null
                 ldt.Rows.Add(dr);
             }
-            DisplayDataTable(ldt);
+            DisplayDataTable(ldt, "Links");
         }
     }
 }

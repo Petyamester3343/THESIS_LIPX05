@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Thesis_LIPX05
 {
@@ -18,7 +16,7 @@ namespace Thesis_LIPX05
             FIFTH
         }
 
-        private Window? jumper;
+        private Window? jumper; // used to jump to the main window after loading
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -91,5 +89,4 @@ namespace Thesis_LIPX05
             }
         }
     }
-
 }

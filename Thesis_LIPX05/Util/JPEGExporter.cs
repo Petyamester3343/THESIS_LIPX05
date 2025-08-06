@@ -39,7 +39,7 @@ namespace Thesis_LIPX05.Util
 
                 MessageBox.Show($"Canvas exported as {saveDialog.FileName}", "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else MessageBox.Show("Export cancelled.", "Export Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show($"Export of {saveDialog.FileName} was cancelled", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }

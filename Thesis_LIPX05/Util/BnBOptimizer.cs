@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Thesis_LIPX05.Util
+﻿namespace Thesis_LIPX05.Util
 {
-    public class BranchBoundOptimizer(Dictionary<string, SGraph.Node> nodes, List<SGraph.Edge> edges) : OptimizerBase(nodes, edges)
+    public class BnBOptimizer(Dictionary<string, SGraph.Node> nodes, List<SGraph.Edge> edges) : OptimizerBase(nodes, edges)
     {
         private double bestCost = double.NegativeInfinity;
         private List<string> bestPath = [];

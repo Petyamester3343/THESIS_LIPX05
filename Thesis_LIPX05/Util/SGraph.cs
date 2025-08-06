@@ -7,8 +7,6 @@ namespace Thesis_LIPX05.Util
 {
     public class SGraph
     {
-        // TODO: define, build, and render to a canvas an S-graph
-        // with task nodes and edges as unidirectional transitions from one node to another
         public class Node
         {
             public required string ID { get; set; } // unique ID of the node
@@ -38,11 +36,11 @@ namespace Thesis_LIPX05.Util
 
         public static void AddEdge(string fromID, string toID, double cost)
         {
-            if (nodes.TryGetValue(fromID, out var from) && nodes.TryGetValue(toID, out var to) &&
-                from != null && to != null && !double.IsNaN(cost))
-            {
-                edges.Add(new() { From = from, To = to, Cost = cost });
-            }
+            if (nodes.TryGetValue(fromID, out var from)
+                && nodes.TryGetValue(toID, out var to)
+                && from != null
+                && to != null
+                && !double.IsNaN(cost)) edges.Add(new() { From = from, To = to, Cost = cost });
         }
 
         public static void Render(Canvas cv, int RowLimit)

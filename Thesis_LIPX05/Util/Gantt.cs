@@ -1,15 +1,15 @@
-﻿using System.Reflection.Emit;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Rectangle = System.Windows.Shapes.Rectangle;
+
+using static Thesis_LIPX05.Util.SGraph;
 
 namespace Thesis_LIPX05.Util
 {
     internal class Gantt
     {
+        // helper class to represent a Gantt chart item
         public class GanttItem
         {
             public string ID { get; set; } = string.Empty; // unique ID of the task
@@ -18,7 +18,7 @@ namespace Thesis_LIPX05.Util
             public double Duration { get; set; } // duration of the task in minutes
         }
 
-        public static List<GanttItem> BuildFromPath(List<SGraph.Node> path, List<SGraph.Edge> edges)
+        public static List<GanttItem> BuildChartFromPath(List<Node> path, List<Edge> edges)
         {
             var ganttItems = new List<GanttItem>();
             double currT = 0;
@@ -31,7 +31,7 @@ namespace Thesis_LIPX05.Util
                 var edge = edges.FirstOrDefault(e => e.From == from && e.To == to);
                 if (edge == null) continue;
 
-                ganttItems.Add(new GanttItem
+                ganttItems.Add(new()
                 {
                     ID = to.ID,
                     Desc = to.Desc,
@@ -67,7 +67,7 @@ namespace Thesis_LIPX05.Util
 
                 int lblInterval = (scale < 15) ? 2 : 1;
                 TextBlock label;
-                
+
                 if (i % lblInterval == 0)
                 {
                     label = new TextBlock
@@ -81,7 +81,7 @@ namespace Thesis_LIPX05.Util
                     Canvas.SetTop(label, 0);
                     gcv.Children.Add(label);
                 }
-                
+
                 gcv.Children.Add(tick);
             }
 
