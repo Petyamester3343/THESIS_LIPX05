@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="AboutWindow" Height="500" Width="500">
     <DockPanel>
-        <TextBlock Text="Y0KAI Task Scheduler" FontSize="24" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 200 0 20" TextAlignment="Center"/>
-        <TextBlock Text="Version 1.0" FontSize="18" Foreground="Black" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 0 0 0" TextAlignment="Center"/>
+        <TextBlock Name ="YOKAI" Text="Y0KAI Task Scheduler" FontSize="24" FontWeight="Bold" Foreground="Black" Background="Yellow" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 200 0 20" TextAlignment="Center" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"/>
+        <TextBlock Text="Version 2.0" FontSize="18" Foreground="Black" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 0 0 0" TextAlignment="Center"/>
         <TextBlock Text="Developed by: Tóth Péter (LIPX05)" FontSize="18" Foreground="Black" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 0 0 0" TextAlignment="Center"/>
         <Button Content="Close" DockPanel.Dock="Top" Margin="0 0 0 0" FontWeight="Bold" Click="Close_Click" Width="100" Height="40"/>
     </DockPanel>

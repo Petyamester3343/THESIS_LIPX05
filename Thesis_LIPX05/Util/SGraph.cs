@@ -12,6 +12,7 @@ namespace Thesis_LIPX05.Util
             public required string ID { get; set; } // unique ID of the node
             public required string Desc { get; set; } // description of the node
             public Point Position { get; set; } // position of the node on the canvas
+            public static double Radius { get; set; } = 35; // radius of the node, default is 35
         }
 
         public class Edge // controlled edge between two or more nodes
@@ -36,21 +37,20 @@ namespace Thesis_LIPX05.Util
 
         public static void AddEdge(string fromID, string toID, double cost)
         {
-            if (nodes.TryGetValue(fromID, out var from)
-                && nodes.TryGetValue(toID, out var to)
+            if (nodes.TryGetValue(fromID, out Node? from)
+                && nodes.TryGetValue(toID, out Node? to)
                 && from != null
                 && to != null
                 && !double.IsNaN(cost)) edges.Add(new() { From = from, To = to, Cost = cost });
         }
 
-        public static void Render(Canvas cv, int RowLimit)
+        public static void Render(Canvas cv, int rowLimit)
         {
             cv.Children.Clear();
             edgeCountFromNode.Clear();
 
             double
                 spacing = 150,
-                radius = 35,
                 startX = 0,
                 startY = 0;
 
@@ -61,8 +61,8 @@ namespace Thesis_LIPX05.Util
                 var node = sortedNodes[i];
                 node.Position = new()
                 {
-                    X = (int)(startX + i % RowLimit * spacing + radius),
-                    Y = (int)(startY + i / RowLimit * spacing + radius)
+                    X = (int)(startX + i % rowLimit * spacing + Node.Radius),
+                    Y = (int)(startY + i / rowLimit * spacing + Node.Radius)
                 };
 
                 // tooltip for the node
@@ -81,8 +81,8 @@ namespace Thesis_LIPX05.Util
                 // node
                 var graphNode = new Ellipse
                 {
-                    Width = radius * 2,
-                    Height = radius * 2,
+                    Width = Node.Radius * 2,
+                    Height = Node.Radius * 2,
                     Fill = Brushes.LightBlue,
                     Stroke = Brushes.Black,
                     StrokeThickness = 1,
@@ -97,16 +97,16 @@ namespace Thesis_LIPX05.Util
                     FontSize = 10,
                     FontWeight = FontWeights.Bold,
                     TextAlignment = TextAlignment.Center,
-                    Width = radius * 2,
-                    Height = radius / 2,
+                    Width = Node.Radius * 2,
+                    Height = Node.Radius / 2,
                 };
 
                 Canvas.SetLeft(graphNode, node.Position.X);
                 Canvas.SetTop(graphNode, node.Position.Y);
                 cv.Children.Add(graphNode);
                 
-                Canvas.SetLeft(txt, node.Position.X - (radius / 2) + 18);
-                Canvas.SetTop(txt, node.Position.Y + (radius / 1.333));
+                Canvas.SetLeft(txt, node.Position.X - (Node.Radius / 2) + 18);
+                Canvas.SetTop(txt, node.Position.Y + (Node.Radius / 1.333));
                 cv.Children.Add(txt);
             }
 
@@ -124,11 +124,9 @@ namespace Thesis_LIPX05.Util
 
         private static void DrawEdge(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
-            double r = 35;
-
             // offset starting point to the right edge of the source node
-            Point start = new(from.X + 2 * r, from.Y + r);
-            Point end = new(to.X, to.Y + r);
+            Point start = new(from.X + 2 * Node.Radius, from.Y + Node.Radius);
+            Point end = new(to.X, to.Y + Node.Radius);
 
             // how many edges are drawn from this starting point
             if (!edgeCountFromNode.TryGetValue(from, out int edgeIndex)) edgeCountFromNode[from] = 1;
@@ -143,14 +141,15 @@ namespace Thesis_LIPX05.Util
             Vector normal = new(-dir.Y, dir.X);
 
             // midpoint and curve control
-            Point mid = new((start.X + end.X) / 2, (start.Y + end.Y) / 2);
-            Point control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
+            Point
+                mid = new((start.X + end.X) / 2, (start.Y + end.Y) / 2),
+                control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
 
-            // path is quadratic Bezier
+            // edge is a quadratic Bezier, meaning it can be curved in case of two edges overlapping
             var figure = new PathFigure { StartPoint = start };
             var segment = new QuadraticBezierSegment { Point1 = control, Point2 = end };
             figure.Segments.Add(segment);
-
+            
             var geo = new PathGeometry();
             geo.Figures.Add(figure);
 
@@ -163,7 +162,7 @@ namespace Thesis_LIPX05.Util
 
             cv.Children.Add(path);
 
-            // arrowhead
+            // the arrowhead
             Vector arrowDir = start - end;
             arrowDir.Normalize();
             Vector arrowNorm = new(-arrowDir.Y, arrowDir.X);
@@ -186,11 +185,12 @@ namespace Thesis_LIPX05.Util
             // midpoint of the quadratic Bézier curve at t = 0.5            
             // B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
             double t = 0.5;
-            Point midCurve = new(
-                (1-t) * (1-t) * start.X + 2 * (1-t) * t * control.X + t * t * end.X,
-                (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
-                );
-            
+            var midCurve = new Point
+            {
+                X = (1-t) * (1-t) * start.X + 2 * (1-t) * t * control.X + t * t * end.X,
+                Y = (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
+            };
+
             // the weight of the path at the midpoint of the curve
             var weightBlock = new TextBlock
             {

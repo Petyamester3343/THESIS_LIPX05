@@ -1,4 +1,3 @@
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.csproj.AssemblyReference.cache
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\AboutWindow.g.cs
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\MainWindow.g.cs
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\App.g.cs
@@ -9,20 +8,6 @@ C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Th
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.runtimeconfig.json
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.dll
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.pdb
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\EntityFramework.SqlServer.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\EntityFramework.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\System.Data.SQLite.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\System.Data.SqlClient.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\System.Data.SQLite.EF6.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\win-arm64\native\sni.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\win-x64\native\sni.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\win-x86\native\sni.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\linux-x64\native\SQLite.Interop.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\osx-x64\native\SQLite.Interop.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\win-x64\native\SQLite.Interop.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\win-x86\native\SQLite.Interop.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\AboutWindow.baml
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\MainWindow.baml
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.g.resources
@@ -31,7 +16,6 @@ C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Th
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.AssemblyInfo.cs
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.csproj.CoreCompileInputs.cache
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.sourcelink.json
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_L.1C5761DE.Up2Date
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.dll
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\refint\Thesis_LIPX05.dll
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.pdb

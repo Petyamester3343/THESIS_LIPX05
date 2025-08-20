@@ -62,7 +62,6 @@ namespace Thesis_LIPX05
             {
                 var ts_app = new MainWindow();
                 MainWindow = ts_app;
-                ts_app.Closed += MainWindow_Closed;
                 ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 ts_app.Show();
                 ts_app.Activate();
@@ -78,15 +77,6 @@ namespace Thesis_LIPX05
             else if (i >= 40 && i <= 60) return LoadingStatusHelper.THIRD;
             else if (i >= 60 && i <= 80) return LoadingStatusHelper.FOURTH;
             else return LoadingStatusHelper.FIFTH;
-        }
-
-        private void MainWindow_Closed(object? sender, EventArgs e)
-        {
-            if (jumper != null)
-            {
-                jumper.Close();
-                jumper = null;
-            }
         }
     }
 }

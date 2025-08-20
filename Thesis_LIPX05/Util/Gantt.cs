@@ -47,8 +47,15 @@ namespace Thesis_LIPX05.Util
 
         public static void DrawRuler(Canvas gcv, Canvas scv, double totalTime, double scale)
         {
+            gcv.SnapsToDevicePixels = true;
+            scv.SnapsToDevicePixels = true;
+            gcv.UseLayoutRounding = true;
+            scv.UseLayoutRounding = true;
+
             gcv.Children.Clear();
             int tickCount = (int)Math.Ceiling(totalTime);
+
+            double lblCentY = 15;
 
             for (int i = 0; i <= tickCount; i++)
             {
@@ -60,10 +67,13 @@ namespace Thesis_LIPX05.Util
                     X1 = x,
                     Y1 = 0,
                     X2 = x,
-                    Y2 = gcv.ActualHeight, // extended below the ruler to the end of GanttCanvas
+                    Y2 = Math.Max(gcv.ActualHeight, 200), // extended below the ruler to the end of GanttCanvas
                     Stroke = Brushes.LightGray,
-                    StrokeThickness = 1
+                    StrokeThickness = 1,
+                    SnapsToDevicePixels = true,
                 };
+                RenderOptions.SetEdgeMode(tick, EdgeMode.Aliased);
+                gcv.Children.Add(tick);
 
                 int lblInterval = (scale < 15) ? 2 : 1;
                 TextBlock label;
@@ -75,18 +85,32 @@ namespace Thesis_LIPX05.Util
                         Text = $"{i}",
                         FontSize = 10,
                         FontWeight = FontWeights.Bold,
-                        Foreground = Brushes.Black
+                        Foreground = Brushes.Black,
+                        RenderTransform = new RotateTransform(-90),
+                        RenderTransformOrigin = new Point(0.5, 0.5),
+                        SnapsToDevicePixels = true,
+                        UseLayoutRounding = true,
                     };
-                    Canvas.SetLeft(label, x + 2);
-                    Canvas.SetTop(label, 0);
+
+                    TextOptions.SetTextFormattingMode(label, TextFormattingMode.Display);
+
+                    RenderOptions.SetBitmapScalingMode(label, BitmapScalingMode.HighQuality);
+                    RenderOptions.SetEdgeMode(label, EdgeMode.Aliased);
+
+                    label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    var measured = label.DesiredSize;
+
+                    double
+                        left = Math.Round(x - (measured.Width / 2.0) + 5),
+                        top = Math.Round(lblCentY - (measured.Height / 2.0));
+
+                    Canvas.SetLeft(label, left);
+                    Canvas.SetTop(label, top);
                     gcv.Children.Add(label);
                 }
-
-                gcv.Children.Add(tick);
             }
 
             double cvW = totalTime * scale + 100;
-
             gcv.Width = cvW;
             scv.Width = cvW;
         }

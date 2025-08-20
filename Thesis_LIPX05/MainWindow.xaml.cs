@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,7 +9,12 @@ using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
 using Thesis_LIPX05.Util;
+
 using static Thesis_LIPX05.Util.SGraph;
+using static Thesis_LIPX05.Util.Gantt;
+using System.IO;
+using System.Diagnostics;
+using System.Text;
 
 namespace Thesis_LIPX05
 {
@@ -18,66 +24,184 @@ namespace Thesis_LIPX05
     public partial class MainWindow : Window
     {
         private bool isFileLoaded = false;
-        private XElement masterRecipe = new("MasterRecipe");
+
+        private XElement masterRecipe;
+
+        private readonly XNamespace
+            batchML,
+            customNS;
 
         private readonly DataTable
-            masterTable = new("Master Recipe Table"),
-            recipeElementTable = new("Recipe Element Table"),
-            stepTable = new("Steps Table"),
-            linkTable = new("Links Table");
+            masterTable,
+            recipeElementTable,
+            stepTable,
+            linkTable;
 
-        private List<Gantt.GanttItem> ganttData = [];
-        private double zoom = 1.0;
+        private List<GanttItem> ganttData;
+
+        private double zoom;
         private const double baseTimeScale = 10.0;
 
         public MainWindow()
         {
+            masterRecipe = new("MasterRecipe");
+            batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02");
+            customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom");
+            masterTable = new("Master Recipe Table");
+            recipeElementTable = new("Recipe Element Table");
+            stepTable = new("Steps Table");
+            linkTable = new("Links Table");
+            ganttData = [];
+            zoom = 1;
             InitializeComponent();
         }
 
-        private void Exit_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (masterTable.GetChanges() is not null ||
+                recipeElementTable.GetChanges() is not null ||
+                stepTable.GetChanges() is not null ||
+                linkTable.GetChanges() is not null)
+            {
+                var res = MessageBox.Show("Do you want to save changes before exiting?", "Confirm Exit", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+                switch (res)
+                {
+                    case MessageBoxResult.Yes:
+                        SaveFile_Click(sender, new());
+                        break;
+                    case MessageBoxResult.No:
+                        Application.Current.Shutdown();
+                        break;
+                    case MessageBoxResult.Cancel:
+                        e.Cancel = true; // Cancel the closing event
+                        break;
+                }
+            }
+            else Application.Current.Shutdown();
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            switch (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null)
+            {
+                case true: SaveFile_Click(sender, e); break;
+                case false: Application.Current.Shutdown(); break;
+            }
+        }
+
+        private void SolveHeuristically()
+        {
+            var heurOpt = new HeuristicOptimizer(GetNodes(), GetEdges());
+            var heurPath = heurOpt.Optimize();
+
+            ganttData = BuildChartFromPath(heurPath, GetEdges());
+            double heurTotalTime = ganttData.Max(x => x.Start + x.Duration);
+            int heurRowC = ganttData.Count;
+            double heurTimeScale = baseTimeScale * zoom;
+
+            Render(GanttCanvas, ganttData, heurTimeScale);
+            DrawRuler(RulerCanvas, GanttCanvas, heurTotalTime, heurTimeScale);
+        }
+
+        private void SolveWithMINLP()
+        {
+            try
+            {
+                var minlpOpt = new MINLPOptimizer(GetNodes(), GetEdges(), @"C:\Program Files\Bonmin\bin\bonmin.exe");
+                var minlpPath = minlpOpt.Optimize(); // calls Bonmin from the specified path
+
+                ganttData = BuildChartFromPath(minlpPath, GetEdges());
+                double minlpTotalTime = ganttData.Max(x => x.Start + x.Duration);
+                double minlpTimeScale = baseTimeScale * zoom;
+
+                Render(GanttCanvas, ganttData, minlpTimeScale);
+                DrawRuler(RulerCanvas, GanttCanvas, minlpTotalTime, minlpTimeScale);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"MINLP optimization failed: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SolveWithBnB()
+        {
+            var bnbOpt = new BnBOptimizer(GetNodes(), GetEdges());
+            var bnbPath = bnbOpt.Optimize();
+
+            ganttData = BuildChartFromPath(bnbPath, GetEdges());
+            double bnbTotalTime = ganttData.Max(x => x.Start + x.Duration);
+            int bnbRowC = ganttData.Count;
+            double bnbTimeScale = baseTimeScale * zoom;
+
+            Render(GanttCanvas, ganttData, bnbTimeScale);
+            DrawRuler(RulerCanvas, GanttCanvas, bnbTotalTime, bnbTimeScale);
+        }
+
+        private void SolveWithGenetic()
+        {
+            var gaOpt = new GeneticOptimizer(GetNodes(), GetEdges());
+            var gaPath = gaOpt.Optimize();
+
+            ganttData = BuildChartFromPath(gaPath, GetEdges());
+            double gaTotalTime = ganttData.Max(x => x.Start + x.Duration);
+            int gaRowC = ganttData.Count;
+            double gaTimeScale = baseTimeScale * zoom;
+
+            Render(GanttCanvas, ganttData, gaTimeScale);
+            DrawRuler(RulerCanvas, GanttCanvas, gaTotalTime, gaTimeScale);
+        }
 
         private void SolveClick(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)
             {
-                if (menuItem.Tag.ToString() == "Heuristic")
+                switch (menuItem.Tag.ToString())
                 {
-                    if (SGraphCanvas.Children.Count == 0)
-                    {
-                        MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                    var optimizer = new HeuristicOptimizer(GetNodes(), GetEdges());
-                    var path = optimizer.Optimize();
+                    case "Heuristic":
+                        if (SGraphCanvas.Children.Count == 0)
+                        {
+                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
 
-                    ganttData = Gantt.BuildChartFromPath(path, GetEdges());
-                    double totalTime = ganttData.Max(x => x.Start + x.Duration);
-                    int rowC = ganttData.Count;
-                    double tScale = baseTimeScale * zoom;
+                        SolveHeuristically();
 
-                    Gantt.Render(GanttCanvas, ganttData, tScale);
-                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale);
+                        break;
+                    case "MINLP":
+                        if (SGraphCanvas.Children.Count == 0)
+                        {
+                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        SolveWithMINLP();
+
+                        break;
+                    case "BnB":
+                        if (SGraphCanvas.Children.Count == 0)
+                        {
+                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        SolveWithBnB();
+
+                        break;
+                    case "Genetic":
+                        if (SGraphCanvas.Children.Count == 0)
+                        {
+                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        SolveWithGenetic();
+
+                        break;
+                    default:
+                        MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
                 }
-                else if (menuItem.Tag.ToString() == "BnB")
-                {
-                    if (SGraphCanvas.Children.Count == 0)
-                    {
-                        MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                    var optimizer = new BnBOptimizer(GetNodes(), GetEdges());
-                    var path = optimizer.Optimize();
-
-                    ganttData = Gantt.BuildChartFromPath(path, GetEdges());
-                    double totalTime = ganttData.Max(x => x.Start + x.Duration);
-                    int rowC = ganttData.Count;
-                    double tScale = baseTimeScale * zoom;
-
-                    Gantt.Render(GanttCanvas, ganttData, tScale);
-                    Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, tScale);
-                }
-                else MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -111,8 +235,8 @@ namespace Thesis_LIPX05
             GanttCanvas.Width = totalTime * scale + 100; // +100 for padding
             RulerCanvas.Width = GanttCanvas.Width;
 
-            Gantt.Render(GanttCanvas, ganttData, scale);
-            Gantt.DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale);
+            Render(GanttCanvas, ganttData, scale);
+            DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale);
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -123,16 +247,42 @@ namespace Thesis_LIPX05
                 Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
             };
 
-            bool? res = dlg.ShowDialog();
-            if (res == true)
+            if (dlg.ShowDialog() == true)
             {
                 LoadBatchML(dlg.FileName);
                 isFileLoaded = true;
             }
         }
 
-        private void SaveFile_Click(object sender, RoutedEventArgs e) =>
-            MessageBox.Show("Save functionality not implemented yet.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+
+            if (menuItem?.Tag.ToString() == "Exit" || menuItem?.Tag.ToString() == "Close")
+            {
+                MessageBox.Show("Please save changes before exporting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var saveDlg = new SaveFileDialog
+            {
+                DefaultExt = ".xml",
+                Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
+            };
+
+            if (saveDlg.ShowDialog() == true)
+            {
+                try
+                {
+                    masterRecipe.Document?.Save(saveDlg.FileName);
+                    MessageBox.Show($"BatchML file saved as {saveDlg.FileName}", "Save Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving BatchML file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
 
         private void DrawGraph_Click(object sender, RoutedEventArgs e)
         {
@@ -160,8 +310,14 @@ namespace Thesis_LIPX05
             SGraphCanvas.Children.Clear();
             GanttCanvas.Children.Clear();
             RulerCanvas.Children.Clear();
+
             GetNodes().Clear();
             GetEdges().Clear();
+
+            masterTable.Clear();
+            recipeElementTable.Clear();
+            stepTable.Clear();
+            linkTable.Clear();
         }
 
         private void DrawExampleGraph()
@@ -195,12 +351,6 @@ namespace Thesis_LIPX05
         {
             ClearUp();
 
-            var batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02")
-                ?? throw new Exception("BatchML namespace not found.");
-
-            var customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom")
-                ?? throw new Exception("Custom namespace not found.");
-
             var steps = masterRecipe.Descendants(batchML + "Step")
                                     .Select(x => x.Element(batchML + "ID")?.Value.Trim().ToLower())
                                     .Where(x => !string.IsNullOrEmpty(x))
@@ -208,10 +358,10 @@ namespace Thesis_LIPX05
                                     .ToList();
 
             var stepDescs = masterRecipe.Descendants(batchML + "Step")
-                .Select(x => x.Element(batchML + "RecipeElementID")?.Value)
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Distinct()
-                .ToList();
+                                        .Select(x => x.Element(batchML + "RecipeElementID")?.Value)
+                                        .Where(x => !string.IsNullOrEmpty(x))
+                                        .Distinct()
+                                        .ToList();
 
             int i = 0, j = 0;
 
@@ -246,7 +396,7 @@ namespace Thesis_LIPX05
                         }
                         catch
                         {
-                            cost = double.NaN; // Invalid duration, set cost to NaN
+                            cost = double.PositiveInfinity; // Invalid duration, set cost to positive infinity
                         }
                     }
 
@@ -264,7 +414,7 @@ namespace Thesis_LIPX05
                 MessageBox.Show($"From Node: {fromExists}, ID: {link.fromID}");
                 MessageBox.Show($"To Node: {toExists}, ID: {link.toID}");
                 */
-                GetEdges().Add(new Edge
+                GetEdges().Add(new()
                 {
                     From = fromNode!,
                     To = toNode!,
@@ -279,12 +429,6 @@ namespace Thesis_LIPX05
         {
             try
             {
-                var batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02")
-                    ?? throw new Exception("BatchML namespace not found.");
-
-                var customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom")
-                    ?? throw new Exception("Custom namespace not found.");
-
                 var doc = XDocument.Load(path);
 
                 masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
@@ -310,35 +454,55 @@ namespace Thesis_LIPX05
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null) SaveFile_Click(sender, e);
+            else
             {
-                ClearUp();
-                masterTable.Clear();
-
-                for (int i = MainTab.Items.Count - 1; i >= 0; i--)
+                try
                 {
-                    if (MainTab.Items[i] is TabItem tab && tab.Header.ToString() == "Master Recipe")
-                    {
-                        MainTab.Items.RemoveAt(i);
-                        break;
-                    }
-                }
+                    ClearUp();
 
-                isFileLoaded = false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error closing BatchML: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    for (int i = MainTab.Items.Count - 1; i >= 0; i--)
+                    {
+                        TabItem? tab = MainTab.Items[i] as TabItem;
+                        if (tab?.Tag.ToString() == "MasterRecipe")
+                        {
+                            MainTab.Items.RemoveAt(i);
+                            continue;
+                        }
+                        if (tab?.Tag.ToString() == "RecipeElements")
+                        {
+                            MainTab.Items.RemoveAt(i);
+                            continue;
+                        }
+                        if (tab?.Tag.ToString() == "Steps")
+                        {
+                            MainTab.Items.RemoveAt(i);
+                            continue;
+                        }
+                        if (tab?.Tag.ToString() == "Links")
+                        {
+                            MainTab.Items.RemoveAt(i);
+                            continue;
+                        }
+                    }
+
+                    isFileLoaded = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error closing BatchML: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
-        private void DisplayDataTable(DataTable dataTable, string tag)
+        private void DisplayDataTable(DataTable dt, string tag)
         {
             var grid = new DataGrid
             {
-                ItemsSource = dataTable.DefaultView,
+                ItemsSource = dt.DefaultView,
                 AutoGenerateColumns = true,
-                IsReadOnly = false
+                IsReadOnly = false,
+                CanUserAddRows = true
             };
 
             var container = new Grid();
@@ -346,7 +510,7 @@ namespace Thesis_LIPX05
 
             var tab = new TabItem
             {
-                Header = dataTable.TableName,
+                Header = dt.TableName,
                 Content = container,
                 Tag = tag
             };
@@ -365,7 +529,7 @@ namespace Thesis_LIPX05
                     MessageBox.Show("No S-Graph to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                else JPEGExporter.ExportCanvas(SGraphCanvas, "S-Graph");
+                else JPEGExporter.ExportOneCanvas(SGraphCanvas, "S-Graph");
             }
             else MessageBox.Show("Please select the S-Graph tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
@@ -381,7 +545,7 @@ namespace Thesis_LIPX05
                     MessageBox.Show("No Gantt chart to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                else JPEGExporter.ExportCanvas(GanttCanvas, "Gantt Chart");
+                else JPEGExporter.ExportMultipleCanvases(RulerCanvas, GanttCanvas, "Gantt Chart");
             }
             else MessageBox.Show("Please select the Gantt chart tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
@@ -392,20 +556,16 @@ namespace Thesis_LIPX05
             var ver = masterRecipe.Element(batchML + "Version")?.Value;
             var desc = masterRecipe.Elements(batchML + "Description").LastOrDefault()?.Value;
 
-            var header = masterRecipe.Element(batchML + "Header")
-                ?? throw new Exception("Header element not found in BatchML file.");
+            var header = masterRecipe?.Element(batchML + "Header");
 
-            var prodID = header.Element(batchML + "ProductID")?.Value
-                ?? throw new Exception("ProductID element not found in BatchML file.");
-            var prodName = header.Element(batchML + "ProductName")?.Value
-                ?? throw new Exception("ProductName element not found in BatchML file.");
-            var batchSize = header?.Element(batchML + "BatchSize")
-                ?? throw new Exception("BatchSize element not found in BatchML file.");
+            var prodID = header?.Element(batchML + "ProductID")?.Value;
+            var prodName = header?.Element(batchML + "ProductName")?.Value;
+            var batchSize = header?.Element(batchML + "BatchSize");
 
-            var nominal = batchSize.Element(batchML + "Nominal")?.Value;
-            var min = batchSize.Element(batchML + "Min")?.Value;
-            var max = batchSize.Element(batchML + "Max")?.Value;
-            var unit = batchSize.Element(batchML + "UnitOfMeasure")?.Value;
+            var nominal = batchSize?.Element(batchML + "Nominal")?.Value;
+            var min = batchSize?.Element(batchML + "Min")?.Value;
+            var max = batchSize?.Element(batchML + "Max")?.Value;
+            var unit = batchSize?.Element(batchML + "UnitOfMeasure")?.Value;
 
             mdt.Columns.Add("RecipeID");
             mdt.Columns.Add("Version");
@@ -421,7 +581,33 @@ namespace Thesis_LIPX05
                 id, ver, desc, prodName, prodID, nominal, min, max, unit
             );
 
+            mdt.RowChanged += MasterTable_RowChanged;
+
             DisplayDataTable(mdt, "MasterRecipe");
+        }
+
+        private void MasterTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            masterRecipe.SetElementValue(batchML + "ID", e.Row["RecipeID"]);
+            masterRecipe.SetElementValue(batchML + "Version", e.Row["Version"]);
+
+            var desc = masterRecipe.Elements(batchML + "Description").LastOrDefault();
+            if (desc != null) desc.Value = e.Row["Description"].ToString() ?? string.Empty;
+
+            var header = masterRecipe.Element(batchML + "Header");
+            if (header != null)
+            {
+                header.SetElementValue(batchML + "ProductID", e.Row["ProductID"]);
+                header.SetElementValue(batchML + "ProductName", e.Row["ProductName"]);
+                var batchSize = header.Element(batchML + "BatchSize");
+                if (batchSize != null)
+                {
+                    batchSize.SetElementValue(batchML + "Nominal", e.Row["NominalBatchSize"]);
+                    batchSize.SetElementValue(batchML + "Min", e.Row["MinBatchSize"]);
+                    batchSize.SetElementValue(batchML + "Max", e.Row["MaxBatchSize"]);
+                    batchSize.SetElementValue(batchML + "UnitOfMeasure", e.Row["UnitOfMeasure"]);
+                }
+            }
         }
 
         private void DisplayRecipeElementTable(DataTable redt, XNamespace batchML)
@@ -438,23 +624,61 @@ namespace Thesis_LIPX05
             redt.Columns.Add("ID");
             redt.Columns.Add("Description");
 
-            foreach (var re in recipeElements)
+
+            if (recipeElements != null)
             {
-                var dr = redt.NewRow();
-                dr["ID"] = re.ID;
-                dr["Description"] = re.Desc;
-                redt.Rows.Add(dr);
+                foreach (var re in recipeElements)
+                {
+                    var dr = redt.NewRow();
+                    dr["ID"] = re.ID;
+                    dr["Description"] = re.Desc;
+                    redt.Rows.Add(dr);
+                }
+                DisplayDataTable(redt, "RecipeElements");
+            }
+            else
+            {
+                MessageBox.Show("No Recipe Elements found in the BatchML file.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
-            DisplayDataTable(redt, "RecipeElements");
+            redt.RowChanged += RecipeElementTable_RowChanged;
+            redt.RowDeleted += RecipeElementTable_RowDeleted;
+        }
+
+        private void RecipeElementTable_RowDeleted(object sender, DataRowChangeEventArgs e)
+        {
+            var reEl = masterRecipe.Descendants(batchML + "RecipeElement")
+                .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
+                .ToString());
+            reEl?.Remove();
+        }
+
+        private void RecipeElementTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            switch (e.Row.RowState)
+            {
+                case DataRowState.Deleted:
+                    // No action needed on delete, handled in RowDeleted event
+                    break;
+                case DataRowState.Added:
+                    var newRE = new XElement(batchML + "RecipeElement",
+                    new XElement(batchML + "ID", e.Row["ID"]),
+                    new XElement(batchML + "Description", e.Row["Description"]));
+                    masterRecipe.Add(newRE);
+                    break;
+                case DataRowState.Modified:
+                    var reEl = masterRecipe.Descendants(batchML + "RecipeElement")
+                    .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
+                    .ToString());
+                    reEl?.SetElementValue(batchML + "Description", e.Row["Description"]);
+                    break;
+            }
         }
 
         private void DisplayStepTable(DataTable sdt, XNamespace batchML)
         {
-            var procLogic = masterRecipe.Element(batchML + "ProcedureLogic")
-                    ?? throw new Exception("ProcedureLogic element not found in BatchML file.");
-
-            var steps = procLogic.Descendants(batchML + "Step")
+            var steps = masterRecipe.Element(batchML + "ProcedureLogic")?.Descendants(batchML + "Step")
                 .Select(x => new
                 {
                     ID = x.Element(batchML + "ID")?.Value.Trim(),
@@ -466,23 +690,60 @@ namespace Thesis_LIPX05
             sdt.Columns.Add("ID");
             sdt.Columns.Add("RecipeElementID");
 
-            foreach (var step in steps)
+            if (steps != null)
             {
-                var dr = sdt.NewRow();
-                dr["ID"] = step.ID;
-                dr["RecipeElementID"] = step.REID;
-                sdt.Rows.Add(dr);
+                foreach (var step in steps)
+                {
+                    var dr = sdt.NewRow();
+                    dr["ID"] = step.ID;
+                    dr["RecipeElementID"] = step.REID;
+                    sdt.Rows.Add(dr);
+                }
+                DisplayDataTable(sdt, "Steps");
+            }
+            else
+            {
+                MessageBox.Show("No Steps found in the BatchML file.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
-            DisplayDataTable(sdt, "Steps");
+            sdt.RowChanged += StepTable_RowChanged;
+            sdt.RowDeleted += StepTable_RowDeleted;
+        }
+
+        private void StepTable_RowDeleted(object sender, DataRowChangeEventArgs e)
+        {
+            var stepEL = masterRecipe.Descendants(batchML + "Step")
+                .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
+                .ToString());
+            stepEL?.Remove();
+        }
+
+        private void StepTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            switch (e.Row.RowState)
+            {
+                case DataRowState.Deleted:
+                    // No action needed on delete, handled in RowDeleted event
+                    break;
+                case DataRowState.Added:
+                    var newStep = new XElement(batchML + "Step",
+                    new XElement(batchML + "ID", e.Row["ID"]),
+                    new XElement(batchML + "RecipeElementID", e.Row["RecipeElementID"]));
+                    masterRecipe.Add(newStep);
+                    break;
+                case DataRowState.Modified:
+                    var stepEl = masterRecipe.Descendants(batchML + "Step")
+                    .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
+                    .ToString());
+                    stepEl?.SetElementValue(batchML + "RecipeElementID", e.Row["RecipeElementID"]);
+                    break;
+            }
         }
 
         private void DisplayLinkTable(DataTable ldt, XNamespace batchML, XNamespace customNS)
         {
-            var procLogic = masterRecipe.Element(batchML + "ProcedureLogic")
-                    ?? throw new Exception("ProcedureLogic element not found in BatchML file.");
-
-            var links = procLogic.Descendants(batchML + "Link")
+            var links = masterRecipe.Element(batchML + "ProcedureLogic")?.Descendants(batchML + "Link")
                 .Select(x => new
                 {
                     ID = x.Element(batchML + "ID")?.Value.Trim(),
@@ -501,16 +762,97 @@ namespace Thesis_LIPX05
             ldt.Columns.Add("ToID");
             ldt.Columns.Add("Duration");
 
-            foreach (var link in links)
+            if (links != null)
             {
-                var dr = ldt.NewRow();
-                dr["ID"] = link.ID;
-                dr["FromID"] = link.FromID;
-                dr["ToID"] = link.ToID;
-                dr["Duration"] = (link.Duration != null) ? $"{XmlConvert.ToTimeSpan(link.Duration).TotalMinutes} min" : "N/A"; // ISO 8601 to minutes to string via its operator if not null
-                ldt.Rows.Add(dr);
+                foreach (var link in links)
+                {
+                    var dr = ldt.NewRow();
+                    dr["ID"] = link.ID;
+                    dr["FromID"] = link.FromID;
+                    dr["ToID"] = link.ToID;
+
+                    // ISO 8601 to minutes to string via interpolation if not null, otherwise "N/A"
+                    dr["Duration"] = (link.Duration != null)
+                        ? $"{XmlConvert.ToTimeSpan(link.Duration).TotalMinutes} min"
+                        : "N/A";
+
+                    ldt.Rows.Add(dr);
+                }
+                DisplayDataTable(ldt, "Links");
             }
-            DisplayDataTable(ldt, "Links");
+            else
+            {
+                MessageBox.Show("No Links found in the BatchML file.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            ldt.RowChanged += LinkTable_RowChanged;
+            ldt.RowDeleted += LinkTable_RowDeleted;
+        }
+
+
+        private void LinkTable_RowDeleted(object sender, DataRowChangeEventArgs e)
+        {
+            var linkEL = masterRecipe.Descendants(batchML + "Link")
+                .FirstOrDefault(x =>
+                    x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value ==
+                        e.Row["FromID", DataRowVersion.Original]?.ToString() &&
+                    x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value ==
+                        e.Row["ToID", DataRowVersion.Original]?.ToString());
+            linkEL?.Remove();
+        }
+
+        private void LinkTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            string rawDur = e.Row["Duration"]?.ToString() ?? "0";
+
+            switch (e.Row.RowState)
+            {
+                case DataRowState.Added:
+                    var newLINK = new XElement(batchML + "Link",
+                    new XElement(batchML + "ID", e.Row["ID"]),
+                    new XElement(batchML + "FromID",
+                        new XElement(batchML + "FromIDValue", e.Row["FromID"])),
+                    new XElement(batchML + "ToID",
+                        new XElement(batchML + "ToIDValue", e.Row["ToID"])),
+                    new XElement(batchML + "Extension",
+                        new XElement(customNS + "Duration", ConvertToISO8601(rawDur))));
+                    masterRecipe.Add(newLINK);
+                    break;
+                case DataRowState.Modified:
+                    var linkEL = masterRecipe.Descendants(batchML + "Link")
+                    .FirstOrDefault(x =>
+                        x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value == e.Row["FromID"].ToString() &&
+                        x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value == e.Row["ToID"].ToString());
+                    linkEL?.Element(batchML + "Extension")?
+                            .SetElementValue(customNS + "Duration", ConvertToISO8601(rawDur));
+                    break;
+                case DataRowState.Deleted:
+                    break; // No action needed on delete, handled in RowDeleted event
+            }
+        }
+
+        private static string ConvertToISO8601(string raw)
+        {
+            // if it already looks like an ISO 8601 duration, return it as is
+            if (raw.StartsWith("PT", StringComparison.OrdinalIgnoreCase)) return raw;
+
+            // try parse as HH:MM
+            if (TimeSpan.TryParse(raw, out TimeSpan ts))
+                return
+                    $"PT{(ts.Hours > 0 ? $"{ts.Hours}H" : "")}{(ts.Minutes > 0 ? $"{ts.Minutes}M" : "")}";
+
+            // try parse as total minutes
+            if (double.TryParse(raw, out double minutes))
+            {
+                int hrs = (int)(minutes / 60);
+                int mins = (int)(minutes % 60);
+                return
+                    $"PT{(hrs > 0 ? $"{hrs}H" : "")}{(mins > 0 ? $"{mins}M" : "")}";
+            }
+
+            // default return value if parsing fails
+            return "PT0M";
         }
     }
 }

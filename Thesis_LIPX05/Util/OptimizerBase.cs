@@ -1,16 +1,14 @@
-﻿namespace Thesis_LIPX05.Util
+﻿using static Thesis_LIPX05.Util.SGraph;
+
+namespace Thesis_LIPX05.Util
 {
-    public abstract class OptimizerBase : IOptimizer
+    // the base class for all optimizers
+
+    public abstract class OptimizerBase(Dictionary<string, Node> nodes, List<Edge> edges)
     {
-        protected readonly Dictionary<string, SGraph.Node> nodes4Gantt;
-        protected readonly List<SGraph.Edge> edges4Gantt;
+        protected readonly Dictionary<string, Node> nodes4Gantt = nodes;
+        protected readonly List<Edge> edges4Gantt = edges;
 
-        protected OptimizerBase(Dictionary<string, SGraph.Node> nodes, List<SGraph.Edge> edges)
-        {
-            nodes4Gantt = nodes;
-            edges4Gantt = edges;
-        }
-
-        public abstract List<SGraph.Node> Optimize();
+        public abstract List<Node> Optimize();
     }
 }

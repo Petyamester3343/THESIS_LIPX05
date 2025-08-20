@@ -1,15 +1,20 @@
-﻿namespace Thesis_LIPX05.Util
+﻿using static Thesis_LIPX05.Util.SGraph;
+
+namespace Thesis_LIPX05.Util
 {
-    public class HeuristicOptimizer(Dictionary<string, SGraph.Node> nodes, List<SGraph.Edge> edges) : OptimizerBase(nodes, edges)
+#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
+    internal class HeuristicOptimizer(
+        Dictionary<string, Node> nodes,
+        List<Edge> edges) : OptimizerBase(nodes, edges)
+#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
     {
-        public override List<SGraph.Node> Optimize()
+        public override List<Node> Optimize()
         {
             var topo = TopologicalSort(nodes, edges);
             var dist = nodes.Keys.ToDictionary(k => k, _ => double.NegativeInfinity);
             var pred = new Dictionary<string, string>();
 
-            foreach (var n in nodes.Keys)
-                if (!edges.Any(e => e.To.ID == n)) dist[n] = 0; // start nodes with no incoming edges
+            foreach (var n in nodes.Keys) if (!edges.Any(e => e.To.ID == n)) dist[n] = 0; // start nodes with no incoming edges
 
             foreach (var u in topo)
             {
@@ -27,7 +32,7 @@
             }
 
             var end = dist.Aggregate((a, b) => a.Value > b.Value ? a : b).Key;
-            var path = new Stack<string>();
+            Stack<string> path = [];
 
             while (end != null)
             {
@@ -38,7 +43,7 @@
             return path.Select(id => nodes[id]).ToList();
         }
 
-        protected static List<string> TopologicalSort(Dictionary<string, SGraph.Node> nodes, List<SGraph.Edge> edges)
+        protected static List<string> TopologicalSort(Dictionary<string, Node> nodes, List<Edge> edges)
         {
             var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
             foreach (var edge in edges) inDeg[edge.To.ID]++;

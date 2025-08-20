@@ -8,22 +8,24 @@
         Title="Y0KAI Task Scheduler"
         Width="1280"
         Height="720"
+        Closing="MainWindow_Closing"
         >
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Click="OpenFile_Click" />
                 <MenuItem Header="_Save" Click="SaveFile_Click"/>
-                <MenuItem Header="_Close" Click="CloseFile_Click"/>
+                <MenuItem Header="_Close" Tag="Close" Click="CloseFile_Click"/>
                 <MenuItem Header="_Export Gantt Chart" Click="ExportGantt_Click"/>
                 <MenuItem Header="_Export SGraph" Click="ExportSGraph_Click"/>
                 <Separator/>
-                <MenuItem Header="_Exit" Click="Exit_Click"/>
+                <MenuItem Header="_Exit" Click="Exit_Click" Tag="Exit"/>
             </MenuItem>
             <MenuItem Header="_Solver">
                 <MenuItem Header="_Solve heuristically" Tag="Heuristic" Click="SolveClick"/>
                 <MenuItem Header="_Solve with MINLP" Tag="MINLP" Click="SolveClick"/>
                 <MenuItem Header="_Solve with BnB" Tag="BnB" Click="SolveClick"/>
+                <MenuItem Header="_Solve with Genetic" Tag="Genetic" Click="SolveClick"/>
             </MenuItem>
             <MenuItem Header="_Graph">
                 <MenuItem Header="_Draw S-Graph" Click="DrawGraph_Click"/>
@@ -42,8 +44,8 @@
                             ValueChanged="ZoomSlider_ValueChanged"/>
                     <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                         <StackPanel Orientation="Vertical">
-                            <Canvas Name="RulerCanvas" Height="30"/>
-                            <Canvas Name="GanttCanvas" Background="White"/>
+                            <Canvas Name="RulerCanvas" Height="30" Background="White"/>
+                            <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent"/>
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
