@@ -7,6 +7,7 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class App : Application
     {
+        // The loading status helper enum to determine the current loading stage (through simulation)
         public enum LoadingStatusHelper
         {
             FIRST,
@@ -18,11 +19,13 @@ namespace Thesis_LIPX05
 
         private Window? jumper; // used to jump to the main window after loading
 
+        // The main entry point for the application
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             var loading = new LoadingWindow();
             loading.Show();
 
+            // Create a dummy window to prevent the main window from showing up before the loading is complete
             jumper = new Window
             {
                 Width = 0,
@@ -32,6 +35,7 @@ namespace Thesis_LIPX05
             };
             jumper.Show();
 
+            // Simulates loading progress by updating the loading window's progress
             for (int i = 0; i <= 100; i++)
             {
                 switch (DecideRang(i))
@@ -56,6 +60,7 @@ namespace Thesis_LIPX05
                 await Task.Delay(33);
             }
 
+            // Close the loading window and show the main window
             await loading.Dispatcher.InvokeAsync(loading.Close);
 
             await Dispatcher.InvokeAsync(() =>
@@ -70,6 +75,7 @@ namespace Thesis_LIPX05
             jumper.Close();
         }
 
+        // Decides the loading status based on the given integer value
         public static LoadingStatusHelper DecideRang(int i)
         {
             if (i <= 20) return LoadingStatusHelper.FIRST;

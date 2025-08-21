@@ -14,10 +14,13 @@ namespace Thesis_LIPX05
             InitializeComponent();
         }
 
+        // Handles the click event of the Close button to close the About window
         private void Close_Click(object sender, RoutedEventArgs e) => Close();
 
+        // Handles the mouse left button down event on the YOKAI text block to invert its colors
         private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => InvertColor();
 
+        // Inverts the foreground and background colors of the YOKAI text block (a little extra)
         private void InvertColor()
         {
             if (YOKAI.Background is SolidColorBrush backBrush && YOKAI.Foreground is SolidColorBrush foreBrush)

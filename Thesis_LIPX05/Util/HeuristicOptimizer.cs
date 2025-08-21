@@ -2,10 +2,9 @@
 
 namespace Thesis_LIPX05.Util
 {
+    internal class HeuristicOptimizer(Dictionary<string, Node> nodes, List<Edge> edges)
 #pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
-    internal class HeuristicOptimizer(
-        Dictionary<string, Node> nodes,
-        List<Edge> edges) : OptimizerBase(nodes, edges)
+        : OptimizerBase(nodes, edges)
 #pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
     {
         public override List<Node> Optimize()
@@ -40,16 +39,17 @@ namespace Thesis_LIPX05.Util
                 pred.TryGetValue(end, out end);
             }
 
-            return path.Select(id => nodes[id]).ToList();
+            return [.. path.Select(id => nodes[id])];
         }
 
+        // Topological sort using Kahn's algorithm
         protected static List<string> TopologicalSort(Dictionary<string, Node> nodes, List<Edge> edges)
         {
             var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
             foreach (var edge in edges) inDeg[edge.To.ID]++;
 
-            var queue = new Queue<string>(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
-            var sorted = new List<string>();
+            Queue<string> queue = new(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
+            List<string> sorted = [];
 
             while (queue.Count != 0)
             {

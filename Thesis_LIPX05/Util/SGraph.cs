@@ -5,17 +5,20 @@ using System.Windows.Shapes;
 
 namespace Thesis_LIPX05.Util
 {
+    // The class for S-Graphs
     public class SGraph
     {
+        // The nested class representing a node in the graph
         public class Node
         {
             public required string ID { get; set; } // unique ID of the node
             public required string Desc { get; set; } // description of the node
             public Point Position { get; set; } // position of the node on the canvas
-            public static double Radius { get; set; } = 35; // radius of the node, default is 35
+            public static double Radius { get; set; } = 35; // radius of the node, default is 35 (for visual representation)
         }
 
-        public class Edge // controlled edge between two or more nodes
+        // The nested class representing a unidirectional edge between two nodes
+        public class Edge // a unidirectional edge between two or more nodes
         {
             public required Node From { get; set; }
             public required Node To { get; set; }
@@ -26,15 +29,18 @@ namespace Thesis_LIPX05.Util
         private readonly static Dictionary<Point, int> edgeCountFromNode = [];
         private readonly static List<Edge> edges = [];
 
+        // Getters for nodes and edges
         public static Dictionary<string, Node> GetNodes() => nodes;
         public static List<Edge> GetEdges() => edges;
 
+        // Adds a node to the graph
         public static void AddNode(string id, string desc, Point position)
         {
             if (!nodes.ContainsKey(id))
                 nodes.Add(id, new() { ID = id, Desc = desc, Position = position });
         }
 
+        // Adds an edge to the graph
         public static void AddEdge(string fromID, string toID, double cost)
         {
             if (nodes.TryGetValue(fromID, out Node? from)
@@ -44,6 +50,7 @@ namespace Thesis_LIPX05.Util
                 && !double.IsNaN(cost)) edges.Add(new() { From = from, To = to, Cost = cost });
         }
 
+        // Renders the graph on the given canvas
         public static void Render(Canvas cv, int rowLimit)
         {
             cv.Children.Clear();
@@ -78,7 +85,7 @@ namespace Thesis_LIPX05.Util
                     }
                 };
                 
-                // node
+                // one node
                 var graphNode = new Ellipse
                 {
                     Width = Node.Radius * 2,
@@ -89,7 +96,7 @@ namespace Thesis_LIPX05.Util
                     ToolTip = graphToolTip
                 };
 
-                // label
+                // and its label
                 var txt = new TextBlock
                 {
                     Text = node.ID,
@@ -118,10 +125,13 @@ namespace Thesis_LIPX05.Util
                 maxHorSize = nodes.Values.Max(nHor => nHor.Position.X),
                 maxVertSize = nodes.Values.Max(nVert => nVert.Position.Y);
 
+            // set the canvas size to fit all nodes and edges
             cv.Width = maxHorSize + 100;
             cv.Height = maxVertSize + 100;
         }
 
+
+        // Draws a quadratic Bezier curve with a triangle polygon at its end, between two nodes on the provided canvas
         private static void DrawEdge(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
             // offset starting point to the right edge of the source node
@@ -129,8 +139,7 @@ namespace Thesis_LIPX05.Util
             Point end = new(to.X, to.Y + Node.Radius);
 
             // how many edges are drawn from this starting point
-            if (!edgeCountFromNode.TryGetValue(from, out int edgeIndex)) edgeCountFromNode[from] = 1;
-            else edgeCountFromNode[from] = ++edgeIndex;
+            edgeCountFromNode[from] = (!edgeCountFromNode.TryGetValue(from, out int edgeIndex)) ? 1 : ++edgeIndex;
 
             // first is straight, rest are curved
             double curveOffset = (edgeIndex > 1) ? 20 * (edgeIndex - 1) : 0;
@@ -145,7 +154,7 @@ namespace Thesis_LIPX05.Util
                 mid = new((start.X + end.X) / 2, (start.Y + end.Y) / 2),
                 control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
 
-            // edge is a quadratic Bezier, meaning it can be curved in case of two edges overlapping
+            // section for the edge (a quadratic Bezier segment which can be curved in case of two edges overlapping)
             var figure = new PathFigure { StartPoint = start };
             var segment = new QuadraticBezierSegment { Point1 = control, Point2 = end };
             figure.Segments.Add(segment);
@@ -162,7 +171,7 @@ namespace Thesis_LIPX05.Util
 
             cv.Children.Add(path);
 
-            // the arrowhead
+            // section for the arrowhead
             Vector arrowDir = start - end;
             arrowDir.Normalize();
             Vector arrowNorm = new(-arrowDir.Y, arrowDir.X);
@@ -191,13 +200,13 @@ namespace Thesis_LIPX05.Util
                 Y = (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
             };
 
-            // the weight of the path at the midpoint of the curve
+            // the weight of the path at the calculated midpoint of the curve
             var weightBlock = new TextBlock
             {
                 Text = Convert.ToInt32(weight).ToString(),
                 Foreground = Brushes.Black,
                 Background = Brushes.White,
-                FontSize = 8,
+                FontSize = 10,
                 FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center,
                 Width = 18,

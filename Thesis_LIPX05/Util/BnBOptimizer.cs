@@ -2,8 +2,9 @@
 
 namespace Thesis_LIPX05.Util
 {
+    public class BnBOptimizer(Dictionary<string, Node> nodes, List<Edge> edges)
 #pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
-    public class BnBOptimizer(Dictionary<string, Node> nodes, List<Edge> edges) : OptimizerBase(nodes, edges)
+        : OptimizerBase(nodes, edges)
 #pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
     {
         private double bestCost = double.NegativeInfinity;
@@ -20,7 +21,8 @@ namespace Thesis_LIPX05.Util
             return [.. bestPath.Select(id => nodes[id])];
         }
 
-        private void ExplorePath(List<string> path, double totalCost) // recursive branching
+        // Recursive method to branch and bound using backtracking
+        private void ExplorePath(List<string> path, double totalCost)
         {
             if (path.Count == nodes.Count) // all nodes visited
             {

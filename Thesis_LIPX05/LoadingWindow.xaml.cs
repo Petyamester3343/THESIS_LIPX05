@@ -12,6 +12,7 @@ namespace Thesis_LIPX05
             InitializeComponent();
         }
 
+        // Decides the loading status based on the given range value (asynchronous)
         public async Task UpdateProgressAsync(string status)
         {
             if (Dispatcher.CheckAccess())
@@ -21,6 +22,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Updates the loading text with the given status (synchronous)
         private void UpdateProgress(string status) => LoadingText.Text = status;
     }
 }

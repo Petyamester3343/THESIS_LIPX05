@@ -9,7 +9,7 @@ namespace Thesis_LIPX05.Util
 {
     internal class Gantt
     {
-        // helper class to represent a Gantt chart item
+        // A nested helper class to represent a Gantt chart item
         public class GanttItem
         {
             public string ID { get; set; } = string.Empty; // unique ID of the task
@@ -18,6 +18,7 @@ namespace Thesis_LIPX05.Util
             public double Duration { get; set; } // duration of the task in minutes
         }
 
+        // Builds a Gantt chart from an S-Graph
         public static List<GanttItem> BuildChartFromPath(List<Node> path, List<Edge> edges)
         {
             var ganttItems = new List<GanttItem>();
@@ -45,6 +46,7 @@ namespace Thesis_LIPX05.Util
             return ganttItems;
         }
 
+        // Draws the ruler on the Gantt chart canvas and the scroll view
         public static void DrawRuler(Canvas gcv, Canvas scv, double totalTime, double scale)
         {
             gcv.SnapsToDevicePixels = true;
@@ -115,6 +117,7 @@ namespace Thesis_LIPX05.Util
             scv.Width = cvW;
         }
 
+        // Draws the Gantt chart on the provided canvas
         public static void Render(Canvas cv, List<GanttItem> items, double scale)
         {
             cv.Children.Clear();

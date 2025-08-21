@@ -72,6 +72,7 @@ namespace Thesis_LIPX05.Util
             else throw new InvalidOperationException("Bonmin did not produce a solution file!");
         }
 
+        // Generates the OSiL XML from the graph
         public static string GenOsilFromGraph(Dictionary<string, Node> nodes, List<Edge> edges)
         {
             var sb = new StringBuilder();
@@ -144,6 +145,7 @@ namespace Thesis_LIPX05.Util
             return sb.ToString();
         }
 
+        // Parses the solution text from Bonmin and returns a dictionary of task starts
         public static Dictionary<string, double> ParseBonminSolution(string solText)
         {
             var res = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
@@ -165,7 +167,7 @@ namespace Thesis_LIPX05.Util
             return res;
         }
 
-        public static List<(string id, double start)> GetSortedTaskStarts(Dictionary<string, double> starts) =>
-            [.. starts.OrderBy(kv => kv.Value).Select(kv => (id: kv.Key, start: kv.Value))];
+        // Returns a sorted list of task starts by their start time (contains tuples)
+        public static List<(string id, double start)> GetSortedTaskStarts(Dictionary<string, double> starts) => [.. starts.OrderBy(kv => kv.Value).Select(kv => (id: kv.Key, start: kv.Value))];
     }
 }

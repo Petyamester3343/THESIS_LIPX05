@@ -2,12 +2,9 @@
 
 namespace Thesis_LIPX05.Util
 {
-    internal class GeneticOptimizer(
-        Dictionary<string, Node> nodes,
-        List<Edge> edges,
-        int populationSize = 50,
+    internal class GeneticOptimizer(Dictionary<string, Node> nodes, List<Edge> edges, int populationSize = 50, int generations = 100) 
 #pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
-        int generations = 100) : OptimizerBase(nodes, edges)
+        : OptimizerBase(nodes, edges)
 #pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
 
     {
@@ -20,11 +17,11 @@ namespace Thesis_LIPX05.Util
                 .Select(_ => nodes.Values.OrderBy(_ => rnd.Next()).ToList())
                 .ToList();
 
-            List<Node> best = population[0];
+            var best = population[0];
             double bestFitness = Evaluate(best);
 
             // evolve population over generations
-            for (int gen = 0; gen < generations; gen++)
+            for (int i = 0; i < generations; i++)
             {
                 var scored = population
                     .Select(p => new { Path = p, Score = Evaluate(p) })
@@ -60,6 +57,7 @@ namespace Thesis_LIPX05.Util
             return best;
         }
 
+        // Evaluates the fitness of a path by summing the costs of its edges
         private double Evaluate(List<Node> path)
         {
             double t = 0;
@@ -71,6 +69,7 @@ namespace Thesis_LIPX05.Util
             return t;
         }
 
+        // Performs crossover between two parent paths to create a child path
         private List<Node> Crossover(List<Node> p1, List<Node> p2)
         {
             int cut = rnd.Next(1, p1.Count - 1);
@@ -79,12 +78,13 @@ namespace Thesis_LIPX05.Util
             return child;
         }
 
+        // Mutates a path by swapping two nodes
         private void Mutate(List<Node> path)
         {
             int
                 i = rnd.Next(path.Count),
                 j = rnd.Next(path.Count);
-            (path[i], path[j]) = (path[j], path[i]); // swap two nodes
+            (path[i], path[j]) = (path[j], path[i]); // swap the two nodes within tuples
         }
     }
 }

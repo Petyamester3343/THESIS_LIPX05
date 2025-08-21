@@ -2,8 +2,7 @@
 
 namespace Thesis_LIPX05.Util
 {
-    // the base class for all optimizers
-
+    // The base class for all optimizers (the origin of their inheritance)
     public abstract class OptimizerBase(Dictionary<string, Node> nodes, List<Edge> edges)
     {
         protected readonly Dictionary<string, Node> nodes4Gantt = nodes;

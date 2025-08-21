@@ -12,9 +12,6 @@ using Thesis_LIPX05.Util;
 
 using static Thesis_LIPX05.Util.SGraph;
 using static Thesis_LIPX05.Util.Gantt;
-using System.IO;
-using System.Diagnostics;
-using System.Text;
 
 namespace Thesis_LIPX05
 {
@@ -56,6 +53,8 @@ namespace Thesis_LIPX05
             InitializeComponent();
         }
 
+        // Event handler for the MainWindow closing event
+        // Checks for unsaved modifications in the data tables
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             if (masterTable.GetChanges() is not null ||
@@ -81,15 +80,17 @@ namespace Thesis_LIPX05
             else Application.Current.Shutdown();
         }
 
+        // Event handler for the Exit menu item click event
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             switch (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null)
             {
-                case true: SaveFile_Click(sender, e); break;
+                case true: MainWindow_Closing(sender, new()); break;
                 case false: Application.Current.Shutdown(); break;
             }
         }
 
+        // Calls the heursitic solver
         private void SolveHeuristically()
         {
             var heurOpt = new HeuristicOptimizer(GetNodes(), GetEdges());
@@ -104,6 +105,7 @@ namespace Thesis_LIPX05
             DrawRuler(RulerCanvas, GanttCanvas, heurTotalTime, heurTimeScale);
         }
 
+        // Calls the MINLP solver
         private void SolveWithMINLP()
         {
             try
@@ -124,6 +126,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Calls the Branch and Bound solver
         private void SolveWithBnB()
         {
             var bnbOpt = new BnBOptimizer(GetNodes(), GetEdges());
@@ -138,6 +141,7 @@ namespace Thesis_LIPX05
             DrawRuler(RulerCanvas, GanttCanvas, bnbTotalTime, bnbTimeScale);
         }
 
+        // Calls the Genetic Algorithm solver
         private void SolveWithGenetic()
         {
             var gaOpt = new GeneticOptimizer(GetNodes(), GetEdges());
@@ -152,6 +156,8 @@ namespace Thesis_LIPX05
             DrawRuler(RulerCanvas, GanttCanvas, gaTotalTime, gaTimeScale);
         }
 
+        // Event handler for the Solve menu item click event
+        // Tthis method checks which solver was selected and calls the appropriate method
         private void SolveClick(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)
@@ -165,9 +171,7 @@ namespace Thesis_LIPX05
                             return;
                         }
 
-                        SolveHeuristically();
-
-                        break;
+                        SolveHeuristically(); break;
                     case "MINLP":
                         if (SGraphCanvas.Children.Count == 0)
                         {
@@ -175,9 +179,7 @@ namespace Thesis_LIPX05
                             return;
                         }
 
-                        SolveWithMINLP();
-
-                        break;
+                        SolveWithMINLP(); break;
                     case "BnB":
                         if (SGraphCanvas.Children.Count == 0)
                         {
@@ -185,9 +187,7 @@ namespace Thesis_LIPX05
                             return;
                         }
 
-                        SolveWithBnB();
-
-                        break;
+                        SolveWithBnB(); break;
                     case "Genetic":
                         if (SGraphCanvas.Children.Count == 0)
                         {
@@ -195,9 +195,7 @@ namespace Thesis_LIPX05
                             return;
                         }
 
-                        SolveWithGenetic();
-
-                        break;
+                        SolveWithGenetic(); break;
                     default:
                         MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
@@ -205,8 +203,10 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Event handler for the About menu item click event (only a static, disposable window)
         private void About_Click(object sender, RoutedEventArgs e) => new AboutWindow().Show();
 
+        // Event handler for the zoom slider's PreviewMouseDown event
         private void ZoomSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is not Slider slider) return;
@@ -220,6 +220,8 @@ namespace Thesis_LIPX05
                 e.Handled = true; // Prevents slider from moving
             }
         }
+
+        // Event handler for the zoom slider's ValueChanged event
         private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (ganttData == null || ganttData.Count == 0) return;
@@ -239,6 +241,7 @@ namespace Thesis_LIPX05
             DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale);
         }
 
+        // Event handler for opening a file
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog
@@ -254,6 +257,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Event handler for saving a file
         private void SaveFile_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
@@ -284,6 +288,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Event handler for the S-Graph renderer button click event
         private void DrawGraph_Click(object sender, RoutedEventArgs e)
         {
             if (isFileLoaded)
@@ -305,7 +310,8 @@ namespace Thesis_LIPX05
             }
         }
 
-        private void ClearUp()
+        // A helper method to flush the containers, clean the canvases and data tables in one go
+        private void Purge()
         {
             SGraphCanvas.Children.Clear();
             GanttCanvas.Children.Clear();
@@ -318,11 +324,37 @@ namespace Thesis_LIPX05
             recipeElementTable.Clear();
             stepTable.Clear();
             linkTable.Clear();
+
+            for (int i = MainTab.Items.Count - 1; i >= 0; i--)
+            {
+                TabItem? tab = MainTab.Items[i] as TabItem;
+                if (tab?.Tag.ToString() == "MasterRecipe")
+                {
+                    MainTab.Items.RemoveAt(i);
+                    continue;
+                }
+                if (tab?.Tag.ToString() == "RecipeElements")
+                {
+                    MainTab.Items.RemoveAt(i);
+                    continue;
+                }
+                if (tab?.Tag.ToString() == "Steps")
+                {
+                    MainTab.Items.RemoveAt(i);
+                    continue;
+                }
+                if (tab?.Tag.ToString() == "Links")
+                {
+                    MainTab.Items.RemoveAt(i);
+                    continue;
+                }
+            }
         }
 
+        // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no file is loaded)
         private void DrawExampleGraph()
         {
-            ClearUp();
+            Purge(); // A pre-cautionary cleanup
 
             int
                 i = 0,
@@ -340,16 +372,16 @@ namespace Thesis_LIPX05
                 }
             }
 
-            var rnd = new Random();
             for (int x = 1; x < GetNodes().Count; x++) // Example edges
-                AddEdge($"Eq{x}", (x % 3 != 0) ? $"Eq{x + 1}" : $"Prod{x / 3}", rnd.Next(5, 45));
+                AddEdge($"Eq{x}", (x % 3 != 0) ? $"Eq{x + 1}" : $"Prod{x / 3}", new Random().Next(5, 45));
 
             Render(SGraphCanvas, 4);
         }
 
+        // Builds the S-Graph from the loaded BatchML file
         protected void BuildSGraphFromXml()
         {
-            ClearUp();
+            Purge();
 
             var steps = masterRecipe.Descendants(batchML + "Step")
                                     .Select(x => x.Element(batchML + "ID")?.Value.Trim().ToLower())
@@ -425,14 +457,14 @@ namespace Thesis_LIPX05
             Render(SGraphCanvas, 3);
         }
 
+        // Loads the BatchML file and populates the data tables
         private void LoadBatchML(string path)
         {
             try
             {
                 var doc = XDocument.Load(path);
 
-                masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
-                    ?? throw new Exception("Master element not found in BatchML file.");
+                masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault() ?? throw new Exception("Master element not found in BatchML file.");
 
                 // Master Recipe + Header datatable
                 DisplayMasterTable(masterTable, batchML);
@@ -452,6 +484,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Handler event for closing a BatchML file
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
             if (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null) SaveFile_Click(sender, e);
@@ -459,33 +492,7 @@ namespace Thesis_LIPX05
             {
                 try
                 {
-                    ClearUp();
-
-                    for (int i = MainTab.Items.Count - 1; i >= 0; i--)
-                    {
-                        TabItem? tab = MainTab.Items[i] as TabItem;
-                        if (tab?.Tag.ToString() == "MasterRecipe")
-                        {
-                            MainTab.Items.RemoveAt(i);
-                            continue;
-                        }
-                        if (tab?.Tag.ToString() == "RecipeElements")
-                        {
-                            MainTab.Items.RemoveAt(i);
-                            continue;
-                        }
-                        if (tab?.Tag.ToString() == "Steps")
-                        {
-                            MainTab.Items.RemoveAt(i);
-                            continue;
-                        }
-                        if (tab?.Tag.ToString() == "Links")
-                        {
-                            MainTab.Items.RemoveAt(i);
-                            continue;
-                        }
-                    }
-
+                    Purge();
                     isFileLoaded = false;
                 }
                 catch (Exception ex)
@@ -494,7 +501,8 @@ namespace Thesis_LIPX05
                 }
             }
         }
-
+        
+        // Creates and displays the data tables
         private void DisplayDataTable(DataTable dt, string tag)
         {
             var grid = new DataGrid
@@ -518,6 +526,7 @@ namespace Thesis_LIPX05
             MainTab.SelectedIndex = 0;
         }
 
+        // Exports an S-Graph to a JPEG file
         private void ExportSGraph_Click(object sender, RoutedEventArgs e)
         {
             var selectedTab = MainTab.SelectedItem as TabItem;
@@ -534,6 +543,7 @@ namespace Thesis_LIPX05
             else MessageBox.Show("Please select the S-Graph tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
+        // Exports the whole Gantt chart to a JPEG file
         private void ExportGantt_Click(object sender, RoutedEventArgs e)
         {
             var selectedTab = MainTab.SelectedItem as TabItem;
@@ -550,6 +560,7 @@ namespace Thesis_LIPX05
             else MessageBox.Show("Please select the Gantt chart tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
+        // Displays the master recipe table
         private void DisplayMasterTable(DataTable mdt, XNamespace batchML)
         {
             var id = masterRecipe.Element(batchML + "ID")?.Value;
@@ -586,6 +597,7 @@ namespace Thesis_LIPX05
             DisplayDataTable(mdt, "MasterRecipe");
         }
 
+        // Event handler in case of changes in the master recipe table
         private void MasterTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
             masterRecipe.SetElementValue(batchML + "ID", e.Row["RecipeID"]);
@@ -610,6 +622,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Displays the recipe element table
         private void DisplayRecipeElementTable(DataTable redt, XNamespace batchML)
         {
             var recipeElements = masterRecipe.Descendants(batchML + "RecipeElement")
@@ -646,6 +659,7 @@ namespace Thesis_LIPX05
             redt.RowDeleted += RecipeElementTable_RowDeleted;
         }
 
+        // Event handler for deletions in the recipe element table
         private void RecipeElementTable_RowDeleted(object sender, DataRowChangeEventArgs e)
         {
             var reEl = masterRecipe.Descendants(batchML + "RecipeElement")
@@ -654,13 +668,11 @@ namespace Thesis_LIPX05
             reEl?.Remove();
         }
 
+        // Event handler for changes in the recipe element table
         private void RecipeElementTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
             switch (e.Row.RowState)
             {
-                case DataRowState.Deleted:
-                    // No action needed on delete, handled in RowDeleted event
-                    break;
                 case DataRowState.Added:
                     var newRE = new XElement(batchML + "RecipeElement",
                     new XElement(batchML + "ID", e.Row["ID"]),
@@ -676,6 +688,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Displays the steps table
         private void DisplayStepTable(DataTable sdt, XNamespace batchML)
         {
             var steps = masterRecipe.Element(batchML + "ProcedureLogic")?.Descendants(batchML + "Step")
@@ -711,6 +724,7 @@ namespace Thesis_LIPX05
             sdt.RowDeleted += StepTable_RowDeleted;
         }
 
+        // Event handler for deletions in the steps table
         private void StepTable_RowDeleted(object sender, DataRowChangeEventArgs e)
         {
             var stepEL = masterRecipe.Descendants(batchML + "Step")
@@ -719,13 +733,11 @@ namespace Thesis_LIPX05
             stepEL?.Remove();
         }
 
+        // Event handler for changes in the steps table
         private void StepTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
             switch (e.Row.RowState)
             {
-                case DataRowState.Deleted:
-                    // No action needed on delete, handled in RowDeleted event
-                    break;
                 case DataRowState.Added:
                     var newStep = new XElement(batchML + "Step",
                     new XElement(batchML + "ID", e.Row["ID"]),
@@ -741,6 +753,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Displays the links table
         private void DisplayLinkTable(DataTable ldt, XNamespace batchML, XNamespace customNS)
         {
             var links = masterRecipe.Element(batchML + "ProcedureLogic")?.Descendants(batchML + "Link")
@@ -790,7 +803,7 @@ namespace Thesis_LIPX05
             ldt.RowDeleted += LinkTable_RowDeleted;
         }
 
-
+        // Event handler for deletions in the links table
         private void LinkTable_RowDeleted(object sender, DataRowChangeEventArgs e)
         {
             var linkEL = masterRecipe.Descendants(batchML + "Link")
@@ -802,6 +815,7 @@ namespace Thesis_LIPX05
             linkEL?.Remove();
         }
 
+        // Event handler for changes in the links table
         private void LinkTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
             string rawDur = e.Row["Duration"]?.ToString() ?? "0";
@@ -827,28 +841,33 @@ namespace Thesis_LIPX05
                     linkEL?.Element(batchML + "Extension")?
                             .SetElementValue(customNS + "Duration", ConvertToISO8601(rawDur));
                     break;
-                case DataRowState.Deleted:
-                    break; // No action needed on delete, handled in RowDeleted event
             }
         }
 
+        // A helper method, which converts a raw duration string to ISO 8601 (PT) format
         private static string ConvertToISO8601(string raw)
         {
-            // if it already looks like an ISO 8601 duration, return it as is
-            if (raw.StartsWith("PT", StringComparison.OrdinalIgnoreCase)) return raw;
+            // if it already looks like an ISO 8601 duration, return it as is (ideally, that is)
+            if (raw.StartsWith("PT", StringComparison.OrdinalIgnoreCase) &&
+                (raw.Contains('Y', StringComparison.OrdinalIgnoreCase) ||
+                raw.Contains('M', StringComparison.OrdinalIgnoreCase) ||
+                raw.Contains('W', StringComparison.OrdinalIgnoreCase) ||
+                raw.Contains('D', StringComparison.OrdinalIgnoreCase) ||
+                raw.Contains('H', StringComparison.OrdinalIgnoreCase) ||
+                raw.Contains('M', StringComparison.OrdinalIgnoreCase) ||
+                raw.Contains('S', StringComparison.OrdinalIgnoreCase)))
+                return raw;
 
             // try parse as HH:MM
-            if (TimeSpan.TryParse(raw, out TimeSpan ts))
-                return
-                    $"PT{(ts.Hours > 0 ? $"{ts.Hours}H" : "")}{(ts.Minutes > 0 ? $"{ts.Minutes}M" : "")}";
+            if (TimeSpan.TryParse(raw, out TimeSpan ts)) return $"PT{(ts.Hours > 0 ? $"{ts.Hours}H" : "")}{(ts.Minutes > 0 ? $"{ts.Minutes}M" : "")}";
 
             // try parse as total minutes
             if (double.TryParse(raw, out double minutes))
             {
                 int hrs = (int)(minutes / 60);
                 int mins = (int)(minutes % 60);
-                return
-                    $"PT{(hrs > 0 ? $"{hrs}H" : "")}{(mins > 0 ? $"{mins}M" : "")}";
+                
+                return $"PT{(hrs > 0 ? $"{hrs}H" : "")}{(mins > 0 ? $"{mins}M" : "")}";
             }
 
             // default return value if parsing fails

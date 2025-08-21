@@ -11,6 +11,7 @@ namespace Thesis_LIPX05.Util
 {
     internal class JPEGExporter
     {
+        // Exports a single Canvas as a JPEG image (solely used on S-Graphs)
         public static void ExportOneCanvas(Canvas cv, string ctx, int dpi = 96)
         {
             var saveDialog = new SaveFileDialog
@@ -43,7 +44,8 @@ namespace Thesis_LIPX05.Util
             else MessageBox.Show($"Export of {saveDialog.FileName} was cancelled", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        public static void ExportMultipleCanvases(Canvas rcv, Canvas gcv, string ctx) // for the Gantt chart with the time ruler
+        // Exports two Canvases as a single JPEG image (used for Gantt charts with time ruler)
+        public static void ExportMultipleCanvases(Canvas rcv, Canvas gcv, string ctx)
         {
             var panel = new StackPanel
             {
@@ -80,6 +82,8 @@ namespace Thesis_LIPX05.Util
             else MessageBox.Show($"Export of {dlg.FileName} was cancelled", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
+        // Clones a Canvas and its children to avoid modifying the original
+        // (it returns a Canvas object instead of one of UIElement in favor of performance-related improvements)
         private static Canvas CloneVisual(Canvas og)
         {
             var clone = new Canvas
