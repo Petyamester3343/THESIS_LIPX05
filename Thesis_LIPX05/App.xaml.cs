@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.Runtime.InteropServices;
+using System.Windows;
+
+using static System.Diagnostics.Process;
 
 namespace Thesis_LIPX05
 {
@@ -7,6 +10,66 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class App : Application
     {
+        private static Mutex? appMutex;
+
+        // Win32 imports
+        [LibraryImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool SetForegroundWindow(IntPtr hWnd);
+
+        [LibraryImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        private const int SW_RESTORE = 9;
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            const string appName = "Thesis_LIPX05_SingleInstance";
+            appMutex = new(true, appName, out bool createdNew);
+            if (!createdNew) // Application is already running
+            {
+                BringExistingInstanceToFront();
+                Shutdown();
+                return;
+            }
+            base.OnStartup(e);
+        }
+
+        private static void BringExistingInstanceToFront()
+        {
+            try
+            {
+                var curr = GetCurrentProcess();
+                var running = GetProcessesByName(curr.ProcessName)
+                    .FirstOrDefault(p => p.Id != curr.Id);
+
+                if (running is not null)
+                {
+                    IntPtr hWnd = running.MainWindowHandle;
+                    if (hWnd != IntPtr.Zero)
+                    {
+                        ShowWindow(hWnd, SW_RESTORE); // Restore if minimized
+                        SetForegroundWindow(hWnd); // Bring to foreground
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Another instance is already running.",
+                    "Instance Running",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            appMutex?.ReleaseMutex();
+            appMutex?.Dispose();
+            base.OnExit(e);
+        }
+
         // The loading status helper enum to determine the current loading stage (through simulation)
         public enum LoadingStatusHelper
         {
@@ -71,7 +134,7 @@ namespace Thesis_LIPX05
                 ts_app.Show();
                 ts_app.Activate();
             });
-            
+
             jumper.Close();
         }
 
