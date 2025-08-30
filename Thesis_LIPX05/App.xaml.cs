@@ -25,7 +25,7 @@ namespace Thesis_LIPX05
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            const string appName = "Thesis_LIPX05_SingleInstance";
+            const string appName = "Thesis_LIPX05";
             appMutex = new(true, appName, out bool createdNew);
             if (!createdNew) // Application is already running
             {
