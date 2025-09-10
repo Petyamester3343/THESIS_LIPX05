@@ -21,45 +21,32 @@ namespace Thesis_LIPX05
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        private const int SW_RESTORE = 9;
-
         protected override void OnStartup(StartupEventArgs e)
         {
-            const string appName = "Thesis_LIPX05";
-            appMutex = new(true, appName, out bool createdNew);
-            if (!createdNew) // Application is already running
-            {
-                BringExistingInstanceToFront();
-                Shutdown();
-                return;
-            }
-            base.OnStartup(e);
-        }
+            string mutexName = "Thesis_LIPX05_Unique_Mutex_Name";
+            appMutex = new(true, mutexName, out bool createdNew);
 
-        private static void BringExistingInstanceToFront()
-        {
-            try
+            if (!createdNew)
             {
-                var curr = GetCurrentProcess();
-                var running = GetProcessesByName(curr.ProcessName)
-                    .FirstOrDefault(p => p.Id != curr.Id);
+                // Another instance is already running, bring it to the foreground
+                var currentProcess = GetCurrentProcess();
+                var runningProcess = GetProcessesByName(currentProcess.ProcessName)
+                    .FirstOrDefault(p => p.Id != currentProcess.Id);
 
-                if (running is not null)
+                if (runningProcess != null)
                 {
-                    IntPtr hWnd = running.MainWindowHandle;
-                    if (hWnd != IntPtr.Zero)
-                    {
-                        ShowWindow(hWnd, SW_RESTORE); // Restore if minimized
-                        SetForegroundWindow(hWnd); // Bring to foreground
-                    }
+                    ShowWindow(runningProcess.MainWindowHandle, 5); // SW_SHOW
+                    SetForegroundWindow(runningProcess.MainWindowHandle);
+
+                    Shutdown();
+                    return;
                 }
-            }
-            catch
-            {
-                MessageBox.Show("Another instance is already running.",
-                    "Instance Running",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                else
+                {
+                    appMutex = new(true, mutexName, out createdNew);
+                }
+
+                base.OnStartup(e);
             }
         }
 
