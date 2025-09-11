@@ -1,14 +1,16 @@
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\AboutWindow.g.cs
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\MainWindow.g.cs
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\App.g.cs
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05_MarkupCompile.cache
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05_MarkupCompile.lref
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.exe
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.deps.json
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.runtimeconfig.json
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.dll
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\Thesis_LIPX05.pdb
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\AboutWindow.g.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\LoadingWindow.g.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\MainWindow.g.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\App.g.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05_MarkupCompile.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05_MarkupCompile.lref
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\AboutWindow.baml
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\LoadingWindow.baml
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\MainWindow.baml
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.g.resources
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.GeneratedMSBuildEditorConfig.editorconfig
@@ -21,5 +23,3 @@ C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\re
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.pdb
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\Thesis_LIPX05.genruntimeconfig.cache
 C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\ref\Thesis_LIPX05.dll
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\LoadingWindow.g.cs
-C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\obj\Debug\net9.0-windows\LoadingWindow.baml

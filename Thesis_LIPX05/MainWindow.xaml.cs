@@ -260,12 +260,17 @@ namespace Thesis_LIPX05
         // Event handler for saving a file
         private void SaveFile_Click(object sender, RoutedEventArgs e)
         {
+            if (!isFileLoaded || masterRecipe is null)
+            {
+                MessageBox.Show("No BatchML file loaded to save!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var menuItem = sender as MenuItem;
 
             if (menuItem?.Tag.ToString() == "Exit" || menuItem?.Tag.ToString() == "Close")
             {
                 MessageBox.Show("Please save changes before exporting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
             }
 
             var saveDlg = new SaveFileDialog

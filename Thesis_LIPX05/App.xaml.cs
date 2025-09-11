@@ -45,8 +45,27 @@ namespace Thesis_LIPX05
                 {
                     appMutex = new(true, mutexName, out createdNew);
                 }
-
-                base.OnStartup(e);
+                try
+                {
+                    base.OnStartup(e);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Startup failed: {ex.Message}\n{ex.StackTrace}", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Shutdown(-1);
+                }
+            }
+            else
+            {
+                try
+                {
+                    base.OnStartup(e);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Startup failed: {ex.Message}\n{ex.StackTrace}", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Shutdown(-1);
+                }
             }
         }
 
