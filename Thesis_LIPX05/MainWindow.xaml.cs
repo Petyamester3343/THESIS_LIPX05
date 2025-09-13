@@ -1,6 +1,11 @@
 ﻿using Microsoft.Win32;
+using Microsoft.VisualBasic;
+
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -8,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
+
 using Thesis_LIPX05.Util;
 
 using static Thesis_LIPX05.Util.SGraph;
@@ -36,11 +42,26 @@ namespace Thesis_LIPX05
 
         private List<GanttItem> ganttData;
 
+        private readonly List<CustomSolver> customSolverList = [];
+
+        private readonly Dictionary<string, Action> solvers;
+
+        private readonly string customSolverPath =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
+
         private double zoom;
         private const double baseTimeScale = 10.0;
 
+        private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
+
         public MainWindow()
         {
+            solvers = new()
+            {
+                {  "Heuristic", SolveHeuristically },
+                { "BnB", SolveWithBnB },
+                { "Genetic", SolveWithGenetic }
+            };
             masterRecipe = new("MasterRecipe");
             batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02");
             customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom");
@@ -51,6 +72,37 @@ namespace Thesis_LIPX05
             ganttData = [];
             zoom = 1;
             InitializeComponent();
+            LoadCustomSolvers();
+            BuildSolverMenu(SolverMenu);
+        }
+
+        // dynamicaly building the solver menu
+        private void BuildSolverMenu(MenuItem solverMenu)
+        {
+            SolverMenu.Items.Clear();
+            foreach (var solver in solvers)
+            {
+                var item = new MenuItem
+                {
+                    Header = solver.Key,
+                    Tag = solver.Key
+                };
+                item.Click += (sender, e) => solver.Value();
+                solverMenu.Items.Add(item);
+            }
+
+            solverMenu.Items.Add(new Separator());
+
+            foreach (var cs in customSolverList) AddCustomSolverMenuItem(cs);
+
+            solverMenu.Items.Add(new Separator());
+
+            var addSolverItem = new MenuItem
+            {
+                Header = "Add Custom Solver...",
+            };
+            addSolverItem.Click += AddCustomSolver_Click;
+            solverMenu.Items.Add(addSolverItem);
         }
 
         // Event handler for the MainWindow closing event
@@ -62,12 +114,15 @@ namespace Thesis_LIPX05
                 stepTable.GetChanges() is not null ||
                 linkTable.GetChanges() is not null)
             {
-                var res = MessageBox.Show("Do you want to save changes before exiting?", "Confirm Exit", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                var res = MessageBox.Show("Do you wish to save changes before exiting?", "Confirm Exit", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
                 switch (res)
                 {
                     case MessageBoxResult.Yes:
                         SaveFile_Click(sender, new());
+                        var res2 = MessageBox.Show("Do you wish to save your custom solvers?", "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                        if (res2 is MessageBoxResult.Yes) SaveCustomSolvers();
+                        Application.Current.Shutdown();
                         break;
                     case MessageBoxResult.No:
                         Application.Current.Shutdown();
@@ -105,27 +160,6 @@ namespace Thesis_LIPX05
             DrawRuler(RulerCanvas, GanttCanvas, heurTotalTime, heurTimeScale);
         }
 
-        // Calls the MINLP solver
-        private void SolveWithMINLP()
-        {
-            try
-            {
-                var minlpOpt = new MINLPOptimizer(GetNodes(), GetEdges(), @"C:\Program Files\Bonmin\bin\bonmin.exe");
-                var minlpPath = minlpOpt.Optimize(); // calls Bonmin from the specified path
-
-                ganttData = BuildChartFromPath(minlpPath, GetEdges());
-                double minlpTotalTime = ganttData.Max(x => x.Start + x.Duration);
-                double minlpTimeScale = baseTimeScale * zoom;
-
-                Render(GanttCanvas, ganttData, minlpTimeScale);
-                DrawRuler(RulerCanvas, GanttCanvas, minlpTotalTime, minlpTimeScale);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"MINLP optimization failed: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         // Calls the Branch and Bound solver
         private void SolveWithBnB()
         {
@@ -157,7 +191,7 @@ namespace Thesis_LIPX05
         }
 
         // Event handler for the Solve menu item click event
-        // Tthis method checks which solver was selected and calls the appropriate method
+        // This method checks which solver was selected and calls the appropriate method
         private void SolveClick(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)
@@ -165,40 +199,44 @@ namespace Thesis_LIPX05
                 switch (menuItem.Tag.ToString())
                 {
                     case "Heuristic":
-                        if (SGraphCanvas.Children.Count == 0)
                         {
-                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
+                            if (SGraphCanvas.Children.Count == 0)
+                            {
+                                MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            SolveHeuristically();
+                            GanttCanvas.Tag = menuItem.Tag;
+                            break;
                         }
-
-                        SolveHeuristically(); break;
-                    case "MINLP":
-                        if (SGraphCanvas.Children.Count == 0)
-                        {
-                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
-                        }
-
-                        SolveWithMINLP(); break;
                     case "BnB":
-                        if (SGraphCanvas.Children.Count == 0)
                         {
-                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
+                            if (SGraphCanvas.Children.Count == 0)
+                            {
+                                MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            SolveWithBnB();
+                            GanttCanvas.Tag = menuItem.Tag;
+                            break;
                         }
-
-                        SolveWithBnB(); break;
                     case "Genetic":
-                        if (SGraphCanvas.Children.Count == 0)
                         {
-                            MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
+                            if (SGraphCanvas.Children.Count == 0)
+                            {
+                                MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            SolveWithGenetic();
+                            GanttCanvas.Tag = menuItem.Tag;
+                            break;
                         }
-
-                        SolveWithGenetic(); break;
                     default:
-                        MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        break;
+                        {
+                            MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            GanttCanvas.Tag = "";
+                            break;
+                        }
                 }
             }
         }
@@ -353,13 +391,18 @@ namespace Thesis_LIPX05
                     MainTab.Items.RemoveAt(i);
                     continue;
                 }
+                if (tab?.Tag?.ToString()?.Contains("Solution") == true)
+                {
+                    MainTab.Items.RemoveAt(i);
+                    continue;
+                }
             }
         }
 
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no file is loaded)
         private void DrawExampleGraph()
         {
-            Purge(); // A pre-cautionary cleanup
+            Purge(); // cleans any remaining stuff from the canvases, data tables, and even the tabs
 
             int
                 i = 0,
@@ -425,7 +468,7 @@ namespace Thesis_LIPX05
                     var durEl = x.Element(batchML + "Extension")?.Descendants(customNS + "Duration").FirstOrDefault()?.Value;
 
                     double cost = 0;
-                    if (durEl != null)
+                    if (durEl is not null)
                     {
                         try
                         {
@@ -506,7 +549,7 @@ namespace Thesis_LIPX05
                 }
             }
         }
-        
+
         // Creates and displays the data tables
         private void DisplayDataTable(DataTable dt, string tag)
         {
@@ -758,6 +801,143 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Event handler for adding a custom solver
+        private void AddCustomSolver_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Filter = "Applications (*.exe)|*.exe|All Files (*.*)|*.*",
+                Title = "Select Custom Solver Executable"
+            };
+
+            if (dlg.ShowDialog() is true)
+            {
+                string solverPath = dlg.FileName;
+
+                var input = Interaction.InputBox(
+                    "Enter a name for the custom solver:",
+                    "Custom Solver Name",
+                    Path.GetFileNameWithoutExtension(solverPath)
+                    );
+
+                if (!string.IsNullOrWhiteSpace(input))
+                {
+                    if (customSolverList.Any(s => s.Name.Equals(input, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        MessageBox.Show("A solver with this name already exists!", "Duplicate Name", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    var solver = new CustomSolver
+                    {
+                        Name = input.Trim(),
+                        Path = solverPath
+                    };
+                    customSolverList.Add(solver);
+                    SaveCustomSolvers();
+
+                    AddCustomSolverMenuItem(solver);
+                }
+            }
+        }
+
+        // Saves custom solvers to a JSON file
+        private void SaveCustomSolvers()
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(customSolverPath)!);
+                string json = JsonSerializer.Serialize(customSolverList, CachedOptions);
+                File.WriteAllText(customSolverPath, json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving custom solvers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Loads custom solvers from a JSON file
+        private void LoadCustomSolvers()
+        {
+            try
+            {
+                if (File.Exists(customSolverPath))
+                {
+                    string json = File.ReadAllText(customSolverPath);
+                    var loaded = JsonSerializer.Deserialize<List<CustomSolver>>(json);
+                    if (loaded != null)
+                    {
+                        customSolverList.Clear();
+                        customSolverList.AddRange(loaded);
+                        foreach (var solver in customSolverList) AddCustomSolverMenuItem(solver);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading custom solvers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Adds a custom solver to the Solver menu
+        private void AddCustomSolverMenuItem(CustomSolver solver)
+        {
+            var item = new MenuItem
+            {
+                Header = solver.Name,
+                Tag = solver.Name
+            };
+            item.Click += (sender, e) => RunExtSolver(solver.Path);
+            SolverMenu.Items.Add(item);
+        }
+
+        // Runs the external solver executable
+        private static void RunExtSolver(string path)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error running external solver:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CreateSolutionTableBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (GanttCanvas.Children.Count != 0) DisplaySolutionAsTable(ganttData);
+            else MessageBox.Show("No Gantt chart to create solution table from!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void DisplaySolutionAsTable(List<GanttItem> data)
+        {
+            var execSolver = GanttCanvas.Tag?.ToString() ?? "";
+            var sdt = new DataTable
+            {
+                TableName = $"Solution {execSolver}"
+            };
+            sdt.Columns.Add("TaskID");
+            sdt.Columns.Add("StartTime (min)");
+            sdt.Columns.Add("Duration (min)");
+            sdt.Columns.Add("EndTime (min)");
+            foreach (var item in data)
+            {
+                var dr = sdt.NewRow();
+                dr["TaskID"] = item.ID;
+                dr["StartTime (min)"] = item.Start;
+                dr["Duration (min)"] = item.Duration;
+                dr["EndTime (min)"] = item.Start + item.Duration;
+                sdt.Rows.Add(dr);
+            }
+            DisplayDataTable(sdt, sdt.TableName);
+        }
+
         // Displays the links table
         private void DisplayLinkTable(DataTable ldt, XNamespace batchML, XNamespace customNS)
         {
@@ -871,7 +1051,7 @@ namespace Thesis_LIPX05
             {
                 int hrs = (int)(minutes / 60);
                 int mins = (int)(minutes % 60);
-                
+
                 return $"PT{(hrs > 0 ? $"{hrs}H" : "")}{(mins > 0 ? $"{mins}M" : "")}";
             }
 

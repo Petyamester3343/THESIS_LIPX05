@@ -21,11 +21,7 @@
                 <Separator/>
                 <MenuItem Header="_Exit" Click="Exit_Click" Tag="Exit"/>
             </MenuItem>
-            <MenuItem Header="_Solver">
-                <MenuItem Header="_Solve heuristically" Tag="Heuristic" Click="SolveClick"/>
-                <MenuItem Header="_Solve with MINLP" Tag="MINLP" Click="SolveClick"/>
-                <MenuItem Header="_Solve with BnB" Tag="BnB" Click="SolveClick"/>
-                <MenuItem Header="_Solve with Genetic" Tag="Genetic" Click="SolveClick"/>
+            <MenuItem Header="_Solver" Name="SolverMenu">
             </MenuItem>
             <MenuItem Header="_Graph">
                 <MenuItem Header="_Draw S-Graph" Click="DrawGraph_Click"/>
@@ -45,7 +41,8 @@
                     <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                         <StackPanel Orientation="Vertical">
                             <Canvas Name="RulerCanvas" Height="30" Background="White"/>
-                            <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent"/>
+                            <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent" Tag=""/>
+                            <Button Name="ShowSolutionTableBtn" Content="Create Solution Table" VerticalAlignment="Bottom" Width="125" Margin="1115,575,0,0" Click="CreateSolutionTableBtn_Click"/>
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>

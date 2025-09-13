@@ -23,9 +23,11 @@ namespace Thesis_LIPX05
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            string mutexName = "Thesis_LIPX05_Unique_Mutex_Name";
-            appMutex = new(true, mutexName, out bool createdNew);
+            string mutexName = "Y0KAI Task Scheduler";
+            bool createdNew = false;
+            appMutex = new(true, mutexName, out createdNew);
 
+            // Check if the mutex was created successfully
             if (!createdNew)
             {
                 // Another instance is already running, bring it to the foreground
@@ -35,16 +37,14 @@ namespace Thesis_LIPX05
 
                 if (runningProcess != null)
                 {
-                    ShowWindow(runningProcess.MainWindowHandle, 5); // SW_SHOW
+                    ShowWindow(runningProcess.MainWindowHandle, 5); // 5 -> SW_SHOW
                     SetForegroundWindow(runningProcess.MainWindowHandle);
 
                     Shutdown();
                     return;
                 }
-                else
-                {
-                    appMutex = new(true, mutexName, out createdNew);
-                }
+                else appMutex = new(true, mutexName, out createdNew);
+                
                 try
                 {
                     base.OnStartup(e);
@@ -94,7 +94,7 @@ namespace Thesis_LIPX05
             var loading = new LoadingWindow();
             loading.Show();
 
-            // Create a dummy window to prevent the main window from showing up before the loading is complete
+            // Create a jumper window to prevent the main window from showing up before the loading is complete
             jumper = new Window
             {
                 Width = 0,
@@ -104,7 +104,7 @@ namespace Thesis_LIPX05
             };
             jumper.Show();
 
-            // Simulates loading progress by updating the loading window's progress
+            // Simulate loading progress by updating the loading window's progress text
             for (int i = 0; i <= 100; i++)
             {
                 switch (DecideRang(i))
@@ -129,7 +129,7 @@ namespace Thesis_LIPX05
                 await Task.Delay(33);
             }
 
-            // Close the loading window and show the main window
+            // Show the main window and close the jumper window with the loading window
             await loading.Dispatcher.InvokeAsync(loading.Close);
 
             await Dispatcher.InvokeAsync(() =>
@@ -142,6 +142,7 @@ namespace Thesis_LIPX05
             });
 
             jumper.Close();
+            jumper = null;
         }
 
         // Decides the loading status based on the given integer value
