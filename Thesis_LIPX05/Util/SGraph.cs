@@ -1,7 +1,13 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+
+using FilePath = System.IO.Path;
+using ShapePath = System.Windows.Shapes.Path;
+
+using static System.Environment;
 
 namespace Thesis_LIPX05.Util
 {
@@ -33,6 +39,24 @@ namespace Thesis_LIPX05.Util
         public static Dictionary<string, Node> GetNodes() => nodes;
         public static List<Edge> GetEdges() => edges;
 
+        public static void WriteSGraphIntoFile()
+        {
+            // fetching the nodes to the desktop
+            string desktopPath = GetFolderPath(SpecialFolder.Desktop);
+            using var sw = new StreamWriter(FilePath.Combine(desktopPath, "sgraph_nodes.csv"), append: true);
+            sw.WriteLine("node,id,desc");
+            foreach (var node in nodes) sw.WriteLine($"{node.Key},{node.Value.ID},{node.Value.Desc}");
+            sw.Flush();
+            sw.Close();
+
+            // fetching the edges to the desktop
+            using var sw2 = new StreamWriter(FilePath.Combine(desktopPath, "sgraph_edges.csv"), append: true);
+            sw2.WriteLine("from,to,cost");
+            foreach (var edge in edges) sw2.WriteLine($"{edge.From.ID},{edge.To.ID},{edge.Cost}");
+            sw2.Flush();
+            sw2.Close();
+        }
+
         // Adds a node to the graph
         public static void AddNode(string id, string desc, Point position)
         {
@@ -43,8 +67,8 @@ namespace Thesis_LIPX05.Util
         // Adds an edge to the graph
         public static void AddEdge(string fromID, string toID, double cost)
         {
-            if (nodes.TryGetValue(fromID, out Node? from)
-                && nodes.TryGetValue(toID, out Node? to)
+            if (nodes.TryGetValue(fromID, out var from)
+                && nodes.TryGetValue(toID, out var to)
                 && from != null
                 && to != null
                 && !double.IsNaN(cost)) edges.Add(new() { From = from, To = to, Cost = cost });
@@ -128,6 +152,8 @@ namespace Thesis_LIPX05.Util
             // set the canvas size to fit all nodes and edges
             cv.Width = maxHorSize + 100;
             cv.Height = maxVertSize + 100;
+
+            WriteSGraphIntoFile();
         }
 
 
@@ -162,7 +188,7 @@ namespace Thesis_LIPX05.Util
             var geo = new PathGeometry();
             geo.Figures.Add(figure);
 
-            var path = new Path
+            var path = new ShapePath
             {
                 Stroke = color,
                 StrokeThickness = thickness,

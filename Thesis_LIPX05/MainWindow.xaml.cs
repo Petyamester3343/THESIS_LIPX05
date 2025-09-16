@@ -41,8 +41,9 @@ namespace Thesis_LIPX05
             linkTable;
 
         private List<GanttItem> ganttData;
+        private List<DataTable> solutionsList;
 
-        private readonly List<CustomSolver> customSolverList = [];
+        private readonly List<CustomSolver> customSolvers;
 
         private readonly Dictionary<string, Action> solvers;
 
@@ -72,8 +73,12 @@ namespace Thesis_LIPX05
             ganttData = [];
             zoom = 1;
             InitializeComponent();
+
+            customSolvers = [];
             LoadCustomSolvers();
             BuildSolverMenu(SolverMenu);
+
+            solutionsList = [];
         }
 
         // dynamicaly building the solver menu
@@ -93,7 +98,7 @@ namespace Thesis_LIPX05
 
             solverMenu.Items.Add(new Separator());
 
-            foreach (var cs in customSolverList) AddCustomSolverMenuItem(cs);
+            foreach (var cs in customSolvers) AddCustomSolverMenuItem(cs);
 
             solverMenu.Items.Add(new Separator());
 
@@ -368,30 +373,32 @@ namespace Thesis_LIPX05
             stepTable.Clear();
             linkTable.Clear();
 
+            foreach (DataTable dt in solutionsList) dt.Clear();
+
             for (int i = MainTab.Items.Count - 1; i >= 0; i--)
             {
                 TabItem? tab = MainTab.Items[i] as TabItem;
-                if (tab?.Tag.ToString() == "MasterRecipe")
+                if (tab?.Tag?.ToString()?.Equals("MasterRecipe") is true)
                 {
                     MainTab.Items.RemoveAt(i);
                     continue;
                 }
-                if (tab?.Tag.ToString() == "RecipeElements")
+                if (tab?.Tag?.ToString()?.Equals("RecipeElements") is true)
                 {
                     MainTab.Items.RemoveAt(i);
                     continue;
                 }
-                if (tab?.Tag.ToString() == "Steps")
+                if (tab?.Tag?.ToString()?.Equals("Steps") is true)
                 {
                     MainTab.Items.RemoveAt(i);
                     continue;
                 }
-                if (tab?.Tag.ToString() == "Links")
+                if (tab?.Tag?.ToString()?.Equals("Links") is true)
                 {
                     MainTab.Items.RemoveAt(i);
                     continue;
                 }
-                if (tab?.Tag?.ToString()?.Contains("Solution") == true)
+                if (tab?.Tag?.ToString()?.Contains("Solution") is true)
                 {
                     MainTab.Items.RemoveAt(i);
                     continue;
@@ -402,7 +409,7 @@ namespace Thesis_LIPX05
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no file is loaded)
         private void DrawExampleGraph()
         {
-            Purge(); // cleans any remaining stuff from the canvases, data tables, and even the tabs
+            Purge();
 
             int
                 i = 0,
@@ -488,8 +495,9 @@ namespace Thesis_LIPX05
             foreach (var link in links)
             {
 
-                bool fromExists = GetNodes().TryGetValue(link.fromID!, out Node? fromNode);
-                bool toExists = GetNodes().TryGetValue(link.toID!, out Node? toNode);
+                bool fromExists = GetNodes().TryGetValue(link.fromID!, out var fromNode);
+                bool toExists = GetNodes().TryGetValue(link.toID!, out var toNode);
+                // For debugging purposes
                 /*
                 MessageBox.Show($"From Node: {fromExists}, ID: {link.fromID}");
                 MessageBox.Show($"To Node: {toExists}, ID: {link.toID}");
@@ -512,7 +520,8 @@ namespace Thesis_LIPX05
             {
                 var doc = XDocument.Load(path);
 
-                masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault() ?? throw new Exception("Master element not found in BatchML file.");
+                masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
+                    ?? throw new Exception("Master element not found in BatchML file.");
 
                 // Master Recipe + Header datatable
                 DisplayMasterTable(masterTable, batchML);
@@ -588,7 +597,7 @@ namespace Thesis_LIPX05
                 }
                 else JPEGExporter.ExportOneCanvas(SGraphCanvas, "S-Graph");
             }
-            else MessageBox.Show("Please select the S-Graph tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show("Please select the \"S-Graph\" tab to export the S-Graph!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         // Exports the whole Gantt chart to a JPEG file
@@ -605,7 +614,7 @@ namespace Thesis_LIPX05
                 }
                 else JPEGExporter.ExportMultipleCanvases(RulerCanvas, GanttCanvas, "Gantt Chart");
             }
-            else MessageBox.Show("Please select the Gantt chart tab to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show("Please select the \"Gantt chart\" tab to export the Gantt chart!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         // Displays the master recipe table
@@ -822,7 +831,7 @@ namespace Thesis_LIPX05
 
                 if (!string.IsNullOrWhiteSpace(input))
                 {
-                    if (customSolverList.Any(s => s.Name.Equals(input, StringComparison.OrdinalIgnoreCase)))
+                    if (customSolvers.Any(s => s.Name.Equals(input, StringComparison.OrdinalIgnoreCase)))
                     {
                         MessageBox.Show("A solver with this name already exists!", "Duplicate Name", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
@@ -833,7 +842,7 @@ namespace Thesis_LIPX05
                         Name = input.Trim(),
                         Path = solverPath
                     };
-                    customSolverList.Add(solver);
+                    customSolvers.Add(solver);
                     SaveCustomSolvers();
 
                     AddCustomSolverMenuItem(solver);
@@ -847,7 +856,7 @@ namespace Thesis_LIPX05
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(customSolverPath)!);
-                string json = JsonSerializer.Serialize(customSolverList, CachedOptions);
+                string json = JsonSerializer.Serialize(customSolvers, CachedOptions);
                 File.WriteAllText(customSolverPath, json);
             }
             catch (Exception ex)
@@ -867,9 +876,9 @@ namespace Thesis_LIPX05
                     var loaded = JsonSerializer.Deserialize<List<CustomSolver>>(json);
                     if (loaded != null)
                     {
-                        customSolverList.Clear();
-                        customSolverList.AddRange(loaded);
-                        foreach (var solver in customSolverList) AddCustomSolverMenuItem(solver);
+                        customSolvers.Clear();
+                        customSolvers.AddRange(loaded);
+                        foreach (var solver in customSolvers) AddCustomSolverMenuItem(solver);
                     }
                 }
             }
@@ -922,10 +931,13 @@ namespace Thesis_LIPX05
             {
                 TableName = $"Solution {execSolver}"
             };
+
+
             sdt.Columns.Add("TaskID");
             sdt.Columns.Add("StartTime (min)");
             sdt.Columns.Add("Duration (min)");
             sdt.Columns.Add("EndTime (min)");
+
             foreach (var item in data)
             {
                 var dr = sdt.NewRow();
@@ -935,6 +947,8 @@ namespace Thesis_LIPX05
                 dr["EndTime (min)"] = item.Start + item.Duration;
                 sdt.Rows.Add(dr);
             }
+
+            solutionsList.Add(sdt);
             DisplayDataTable(sdt, sdt.TableName);
         }
 
