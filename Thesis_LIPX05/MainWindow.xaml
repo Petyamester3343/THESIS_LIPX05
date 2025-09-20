@@ -14,7 +14,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Click="OpenFile_Click" />
-                <MenuItem Header="_Save" Click="SaveFile_Click"/>
+                <MenuItem Header="_Save" Tag="Save" Click="SaveFile_Click"/>
                 <MenuItem Header="_Close" Tag="Close" Click="CloseFile_Click"/>
                 <MenuItem Header="_Export Gantt Chart" Click="ExportGantt_Click"/>
                 <MenuItem Header="_Export SGraph" Click="ExportSGraph_Click"/>

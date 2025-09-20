@@ -16,8 +16,13 @@ using System.Xml.Linq;
 
 using Thesis_LIPX05.Util;
 
+using static System.IO.Directory;
+using static System.IO.File;
+using static System.IO.Path;
+
 using static Thesis_LIPX05.Util.SGraph;
 using static Thesis_LIPX05.Util.Gantt;
+using System.Text.RegularExpressions;
 
 namespace Thesis_LIPX05
 {
@@ -41,19 +46,22 @@ namespace Thesis_LIPX05
             linkTable;
 
         private List<GanttItem> ganttData;
-        private List<DataTable> solutionsList;
+        private readonly List<DataTable> solutionsList;
 
         private readonly List<CustomSolver> customSolvers;
 
         private readonly Dictionary<string, Action> solvers;
 
         private readonly string customSolverPath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
+            Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
 
         private double zoom;
         private const double baseTimeScale = 10.0;
 
         private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
+
+        [GeneratedRegex(@"^PT(?:(\d+)H)?(?:(\d{,2})M)?$", RegexOptions.IgnoreCase, "hu-HU")]
+        private static partial Regex ISO8601Format();
 
         public MainWindow()
         {
@@ -358,7 +366,23 @@ namespace Thesis_LIPX05
             }
         }
 
-        // A helper method to flush the containers, clean the canvases and data tables in one go
+        // Clears all data tables
+        private void PurgeDataTables()
+        {
+            masterTable.Clear();
+            masterTable.Columns.Clear();
+
+            recipeElementTable.Clear();
+            recipeElementTable.Columns.Clear();
+
+            stepTable.Clear();
+            stepTable.Columns.Clear();
+
+            linkTable.Clear();
+            linkTable.Columns.Clear();
+        }
+
+        // A helper method to flush the containers ad clean the canvases in one go
         private void Purge()
         {
             SGraphCanvas.Children.Clear();
@@ -367,11 +391,6 @@ namespace Thesis_LIPX05
 
             GetNodes().Clear();
             GetEdges().Clear();
-
-            masterTable.Clear();
-            recipeElementTable.Clear();
-            stepTable.Clear();
-            linkTable.Clear();
 
             foreach (DataTable dt in solutionsList) dt.Clear();
 
@@ -550,6 +569,7 @@ namespace Thesis_LIPX05
                 try
                 {
                     Purge();
+                    PurgeDataTables();
                     isFileLoaded = false;
                 }
                 catch (Exception ex)
@@ -695,7 +715,7 @@ namespace Thesis_LIPX05
             redt.Columns.Add("Description");
 
 
-            if (recipeElements != null)
+            if (recipeElements is not null)
             {
                 foreach (var re in recipeElements)
                 {
@@ -738,8 +758,8 @@ namespace Thesis_LIPX05
                     break;
                 case DataRowState.Modified:
                     var reEl = masterRecipe.Descendants(batchML + "RecipeElement")
-                    .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
-                    .ToString());
+                        .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
+                        .ToString());
                     reEl?.SetElementValue(batchML + "Description", e.Row["Description"]);
                     break;
             }
@@ -803,8 +823,8 @@ namespace Thesis_LIPX05
                     break;
                 case DataRowState.Modified:
                     var stepEl = masterRecipe.Descendants(batchML + "Step")
-                    .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
-                    .ToString());
+                        .FirstOrDefault(x => x.Element(batchML + "ID")?.Value.Trim() == e.Row["ID"]
+                        .ToString());
                     stepEl?.SetElementValue(batchML + "RecipeElementID", e.Row["RecipeElementID"]);
                     break;
             }
@@ -843,7 +863,6 @@ namespace Thesis_LIPX05
                         Path = solverPath
                     };
                     customSolvers.Add(solver);
-                    SaveCustomSolvers();
 
                     AddCustomSolverMenuItem(solver);
                 }
@@ -855,9 +874,9 @@ namespace Thesis_LIPX05
         {
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(customSolverPath)!);
+                CreateDirectory(GetDirectoryName(customSolverPath)!);
                 string json = JsonSerializer.Serialize(customSolvers, CachedOptions);
-                File.WriteAllText(customSolverPath, json);
+                WriteAllText(customSolverPath, json);
             }
             catch (Exception ex)
             {
@@ -872,7 +891,7 @@ namespace Thesis_LIPX05
             {
                 if (File.Exists(customSolverPath))
                 {
-                    string json = File.ReadAllText(customSolverPath);
+                    string json = ReadAllText(customSolverPath);
                     var loaded = JsonSerializer.Deserialize<List<CustomSolver>>(json);
                     if (loaded != null)
                     {
@@ -932,7 +951,6 @@ namespace Thesis_LIPX05
                 TableName = $"Solution {execSolver}"
             };
 
-
             sdt.Columns.Add("TaskID");
             sdt.Columns.Add("StartTime (min)");
             sdt.Columns.Add("Duration (min)");
@@ -985,7 +1003,7 @@ namespace Thesis_LIPX05
 
                     // ISO 8601 to minutes to string via interpolation if not null, otherwise "N/A"
                     dr["Duration"] = (link.Duration != null)
-                        ? $"{XmlConvert.ToTimeSpan(link.Duration).TotalMinutes} min"
+                        ? $"PT{XmlConvert.ToTimeSpan(link.Duration).TotalHours}H{XmlConvert.ToTimeSpan(link.Duration).TotalMinutes}M"
                         : "N/A";
 
                     ldt.Rows.Add(dr);
@@ -1047,15 +1065,9 @@ namespace Thesis_LIPX05
         private static string ConvertToISO8601(string raw)
         {
             // if it already looks like an ISO 8601 duration, return it as is (ideally, that is)
-            if (raw.StartsWith("PT", StringComparison.OrdinalIgnoreCase) &&
-                (raw.Contains('Y', StringComparison.OrdinalIgnoreCase) ||
-                raw.Contains('M', StringComparison.OrdinalIgnoreCase) ||
-                raw.Contains('W', StringComparison.OrdinalIgnoreCase) ||
-                raw.Contains('D', StringComparison.OrdinalIgnoreCase) ||
-                raw.Contains('H', StringComparison.OrdinalIgnoreCase) ||
-                raw.Contains('M', StringComparison.OrdinalIgnoreCase) ||
-                raw.Contains('S', StringComparison.OrdinalIgnoreCase)))
-                return raw;
+            Regex regex = ISO8601Format();
+
+            if(regex.IsMatch(raw)) return raw.ToUpper();
 
             // try parse as HH:MM
             if (TimeSpan.TryParse(raw, out TimeSpan ts)) return $"PT{(ts.Hours > 0 ? $"{ts.Hours}H" : "")}{(ts.Minutes > 0 ? $"{ts.Minutes}M" : "")}";
@@ -1072,5 +1084,6 @@ namespace Thesis_LIPX05
             // default return value if parsing fails
             return "PT0M";
         }
+
     }
 }

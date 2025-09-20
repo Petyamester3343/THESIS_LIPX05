@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\util\\sgraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:util\\sgraph.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -23,10 +31,6 @@
       "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:util\\heuristicoptimizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\util\\geneticoptimizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:util\\geneticoptimizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -37,10 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\util\\customsolver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:util\\customsolver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{46D22623-5127-4ACD-8E44-0EACF87A485C}|Thesis_LIPX05.csproj|c:\\users\\phant0m\\desktop\\thesis_lipx05\\thesis_lipx05\\util\\optimizerbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -62,11 +62,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Gantt.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\Gantt.cs",
               "RelativeDocumentMoniker": "Util\\Gantt.cs",
@@ -74,25 +74,24 @@
               "RelativeToolTip": "Util\\Gantt.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAwAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T21:21:11.754Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-30T21:21:11.754Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAANgBAAAAAAAAAAAiwAECAAASAAAAAAAAAA==",
+              "ViewState": "AgIAADoBAAAAAAAAAADgvzcBAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-30T17:23:28.53Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "App.xaml.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\App.xaml.cs",
               "RelativeDocumentMoniker": "App.xaml.cs",
@@ -100,12 +99,11 @@
               "RelativeToolTip": "App.xaml.cs",
               "ViewState": "AgIAAFgAAAAAAAAAAAAAAHAAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-06T03:20:46.096Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-06T03:20:46.096Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "LoadingWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\LoadingWindow.xaml.cs",
               "RelativeDocumentMoniker": "LoadingWindow.xaml.cs",
@@ -113,12 +111,11 @@
               "RelativeToolTip": "LoadingWindow.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-06T03:22:33.43Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-06T03:22:33.43Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "BnBOptimizer.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\BnBOptimizer.cs",
               "RelativeDocumentMoniker": "Util\\BnBOptimizer.cs",
@@ -126,25 +123,23 @@
               "RelativeToolTip": "Util\\BnBOptimizer.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAiwA4AAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-21T22:10:54.341Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-21T22:10:54.341Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "SGraph.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\SGraph.cs",
               "RelativeDocumentMoniker": "Util\\SGraph.cs",
               "ToolTip": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\SGraph.cs",
               "RelativeToolTip": "Util\\SGraph.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADQAAABcAAAAAAAAAA==",
+              "ViewState": "AgIAAIAAAAAAAAAAAAAqwCcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-08T17:36:51.429Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-08T17:36:51.429Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "CustomSolver.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\CustomSolver.cs",
               "RelativeDocumentMoniker": "Util\\CustomSolver.cs",
@@ -156,7 +151,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "HeuristicOptimizer.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\HeuristicOptimizer.cs",
               "RelativeDocumentMoniker": "Util\\HeuristicOptimizer.cs",
@@ -164,8 +159,7 @@
               "RelativeToolTip": "Util\\HeuristicOptimizer.cs",
               "ViewState": "AgIAABcAAAAAAAAAAAAUwC8AAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-21T22:14:21.706Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-21T22:14:21.706Z"
             },
             {
               "$type": "Document",
@@ -181,18 +175,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
               "ToolTip": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\MainWindow.xaml",
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-04-20T19:56:21.107Z"
+              "WhenOpened": "2025-04-20T19:56:21.107Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "GeneticOptimizer.cs",
               "DocumentMoniker": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Thesis_LIPX05\\Util\\GeneticOptimizer.cs",
               "RelativeDocumentMoniker": "Util\\GeneticOptimizer.cs",
@@ -200,8 +195,7 @@
               "RelativeToolTip": "Util\\GeneticOptimizer.cs",
               "ViewState": "AgIAADEAAAAAAAAAAAAgwFoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T04:31:26.361Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-20T04:31:26.361Z"
             },
             {
               "$type": "Document",
