@@ -27,8 +27,8 @@ namespace Thesis_LIPX05
             {
                 var foreColor = foreBrush.Color;
                 var backColor = backBrush.Color;
-                YOKAI.Foreground = new SolidColorBrush(Color.FromArgb(foreColor.A, (byte)(255 - foreColor.R), (byte)(255 - foreColor.G), (byte)(255 - foreColor.B)));
-                YOKAI.Background = new SolidColorBrush(Color.FromArgb(backColor.A, (byte)(255 - backColor.R), (byte)(255 - backColor.G), (byte)(255 - backColor.B)));
+                YOKAI.Foreground = new SolidColorBrush(Color.FromArgb(foreColor.A, Convert.ToByte(255 - foreColor.R), Convert.ToByte(255 - foreColor.G), Convert.ToByte(255 - foreColor.B)));
+                YOKAI.Background = new SolidColorBrush(Color.FromArgb(backColor.A, Convert.ToByte(255 - backColor.R), Convert.ToByte(255 - backColor.G), Convert.ToByte(255 - backColor.B)));
             }
         }
     }

@@ -21,7 +21,7 @@ namespace Thesis_LIPX05.Util
         // Builds a Gantt chart from an S-Graph
         public static List<GanttItem> BuildChartFromPath(List<Node> path, List<Edge> edges)
         {
-            var ganttItems = new List<GanttItem>();
+            List<GanttItem> ganttItems = [];
             double currT = 0;
 
             for (int i = 0; i < path.Count - 1; i++)
@@ -99,7 +99,7 @@ namespace Thesis_LIPX05.Util
                     RenderOptions.SetBitmapScalingMode(label, BitmapScalingMode.HighQuality);
                     RenderOptions.SetEdgeMode(label, EdgeMode.Aliased);
 
-                    label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    label.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity));
                     var measured = label.DesiredSize;
 
                     double

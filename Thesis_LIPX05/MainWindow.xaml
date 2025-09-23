@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:Thesis_LIPX05"
         mc:Ignorable="d"
         Title="Y0KAI Task Scheduler"
-        Width="1280"
-        Height="720"
+        Width="1366"
+        Height="768"
         Closing="MainWindow_Closing"
         >
     <DockPanel>
@@ -16,8 +16,8 @@
                 <MenuItem Header="_Open" Click="OpenFile_Click" />
                 <MenuItem Header="_Save" Tag="Save" Click="SaveFile_Click"/>
                 <MenuItem Header="_Close" Tag="Close" Click="CloseFile_Click"/>
-                <MenuItem Header="_Export Gantt Chart" Click="ExportGantt_Click"/>
-                <MenuItem Header="_Export SGraph" Click="ExportSGraph_Click"/>
+                <MenuItem Header="_Export Gantt Chart" Click="ExportCanvas_Click"/>
+                <MenuItem Header="_Export SGraph" Click="ExportCanvas_Click"/>
                 <Separator/>
                 <MenuItem Header="_Exit" Click="Exit_Click" Tag="Exit"/>
             </MenuItem>

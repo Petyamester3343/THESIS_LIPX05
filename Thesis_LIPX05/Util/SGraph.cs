@@ -8,6 +8,7 @@ using FilePath = System.IO.Path;
 using ShapePath = System.Windows.Shapes.Path;
 
 using static System.Environment;
+using System.Xml.Linq;
 
 namespace Thesis_LIPX05.Util
 {
@@ -39,22 +40,35 @@ namespace Thesis_LIPX05.Util
         public static Dictionary<string, Node> GetNodes() => nodes;
         public static List<Edge> GetEdges() => edges;
 
+        // Writes the S-graph's nodes and edges into an .xml file
         public static void WriteSGraphIntoFile()
         {
-            // fetching the nodes to the desktop
-            string desktopPath = GetFolderPath(SpecialFolder.Desktop);
-            using var sw = new StreamWriter(FilePath.Combine(desktopPath, "sgraph_nodes.csv"), append: true);
-            sw.WriteLine("node,id,desc");
-            foreach (var node in nodes) sw.WriteLine($"{node.Key},{node.Value.ID},{node.Value.Desc}");
-            sw.Flush();
-            sw.Close();
+            string filePath = FilePath.Combine(GetFolderPath(SpecialFolder.Desktop), "sgraph.xml");
 
-            // fetching the edges to the desktop
-            using var sw2 = new StreamWriter(FilePath.Combine(desktopPath, "sgraph_edges.csv"), append: true);
-            sw2.WriteLine("from,to,cost");
-            foreach (var edge in edges) sw2.WriteLine($"{edge.From.ID},{edge.To.ID},{edge.Cost}");
-            sw2.Flush();
-            sw2.Close();
+            var doc = new XDocument(
+                new XElement("SGraph",
+                    new XElement("Nodes",
+                        nodes.Select(n =>
+                            new XElement("Node",
+                            new XAttribute("Key", n.Key),
+                            new XAttribute("ID", n.Value.ID),
+                            new XAttribute("Desc", n.Value.Desc)
+                            )
+                        )
+                    )   ,
+                    new XElement("Edges",
+                        edges.Select(e =>
+                            new XElement("Edge",
+                            new XAttribute("From", e.From.ID),
+                            new XAttribute("To", e.To.ID),
+                            new XAttribute("Cost", e.Cost)
+                            )
+                        )
+                    )
+                )
+            );
+
+            doc.Save(filePath);
         }
 
         // Adds a node to the graph
@@ -157,7 +171,7 @@ namespace Thesis_LIPX05.Util
         }
 
 
-        // Draws a quadratic Bezier curve with a triangle polygon at its end, between two nodes on the provided canvas
+        // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
         private static void DrawEdge(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
             // offset starting point to the right edge of the source node
@@ -217,8 +231,7 @@ namespace Thesis_LIPX05.Util
 
             cv.Children.Add(arrowHead);
 
-            // midpoint of the quadratic Bézier curve at t = 0.5            
-            // B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
+            // midpoint of the quadratic Bézier curve at t = 0.5 -> B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
             double t = 0.5;
             var midCurve = new Point
             {

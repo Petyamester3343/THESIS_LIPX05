@@ -23,15 +23,15 @@ namespace Thesis_LIPX05.Util
                 AddExtension = true
             };
 
-            var size = new Size(Convert.ToInt32(cv.Width), Convert.ToInt32(cv.Height));
-            cv.Measure(size);
-            cv.Arrange(new(size));
+            Size size = new(cv.Width, cv.Height);
+            cv.Measure(availableSize: size);
+            cv.Arrange(finalRect: new(size));
 
-            var rtb = new RenderTargetBitmap((int)size.Width, (int)size.Height, dpi, dpi, PixelFormats.Pbgra32);
+            var rtb = new RenderTargetBitmap(Convert.ToInt32(size.Width), Convert.ToInt32(size.Height), dpi, dpi, PixelFormats.Pbgra32);
 
             rtb.Render(cv);
 
-            var encoder = new JpegBitmapEncoder();
+            JpegBitmapEncoder encoder = new();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
             
             if (saveDialog.ShowDialog() == true)
@@ -41,7 +41,7 @@ namespace Thesis_LIPX05.Util
 
                 MessageBox.Show($"Canvas exported as {saveDialog.FileName}", "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else MessageBox.Show($"Export of {saveDialog.FileName} was cancelled", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show($"Export of {saveDialog.FileName} was cancelled", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Exports two Canvases as a single JPEG image (used for Gantt charts with time ruler)
@@ -55,13 +55,13 @@ namespace Thesis_LIPX05.Util
             panel.Children.Add(CloneVisual(rcv));
             panel.Children.Add(CloneVisual(gcv));
 
-            panel.Measure(new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
-            panel.Arrange(new(panel.DesiredSize)); // arrange the panel to apply the measurements
+            panel.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
+            panel.Arrange(finalRect: new(panel.DesiredSize)); // arrange the panel to apply the measurements
 
-            var rtb = new RenderTargetBitmap((int)panel.DesiredSize.Width, (int)panel.DesiredSize.Height, 96, 96, PixelFormats.Pbgra32);
+            var rtb = new RenderTargetBitmap(Convert.ToInt32(panel.DesiredSize.Width), Convert.ToInt32(panel.DesiredSize.Height), 96, 96, PixelFormats.Pbgra32);
             rtb.Render(panel);
 
-            var enc = new JpegBitmapEncoder();
+            JpegBitmapEncoder enc = new();
             enc.Frames.Add(BitmapFrame.Create(rtb));
 
             var dlg = new SaveFileDialog
@@ -79,7 +79,7 @@ namespace Thesis_LIPX05.Util
                 enc.Save(stream);
                 MessageBox.Show($"Canvas exported as {dlg.FileName}", "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else MessageBox.Show($"Export of {dlg.FileName} was cancelled", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show($"Export of {dlg.FileName} was cancelled", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Clones a Canvas and its children to avoid modifying the original

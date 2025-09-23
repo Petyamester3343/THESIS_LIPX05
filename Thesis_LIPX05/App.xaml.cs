@@ -24,13 +24,12 @@ namespace Thesis_LIPX05
         protected override void OnStartup(StartupEventArgs e)
         {
             string mutexName = "Y0KAI Task Scheduler";
-            bool createdNew = false;
-            appMutex = new(true, mutexName, out createdNew);
+            appMutex = new(true, mutexName, out var createdNew);
 
             // Check if the mutex was created successfully
             if (!createdNew)
             {
-                // Another instance is already running, bring it to the foreground
+                // If another instance is already running, bring it to the foreground
                 var currentProcess = GetCurrentProcess();
                 var runningProcess = GetProcessesByName(currentProcess.ProcessName)
                     .FirstOrDefault(p => p.Id != currentProcess.Id);
@@ -40,7 +39,7 @@ namespace Thesis_LIPX05
                     ShowWindow(runningProcess.MainWindowHandle, 5); // 5 -> SW_SHOW
                     SetForegroundWindow(runningProcess.MainWindowHandle);
 
-                    Shutdown();
+                    Shutdown(0);
                     return;
                 }
                 else appMutex = new(true, mutexName, out createdNew);

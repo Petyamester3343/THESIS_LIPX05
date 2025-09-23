@@ -11,9 +11,11 @@ namespace Thesis_LIPX05.Util
         {
             var topo = TopologicalSort(nodes, edges);
             var dist = nodes.Keys.ToDictionary(k => k, _ => double.NegativeInfinity);
-            var pred = new Dictionary<string, string>();
+            Dictionary<string, string> pred = [];
 
-            foreach (var n in nodes.Keys) if (!edges.Any(e => e.To.ID == n)) dist[n] = 0; // start nodes with no incoming edges
+            foreach (var n in nodes.Keys)
+                if (!edges.Any(e => e.To.ID == n))
+                    dist[n] = 0; // start nodes with no incoming edges
 
             foreach (var u in topo)
             {
@@ -30,13 +32,13 @@ namespace Thesis_LIPX05.Util
                 }
             }
 
-            var end = dist.Aggregate((a, b) => a.Value > b.Value ? a : b).Key;
+            string end = dist.Aggregate((a, b) => a.Value > b.Value ? a : b).Key;
             Stack<string> path = [];
 
             while (end != null)
             {
                 path.Push(end);
-                pred.TryGetValue(end, out end);
+                pred.TryGetValue(end, out end!);
             }
 
             return [.. path.Select(id => nodes[id])];
@@ -48,7 +50,7 @@ namespace Thesis_LIPX05.Util
             var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
             foreach (var edge in edges) inDeg[edge.To.ID]++;
 
-            Queue<string> queue = new(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
+            var queue = new Queue<string>(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
             List<string> sorted = [];
 
             while (queue.Count != 0)
