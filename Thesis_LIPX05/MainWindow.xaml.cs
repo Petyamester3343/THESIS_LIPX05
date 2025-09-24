@@ -53,11 +53,12 @@ namespace Thesis_LIPX05
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
 
         private double zoom;
+        private bool SGraphExists;
         private const double baseTimeScale = 10.0;
 
         private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
 
-        [GeneratedRegex(@"^PT(?:(\d+)H)?(?:(\d|[0-5]\d)M)?$", RegexOptions.IgnoreCase, "hu-HU")]
+        [GeneratedRegex(@"^PT(?:(\d+)H)?(?:(\d|[1-5]\d)M)?$", RegexOptions.IgnoreCase, "hu-HU")]
         private static partial Regex ISO8601Format();
 
         private readonly Dictionary<string, TableMapper> mappings;
@@ -138,13 +139,14 @@ namespace Thesis_LIPX05
                 var item = new MenuItem
                 {
                     Header = solver.Key,
-                    Tag = solver.Key
+                    Tag = solver.Key,
+                    IsEnabled = SGraphExists
                 };
                 item.Click += (sender, e) => solver.Value();
                 solverMenu.Items.Add(item);
             }
 
-            solverMenu.Items.Add(new Separator());
+            solverMenu.Items.Add(newItem: new Separator());
 
             foreach (var cs in customSolvers) AddCustomSolverMenuItem(cs);
 
@@ -153,6 +155,7 @@ namespace Thesis_LIPX05
             var addSolverItem = new MenuItem
             {
                 Header = "Add Custom Solver...",
+                IsEnabled = true
             };
             addSolverItem.Click += AddCustomSolver_Click;
             solverMenu.Items.Add(addSolverItem);
@@ -494,6 +497,14 @@ namespace Thesis_LIPX05
                 AddEdge($"Eq{x}", (x % 3 != 0) ? $"Eq{x + 1}" : $"Prod{x / 3}", new Random().Next(5, 45));
 
             Render(SGraphCanvas, 4);
+
+            SGraphExists = true;
+
+            for (int a = 0; a < SolverMenu.Items.Count; a++)
+            {
+                if (SolverMenu.Items[a] is MenuItem menuItem && !menuItem.Name.Contains("Add new")) menuItem.IsEnabled = true;
+                else continue;
+            }
         }
 
         // Builds the S-Graph from the loaded BatchML file
@@ -576,6 +587,12 @@ namespace Thesis_LIPX05
             }
 
             Render(SGraphCanvas, 3);
+
+            for (int a = 0; a < SolverMenu.Items.Count; a++)
+            {
+                if (SolverMenu.Items[a] is MenuItem menuItem && !menuItem.Name.Contains("Add new")) menuItem.IsEnabled = true;
+                else continue;
+            }
         }
 
         // Loads the BatchML file and populates the data tables
@@ -963,10 +980,12 @@ namespace Thesis_LIPX05
             var item = new MenuItem
             {
                 Header = solver.Name,
-                Tag = solver.Name
+                Tag = solver.Name,
+                IsEnabled = SGraphExists
             };
             item.Click += (sender, e) => RunExtSolver(solver.Path);
             SolverMenu.Items.Add(item);
+            BuildSolverMenu(SolverMenu);
         }
 
         // Runs the external solver executable
@@ -1061,7 +1080,7 @@ namespace Thesis_LIPX05
                     var expected = keyVals[pair.Index];
                     if (string.IsNullOrEmpty(expected)) return false;
 
-                    if (string.Equals(col, "Duraion", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
                     {
                         var dur = el.Element(batchML + "Extension")?.Element(customNS + "Duration")?.Value;
                         return string.Equals(dur, expected, StringComparison.OrdinalIgnoreCase);

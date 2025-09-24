@@ -2,7 +2,7 @@
 
 namespace Thesis_LIPX05.Util
 {
-    internal class GeneticOptimizer(Dictionary<string, Node> nodes, List<Edge> edges, int populationSize = 50, int generations = 100) 
+    internal class GeneticOptimizer(Dictionary<string, Node> nodes, List<Edge> edges, int populationSize = 50, int generations = 100)
 #pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
         : OptimizerBase(nodes, edges)
 #pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
@@ -63,7 +63,7 @@ namespace Thesis_LIPX05.Util
             double t = 0;
             for (int i = 0; i < path.Count; i++)
             {
-                var edge = edges.FirstOrDefault(e => e.From == path[i] && e.To == path[i + 1]);
+                var edge = edges.FirstOrDefault(e => e.From == path[i] && e.To == path[i + 1]); // needs some re-check
                 t += (edge is not null) ? edge.Cost : 1000; // large penalty for missing edges 
             }
             return t;

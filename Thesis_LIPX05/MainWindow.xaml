@@ -16,8 +16,8 @@
                 <MenuItem Header="_Open" Click="OpenFile_Click" />
                 <MenuItem Header="_Save" Tag="Save" Click="SaveFile_Click"/>
                 <MenuItem Header="_Close" Tag="Close" Click="CloseFile_Click"/>
-                <MenuItem Header="_Export Gantt Chart" Click="ExportCanvas_Click"/>
-                <MenuItem Header="_Export SGraph" Click="ExportCanvas_Click"/>
+                <Separator/>
+                <MenuItem Header="_Export current canvas" Click="ExportCanvas_Click"/>
                 <Separator/>
                 <MenuItem Header="_Exit" Click="Exit_Click" Tag="Exit"/>
             </MenuItem>
@@ -38,11 +38,11 @@
                             IsSnapToTickEnabled="False" Width="1000" HorizontalAlignment="Center"
                             DockPanel.Dock="Top" PreviewMouseDown="ZoomSlider_PreviewMouseDown"
                             ValueChanged="ZoomSlider_ValueChanged"/>
+                    <Button Name="ShowSolutionTableBtn" Content="Create Solution Table" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="125" Margin="1200,0,0,50" Click="CreateSolutionTableBtn_Click"/>
                     <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                         <StackPanel Orientation="Vertical">
                             <Canvas Name="RulerCanvas" Height="30" Background="White"/>
                             <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent" Tag=""/>
-                            <Button Name="ShowSolutionTableBtn" Content="Create Solution Table" VerticalAlignment="Bottom" Width="125" Margin="1115,575,0,0" Click="CreateSolutionTableBtn_Click"/>
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>

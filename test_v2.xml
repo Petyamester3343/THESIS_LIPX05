@@ -285,29 +285,5 @@
         </batchML:Extension>
       </batchML:Link>
     </batchML:ProcedureLogic>
-    <batchML:Link>
-      <batchML:ID>Link1</batchML:ID>
-      <batchML:FromID>
-        <batchML:FromIDValue>Step1</batchML:FromIDValue>
-      </batchML:FromID>
-      <batchML:ToID>
-        <batchML:ToIDValue>Step2</batchML:ToIDValue>
-      </batchML:ToID>
-      <batchML:Extension>
-        <custom:Duration>PT0M</custom:Duration>
-      </batchML:Extension>
-    </batchML:Link>
-    <batchML:Link>
-      <batchML:ID>Link1</batchML:ID>
-      <batchML:FromID>
-        <batchML:FromIDValue>Step1</batchML:FromIDValue>
-      </batchML:FromID>
-      <batchML:ToID>
-        <batchML:ToIDValue>Step2</batchML:ToIDValue>
-      </batchML:ToID>
-      <batchML:Extension>
-        <custom:Duration>PT0M</custom:Duration>
-      </batchML:Extension>
-    </batchML:Link>
   </batchML:MasterRecipe>
 </batchML:BatchInformation>
