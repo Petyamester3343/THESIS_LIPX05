@@ -9,13 +9,21 @@
         Width="1366"
         Height="768"
         Closing="MainWindow_Closing"
-        >
+>
+    <Window.Resources>
+        <Style TargetType="ToolTip">
+            <Setter Property="MaxWidth" Value="300"/>
+            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Background" Value="LightYellow"/>
+        </Style>
+    </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="OpenFile_Click" />
-                <MenuItem Header="_Save" Tag="Save" Click="SaveFile_Click"/>
-                <MenuItem Header="_Close" Tag="Close" Click="CloseFile_Click"/>
+                <MenuItem Header="_Open BatchML File" Tag="Open file" Click="OpenFile_Click" />
+                <MenuItem Header="_Save BatchML File" Tag="Save file" Click="SaveFile_Click"/>
+                <MenuItem Header="_Close BatchL File" Tag="Close file" Click="CloseFile_Click"/>
                 <Separator/>
                 <MenuItem Header="_Export current canvas" Click="ExportCanvas_Click"/>
                 <Separator/>
@@ -33,19 +41,21 @@
 
         <TabControl Name="MainTab">
             <TabItem Header="_Gantt chart" Tag="Gantt">
-                <DockPanel>
-                    <Slider Name="ZoomSlider" Minimum="-2" Maximum="2" Value="0" TickFrequency="0.1"
+                <Grid>
+                    <DockPanel>
+                        <Slider Name="ZoomSlider" Minimum="-2" Maximum="2" Value="0" TickFrequency="0.1"
                             IsSnapToTickEnabled="False" Width="1000" HorizontalAlignment="Center"
                             DockPanel.Dock="Top" PreviewMouseDown="ZoomSlider_PreviewMouseDown"
                             ValueChanged="ZoomSlider_ValueChanged"/>
-                    <Button Name="ShowSolutionTableBtn" Content="Create Solution Table" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="125" Margin="1200,0,0,50" Click="CreateSolutionTableBtn_Click"/>
-                    <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                        <StackPanel Orientation="Vertical">
-                            <Canvas Name="RulerCanvas" Height="30" Background="White"/>
-                            <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent" Tag=""/>
-                        </StackPanel>
-                    </ScrollViewer>
-                </DockPanel>
+                        <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <StackPanel Orientation="Vertical">
+                                <Canvas Name="RulerCanvas" Height="30" Background="White"/>
+                                <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent" Tag=""/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DockPanel>
+                    <Button Name="ShowSolutionTableBtn" Content="Create Solution Table" Width="160" Height="40" Margin="1154,615,0,0" Click="CreateSolutionTableBtn_Click" FontWeight="Bold"/>
+                </Grid>
             </TabItem>
             <TabItem Header="_S-Graph" Tag="SGraph">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">

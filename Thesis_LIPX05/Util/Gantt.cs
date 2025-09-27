@@ -47,15 +47,16 @@ namespace Thesis_LIPX05.Util
         }
 
         // Draws the ruler on the Gantt chart canvas and the scroll view
-        public static void DrawRuler(Canvas gcv, Canvas scv, double totalTime, double scale)
+        public static void DrawRuler(Canvas cv1, Canvas cv2, double totalTime, double scale)
         {
-            gcv.SnapsToDevicePixels = true;
-            scv.SnapsToDevicePixels = true;
-            gcv.UseLayoutRounding = true;
-            scv.UseLayoutRounding = true;
+            foreach (Canvas cv in new[] { cv1, cv2 })
+            {
+                cv.SnapsToDevicePixels = true;
+                cv.UseLayoutRounding = true;
+            }
 
-            gcv.Children.Clear();
-            int tickCount = (int)Math.Ceiling(totalTime);
+            cv1.Children.Clear();
+            int tickCount = Convert.ToInt32(Math.Ceiling(totalTime));
 
             double lblCentY = 15;
 
@@ -64,18 +65,18 @@ namespace Thesis_LIPX05.Util
                 double x = i * scale;
 
                 // vertical tick line across both canvases
-                var tick = new Line
+                Line tick = new()
                 {
                     X1 = x,
                     Y1 = 0,
                     X2 = x,
-                    Y2 = Math.Max(gcv.ActualHeight, 200), // extended below the ruler to the end of GanttCanvas
+                    Y2 = cv1.ActualHeight, // extended below the ruler to the end of GanttCanvas
                     Stroke = Brushes.LightGray,
                     StrokeThickness = 1,
                     SnapsToDevicePixels = true,
                 };
                 RenderOptions.SetEdgeMode(tick, EdgeMode.Aliased);
-                gcv.Children.Add(tick);
+                cv1.Children.Add(tick);
 
                 int lblInterval = (scale < 15) ? 2 : 1;
                 TextBlock label;
@@ -89,7 +90,7 @@ namespace Thesis_LIPX05.Util
                         FontWeight = FontWeights.Bold,
                         Foreground = Brushes.Black,
                         RenderTransform = new RotateTransform(-90),
-                        RenderTransformOrigin = new Point(0.5, 0.5),
+                        RenderTransformOrigin = new(0.5, 0.5), // It's a Point
                         SnapsToDevicePixels = true,
                         UseLayoutRounding = true,
                     };
@@ -108,13 +109,13 @@ namespace Thesis_LIPX05.Util
 
                     Canvas.SetLeft(label, left);
                     Canvas.SetTop(label, top);
-                    gcv.Children.Add(label);
+                    cv1.Children.Add(label);
                 }
             }
 
             double cvW = totalTime * scale + 100;
-            gcv.Width = cvW;
-            scv.Width = cvW;
+            cv1.Width = cvW;
+            cv2.Width = cvW;
         }
 
         // Draws the Gantt chart on the provided canvas

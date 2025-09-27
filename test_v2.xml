@@ -221,7 +221,7 @@
         </batchML:Extension>
       </batchML:Link>
       <batchML:Link>
-        <batchML:ID>Link7</batchML:ID>
+        <batchML:ID>Link8</batchML:ID>
         <batchML:FromID>
           <batchML:FromIDValue>Step6</batchML:FromIDValue>
           <batchML:FromType>Step</batchML:FromType>
@@ -237,7 +237,7 @@
         </batchML:Extension>
       </batchML:Link>
       <batchML:Link>
-        <batchML:ID>Link8</batchML:ID>
+        <batchML:ID>Link9</batchML:ID>
         <batchML:FromID>
           <batchML:FromIDValue>Step6</batchML:FromIDValue>
           <batchML:FromType>Step</batchML:FromType>
@@ -253,7 +253,7 @@
         </batchML:Extension>
       </batchML:Link>
       <batchML:Link>
-        <batchML:ID>Link9</batchML:ID>
+        <batchML:ID>Link10</batchML:ID>
         <batchML:FromID>
           <batchML:FromIDValue>Step7</batchML:FromIDValue>
           <batchML:FromType>Step</batchML:FromType>
@@ -269,7 +269,7 @@
         </batchML:Extension>
       </batchML:Link>
       <batchML:Link>
-        <batchML:ID>Link10</batchML:ID>
+        <batchML:ID>Link11</batchML:ID>
         <batchML:FromID>
           <batchML:FromIDValue>Step8</batchML:FromIDValue>
           <batchML:FromType>Step</batchML:FromType>
@@ -285,5 +285,261 @@
         </batchML:Extension>
       </batchML:Link>
     </batchML:ProcedureLogic>
+    <batchML:Step>
+      <batchML:ID>Step1</batchML:ID>
+      <batchML:RecipeElementID>Input-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step2</batchML:ID>
+      <batchML:RecipeElementID>Mix-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step3</batchML:ID>
+      <batchML:RecipeElementID>Flavoring-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step4</batchML:ID>
+      <batchML:RecipeElementID>Preservation-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step5</batchML:ID>
+      <batchML:RecipeElementID>Dehydration-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step6</batchML:ID>
+      <batchML:RecipeElementID>Measuring-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step7</batchML:ID>
+      <batchML:RecipeElementID>Chopping-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step8</batchML:ID>
+      <batchML:RecipeElementID>Packaging-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Step>
+      <batchML:ID>Step9</batchML:ID>
+      <batchML:RecipeElementID>Deployment-Phase</batchML:RecipeElementID>
+    </batchML:Step>
+    <batchML:Link>
+      <batchML:ID>Link1</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step1</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step2</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H10M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step1</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step2</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link2</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step2</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step3</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H15M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step2</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step3</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link3</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step2</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step4</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H55M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step2</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step4</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link4</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step3</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step4</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H45M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step3</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step4</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link5</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step4</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step5</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT1H15M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step4</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step5</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link6</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step4</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step6</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H45M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step4</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step6</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link7</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step5</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step6</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT1H30M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step5</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step6</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link8</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step6</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step7</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H15M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step6</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step7</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link9</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step6</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step8</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H30M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step6</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step8</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link10</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step7</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step8</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H25M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step7</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step8</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
+    <batchML:Link>
+      <batchML:ID>Link11</batchML:ID>
+      <batchML:FromID>
+        <batchML:FromIDValue>Step8</batchML:FromIDValue>
+        <batchML:FromIDValue>Step</batchML:FromIDValue>
+      </batchML:FromID>
+      <batchML:ToID>
+        <batchML:ToIDValue>Step9</batchML:ToIDValue>
+        <batchML:ToIDValue>Step</batchML:ToIDValue>
+      </batchML:ToID>
+      <batchML:Extension>
+        <custom:Duration>PT0H20M</custom:Duration>
+      </batchML:Extension>
+      <batchML:From>
+        <batchML:FromIDValue>Step8</batchML:FromIDValue>
+      </batchML:From>
+      <batchML:To>
+        <batchML:ToIDValue>Step9</batchML:ToIDValue>
+      </batchML:To>
+    </batchML:Link>
   </batchML:MasterRecipe>
 </batchML:BatchInformation>

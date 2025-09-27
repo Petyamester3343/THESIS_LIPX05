@@ -3,14 +3,12 @@
 namespace Thesis_LIPX05.Util
 {
     public class BnBOptimizer(Dictionary<string, Node> nodes, List<Edge> edges)
-#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
-        : OptimizerBase(nodes, edges)
-#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
+        : IOptimizer
     {
         private double bestCost = double.NegativeInfinity;
         private List<string> bestPath = [];
 
-        public override List<Node> Optimize()
+        public List<Node> Optimize()
         {
             var start = nodes.Keys
                 .Where(n => !edges.Any(e => e.To.ID == n))

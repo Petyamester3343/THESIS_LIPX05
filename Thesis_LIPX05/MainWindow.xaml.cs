@@ -13,13 +13,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 using Thesis_LIPX05.Util;
 
-
 using static Thesis_LIPX05.Util.SGraph;
 using static Thesis_LIPX05.Util.Gantt;
-using System.Text.RegularExpressions;
 
 namespace Thesis_LIPX05
 {
@@ -47,7 +46,7 @@ namespace Thesis_LIPX05
         private readonly List<DataTable> solutionsList;
         private readonly List<CustomSolver> customSolvers;
 
-        private readonly Dictionary<string, Action> solvers;
+        private readonly List<string> solvers;
 
         private readonly string customSolverPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
@@ -65,12 +64,12 @@ namespace Thesis_LIPX05
 
         public MainWindow()
         {
-            solvers = new()
-            {
-                {  "Heuristic", SolveHeuristically },
-                { "BnB", SolveWithBnB },
-                { "Genetic", SolveWithGenetic }
-            };
+            solvers =
+            [
+                "Heuristic",
+                "BnB",
+                "Genetic"
+            ];
             masterRecipe = new("MasterRecipe");
             batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02");
             customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom");
@@ -86,11 +85,12 @@ namespace Thesis_LIPX05
                     "Links", new()
                     {
                         ParentElement = "Link",
-                        KeyCols = ["FromID", "ToID"],
+                        KeyCols = ["ID"],
                         Col2El = new()
                         {
-                            { "FromID", "FromIDValue" },
-                            { "ToID", "ToIDValue" },
+                            { "ID", "ID" },
+                            { "From", "FromIDValue" },
+                            { "To", "ToIDValue" },
                             { "Duration", "Duration" }
                         }
                     }
@@ -138,11 +138,11 @@ namespace Thesis_LIPX05
             {
                 var item = new MenuItem
                 {
-                    Header = solver.Key,
-                    Tag = solver.Key,
+                    Header = solver,
+                    Tag = solver,
                     IsEnabled = SGraphExists
                 };
-                item.Click += (sender, e) => solver.Value();
+                item.Click += SolveClick;
                 solverMenu.Items.Add(item);
             }
 
@@ -196,7 +196,7 @@ namespace Thesis_LIPX05
         {
             switch (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null)
             {
-                case true: MainWindow_Closing(sender, new()); break;
+                case true: MainWindow_Closing(sender, new(false)); break;
                 case false: Application.Current.Shutdown(); break;
             }
         }
@@ -289,8 +289,7 @@ namespace Thesis_LIPX05
                         }
                     default:
                         {
-                            MessageBox.Show("Unknown solve method selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            GanttCanvas.Tag = "";
+                            GanttCanvas.Tag = null;
                             break;
                         }
                 }
@@ -362,7 +361,7 @@ namespace Thesis_LIPX05
 
             var menuItem = sender as MenuItem;
 
-            if (menuItem?.Tag.ToString() == "Exit" || menuItem?.Tag.ToString() == "Close")
+            if (menuItem?.Tag.ToString() == "Exit" || menuItem?.Tag.ToString() == "Close File")
             {
                 MessageBox.Show("Please save changes before exporting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
@@ -472,6 +471,18 @@ namespace Thesis_LIPX05
             GetEdges().Clear();
         }
 
+        // A helper method to enable solvers after the initial S-Graph is rendered
+        private void EnableSolvers()
+        {
+            SGraphExists = true;
+
+            foreach (var x in SolverMenu.Items)
+            {
+                if (x is MenuItem menuItem && !menuItem.Name.Contains("Add new")) menuItem.IsEnabled = SGraphExists;
+                else continue;
+            }
+        }
+
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no file is loaded)
         private void DrawExampleGraph()
         {
@@ -498,13 +509,7 @@ namespace Thesis_LIPX05
 
             Render(SGraphCanvas, 4);
 
-            SGraphExists = true;
-
-            for (int a = 0; a < SolverMenu.Items.Count; a++)
-            {
-                if (SolverMenu.Items[a] is MenuItem menuItem && !menuItem.Name.Contains("Add new")) menuItem.IsEnabled = true;
-                else continue;
-            }
+            EnableSolvers();
         }
 
         // Builds the S-Graph from the loaded BatchML file
@@ -588,11 +593,7 @@ namespace Thesis_LIPX05
 
             Render(SGraphCanvas, 3);
 
-            for (int a = 0; a < SolverMenu.Items.Count; a++)
-            {
-                if (SolverMenu.Items[a] is MenuItem menuItem && !menuItem.Name.Contains("Add new")) menuItem.IsEnabled = true;
-                else continue;
-            }
+            EnableSolvers();
         }
 
         // Loads the BatchML file and populates the data tables
@@ -626,7 +627,14 @@ namespace Thesis_LIPX05
         // Handler event for closing a BatchML file
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            if (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null) SaveFile_Click(sender, e);
+            if (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null)
+            {
+                masterTable.AcceptChanges();
+                recipeElementTable.AcceptChanges();
+                stepTable.AcceptChanges();
+                linkTable.AcceptChanges();
+                SaveFile_Click(sender, e);
+            }
             else
             {
                 try
@@ -848,7 +856,7 @@ namespace Thesis_LIPX05
                     ID = x.Element(batchML + "ID")?.Value.Trim(),
                     FromID = x.Element(batchML + "FromID")?.Element(batchML + "FromIDValue")?.Value.Trim(),
                     ToID = x.Element(batchML + "ToID")?.Element(batchML + "ToIDValue")?.Value.Trim(),
-                    Duration = x.Element(batchML + "Extension")?.Descendants(customNS + "Duration").FirstOrDefault()?.Value
+                    Duration = x.Element(batchML + "Extension")?.Descendants(customNS + "Duration").FirstOrDefault()?.Value.Trim()
                 })
                 .Where(x => !string.IsNullOrEmpty(x.ID)
                     && !string.IsNullOrEmpty(x.FromID)
@@ -857,8 +865,8 @@ namespace Thesis_LIPX05
                 .ToList();
 
             ldt.Columns.Add("ID");
-            ldt.Columns.Add("FromID");
-            ldt.Columns.Add("ToID");
+            ldt.Columns.Add("From");
+            ldt.Columns.Add("To");
             ldt.Columns.Add("Duration");
 
             if (links != null)
@@ -867,17 +875,9 @@ namespace Thesis_LIPX05
                 {
                     var dr = ldt.NewRow();
                     dr["ID"] = link.ID;
-                    dr["FromID"] = link.FromID;
-                    dr["ToID"] = link.ToID;
-
-                    // ISO 8601 to minutes to string via interpolation if not null, otherwise "N/A"
-                    if (link.Duration is not null)
-                    {
-                        double totalHours = XmlConvert.ToTimeSpan(link.Duration).TotalHours;
-                        double remainingMinutes = XmlConvert.ToTimeSpan(link.Duration).TotalMinutes % 60;
-                        dr["Duration"] = $"PT{(int)totalHours}H{(int)remainingMinutes}M"; // to ensure compatibility with the Regex pattern
-                    }
-                    else dr["Duration"] = "N/A";
+                    dr["From"] = link.FromID;
+                    dr["To"] = link.ToID;
+                    dr["Duration"] = link.Duration;
 
                     ldt.Rows.Add(dr);
                 }
@@ -924,14 +924,9 @@ namespace Thesis_LIPX05
                         return;
                     }
 
-                    var solver = new CustomSolver
-                    {
-                        Name = input.Trim(),
-                        Path = solverPath
-                    };
-                    customSolvers.Add(solver);
-
-                    AddCustomSolverMenuItem(solver);
+                    CustomSolver newSolver = new() { Name = input.Trim(), Path = solverPath };
+                    customSolvers.Add(newSolver);
+                    AddCustomSolverMenuItem(newSolver);
                 }
             }
         }
@@ -942,7 +937,7 @@ namespace Thesis_LIPX05
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(customSolverPath)!);
-                string json = JsonSerializer.Serialize(customSolvers, CachedOptions);
+                var json = JsonSerializer.Serialize(customSolvers, CachedOptions)!;
                 File.WriteAllText(customSolverPath, json);
             }
             catch (Exception ex)
@@ -989,7 +984,7 @@ namespace Thesis_LIPX05
         }
 
         // Runs the external solver executable
-        private static void RunExtSolver(string path)
+        private void RunExtSolver(string path)
         {
             try
             {
@@ -999,6 +994,7 @@ namespace Thesis_LIPX05
                     UseShellExecute = true
                 };
                 Process.Start(psi);
+                GanttCanvas.Tag = Path.GetFileNameWithoutExtension(path);
             }
             catch (Exception ex)
             {
@@ -1016,11 +1012,8 @@ namespace Thesis_LIPX05
         // Displays the solution as a data table
         private void DisplaySolutionAsTable(List<GanttItem> data)
         {
-            var execSolver = GanttCanvas.Tag?.ToString() ?? "";
-            var sdt = new DataTable
-            {
-                TableName = $"Solution {execSolver}"
-            };
+            var execSolver = GanttCanvas.Tag.ToString();
+            var sdt = new DataTable($"Solution ({execSolver})");
 
             sdt.Columns.Add("TaskID");
             sdt.Columns.Add("StartTime (min)");
@@ -1054,8 +1047,8 @@ namespace Thesis_LIPX05
                 // HH:MM format
                 if (raw!.Contains(':'))
                 {
-                    int hours = Convert.ToInt32(raw[0..1]);
-                    int minutes = Convert.ToInt32(raw[3..4]);
+                    int hours = Convert.ToInt32(raw[..2]);
+                    int minutes = Convert.ToInt32(raw[3..2]);
                     return $"PT{hours}H{minutes}M";
                 }
             }
@@ -1064,84 +1057,109 @@ namespace Thesis_LIPX05
             return "PT0M";
         }
 
-        private void SyncRowToXml(DataRow row, string tableName)
+        // A helper method to find an existing XML element based on key columns in the DataRow
+        private XElement? FindExistingElement(string tableName, DataRow drow)
         {
-            if (masterRecipe is null || !mappings.TryGetValue(tableName, out var mapping)) return;
+            if (masterRecipe is null || !mappings.TryGetValue(tableName, out var map)) return null;
 
-            var keyVals = mapping.KeyCols.Select(k => row.Table.Columns.Contains(k) ? (row[k]?.ToString() ?? string.Empty) : string.Empty).ToArray();
-
-            var existing = masterRecipe.Elements(batchML + mapping.ParentElement).FirstOrDefault(el =>
+            foreach (var el in masterRecipe.Elements(batchML + map.ParentElement))
             {
-                return mapping.KeyCols
-                .Select((c, i) => new { Column = c, Index = i })
-                .All(pair =>
+                bool allMatch = true;
+                for (int i = 0; i < map.KeyCols.Length; i++)
                 {
-                    var col = pair.Column;
-                    var expected = keyVals[pair.Index];
-                    if (string.IsNullOrEmpty(expected)) return false;
+                    string col = map.KeyCols[i];
+                    string expected = (drow[col]?.ToString() ?? string.Empty).Trim();
 
-                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
+                    if (string.IsNullOrEmpty(expected))
                     {
-                        var dur = el.Element(batchML + "Extension")?.Element(customNS + "Duration")?.Value;
-                        return string.Equals(dur, expected, StringComparison.OrdinalIgnoreCase);
+                        allMatch = false;
+                        break;
                     }
 
-                    if (mapping.ParentElement.Equals("Link") && (col.Equals("FromID") || col.Equals("ToID")))
+                    string? actual;
+                    if (col.Equals("Duration"))
                     {
-                        var nodeVal = el.Element(batchML + col)?
-                                        .Element(batchML + (mapping.Col2El.TryGetValue(col, out string? value) ? value : col))?
-                                        .Value;
-                        return string.Equals(nodeVal?.Trim(), expected, StringComparison.OrdinalIgnoreCase);
+                        actual = el.Element(batchML + "Extension")?
+                                   .Element(customNS + "Duration")?.Value?.Trim();
                     }
-
-                    var xmlChild = mapping.Col2El.TryGetValue(col, out string? val) ? val : col;
-                    var childVal = el.Element(batchML + xmlChild)?.Value;
-                    return string.Equals(childVal?.Trim(), expected, StringComparison.OrdinalIgnoreCase);
-                });
-            });
-
-            if (existing is not null)
-            {
-                foreach (var col in mapping.Col2El.Keys)
-                {
-                    var newVal = row.Table.Columns.Contains(col) ? (row[col]?.ToString() ?? string.Empty) : string.Empty;
-
-                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
+                    else if (map.ParentElement.Equals("Link") && (col.Equals("FromID") || col.Equals("ToID")))
                     {
-                        var ext = existing.Element(batchML + "Extension") ?? new XElement(batchML + "Extension");
-                        if (ext.Parent is null) existing.Add(ext);
-
-                        var durEl = ext.Element(customNS + "Duration");
-                        if (durEl is null) ext.Add(new XElement(customNS + "Duration", newVal));
-                        else durEl.Value = newVal;
-                    }
-                    else if (mapping.ParentElement.Equals("Link") && (col.Equals("FromID") || col.Equals("ToID")))
-                    {
-                        var outer = existing.Element(batchML + col) ?? new XElement(batchML + col);
-                        if (outer is null)
-                        {
-                            outer = new XElement(batchML + col);
-                            existing.Add(outer);
-                        }
-                        var innerName = mapping.Col2El[col];
-                        var inner = outer.Element(batchML + innerName);
-                        if (inner is null) outer.Add(new XElement(batchML + innerName, newVal));
-                        else inner.Value = newVal;
+                        actual = el.Element(batchML + col)?
+                                .Element(batchML + map.Col2El[col])?.Value?.Trim();
                     }
                     else
                     {
-                        var xmlName = mapping.Col2El[col];
-                        var child = existing.Element(batchML + xmlName);
-                        if (child is null) existing.Add(new XElement(batchML + xmlName, newVal));
-                        else child.Value = newVal;
+                        var xmlName = map.Col2El[col];
+                        actual = el.Element(batchML + xmlName)?.Value?.Trim();
+                    }
+
+                    if (!string.Equals(expected, actual, StringComparison.OrdinalIgnoreCase))
+                    {
+                        allMatch = false;
+                        break;
+                    }
+                }
+
+                if (allMatch) return el;
+            }
+
+            return null;
+        }
+
+        // Custom event handler for syncing a row from the DataTable to the XML when it's changed or added
+        private void SyncRowToXml(DataRow row, string tableName)
+        {
+            if (masterRecipe is null || !mappings.TryGetValue(tableName, out var map)) return;
+
+            var keyVals = map.KeyCols.Select(k => row.Table.Columns.Contains(k) ? (row[k]?.ToString() ?? string.Empty) : string.Empty).ToArray();
+
+            var existing = FindExistingElement(tableName, row);
+
+            if (existing is not null)
+            {
+                foreach (var col in map.Col2El.Keys)
+                {
+                    var val = row[col]?.ToString() ?? string.Empty;
+
+                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var ext = existing.Element(batchML + "Extension");
+                        if (ext is null)
+                        {
+                            ext = new(batchML + "Extension");
+                            existing.Add(ext);
+                        }
+
+                        var durEl = ext.Element(customNS + "Duration");
+                        if (durEl is null) ext.Add(new XElement(customNS + "Duration", ConvertToISO8601(val)));
+                        else durEl.Value = val;
+                    }
+                    else if (map.ParentElement.Equals("Link") && (col.Equals("From") || col.Equals("To")))
+                    {
+                        var outer = existing.Element(batchML + col);
+                        if (outer is null)
+                        {
+                            outer = new(batchML + col);
+                            existing.Add(outer);
+                        }
+
+                        var inner = outer.Element(batchML + map.Col2El[col]);
+                        if (inner is null) outer.Add(new XElement(batchML + map.Col2El[col], val));
+                        else inner.Value = val;
+                    }
+                    else
+                    {
+                        var child = existing.Element(batchML + map.Col2El[col]);
+                        if (child is null) existing.Add(new XElement(batchML + map.Col2El[col], val));
+                        else child.Value = val;
                     }
                 }
             }
             else
             {
-                var newEl = new XElement(batchML + mapping.ParentElement);
+                var newEl = new XElement(batchML + map.ParentElement);
 
-                foreach (var col in mapping.Col2El.Keys)
+                foreach (var col in map.Col2El.Keys)
                 {
                     string val = row[col]?.ToString() ?? string.Empty;
                     if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
@@ -1149,65 +1167,39 @@ namespace Thesis_LIPX05
                         newEl.Add(new XElement(batchML + "Extension",
                             new XElement(customNS + "Duration", val)));
                     }
-                    else if (mapping.ParentElement.Equals("Link") && (col.Equals("FromID") || col.Equals("ToID")))
+                    else if (map.ParentElement.Equals("Link") && (col.Equals("From") || col.Equals("To")))
                     {
-                        newEl.Add(new XElement(batchML + col,
-                            new XElement(batchML + $"{col}Value", val),
-                            new XElement(batchML + $"{(col.Contains("From") ? col[..4] : col[..2])}Type", "Step")));
+                        newEl.Add(new XElement(batchML + $"{col}ID",
+                            new XElement(batchML + $"{map.Col2El[col]}", val),
+                            new XElement(batchML + $"{map.Col2El[col]}", "Step")));
                     }
                     else
-                        newEl.Add(new XElement(batchML + col, val));
+                        newEl.Add(new XElement(batchML + map.Col2El[col], val));
                 }
 
-                var last = masterRecipe.Elements(batchML + mapping.ParentElement).LastOrDefault();
+                var last = masterRecipe.Elements(batchML + map.ParentElement).LastOrDefault();
                 if (last is not null) last.AddAfterSelf(newEl);
                 else masterRecipe.Add(newEl);
             }
         }
 
+        // Custom event handler for deleting a row from the XML when it's deleted from the DataTable
         private void SyncDeleteRowFromXml(DataRow row, string tableName)
         {
             if (masterRecipe is null || !mappings.TryGetValue(tableName, out TableMapper? mapping)) return;
 
-            var keyVals = mapping.KeyCols
-                .Select(c => row.Table.Columns.Contains(c) ? (row[c, DataRowVersion.Original]?.ToString() ?? string.Empty) : string.Empty)
-                .Select(s => s.Trim())
-                .ToArray();
+            var tempRow = row.Table.NewRow();
 
-            var existing = masterRecipe.Elements(batchML + mapping.ParentElement).FirstOrDefault(el =>
-            {
-                return mapping.KeyCols
-                .Select((col, i) => new { col, i })
-                .All((pair) =>
-                {
-                    string col = pair.col;
-                    string expected = keyVals[pair.i];
-                    if (string.IsNullOrEmpty(expected)) return false;
+            foreach (var col in mappings[tableName].KeyCols)
+                if (row.Table.Columns.Contains(col))
+                    tempRow[col] = row[col, DataRowVersion.Original];
 
-                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var dur = el.Element(batchML + "Extension")?.Element(customNS + "Duration")?.Value;
-                        return string.Equals(dur?.Trim(), expected, StringComparison.OrdinalIgnoreCase);
-                    }
-
-                    if (mapping.ParentElement.Equals("Link") && (col.Equals("FromID") || col.Equals("ToID")))
-                    {
-                        var node = el.Element(batchML + col)?
-                                     .Element(batchML + mapping.Col2El[col])?
-                                     .Value;
-                        return string.Equals(node?.Trim(), expected, StringComparison.OrdinalIgnoreCase);
-                    }
-
-                    var xmlChild = mapping.Col2El.TryGetValue(col, out string? val) ? val : col;
-                    var childVal = el.Element(batchML + xmlChild)?.Value;
-                    return string.Equals(childVal?.Trim(), expected, StringComparison.OrdinalIgnoreCase);
-                });
-            });
-
+            var existing = FindExistingElement(tableName, tempRow);
             existing?.Remove();
         }
     }
 
+    // A helper class to map DataTable columns to XML elements
     public class TableMapper
     {
         public string ParentElement { get; set; } = string.Empty;

@@ -45,23 +45,22 @@ namespace Thesis_LIPX05.Util
         {
             string filePath = FilePath.Combine(GetFolderPath(SpecialFolder.Desktop), "sgraph.xml");
 
-            var doc = new XDocument(
+            XDocument doc = new(
                 new XElement("SGraph",
                     new XElement("Nodes",
                         nodes.Select(n =>
                             new XElement("Node",
-                            new XAttribute("Key", n.Key),
-                            new XAttribute("ID", n.Value.ID),
-                            new XAttribute("Desc", n.Value.Desc)
+                                new XAttribute("ID", n.Value.ID),
+                                new XAttribute("Desc", n.Value.Desc)
                             )
                         )
                     )   ,
                     new XElement("Edges",
                         edges.Select(e =>
                             new XElement("Edge",
-                            new XAttribute("From", e.From.ID),
-                            new XAttribute("To", e.To.ID),
-                            new XAttribute("Cost", e.Cost)
+                                new XAttribute("From", e.From.ID),
+                                new XAttribute("To", e.To.ID),
+                                new XAttribute("Cost", e.Cost)
                             )
                         )
                     )
@@ -103,45 +102,41 @@ namespace Thesis_LIPX05.Util
             var sortedNodes = nodes.Values.ToList();
             for (int i = 0; i < sortedNodes.Count; i++)
             {
-                var node = sortedNodes[i];
+                Node node = sortedNodes[i];
                 node.Position = new()
                 {
                     X = (int)(startX + i % rowLimit * spacing + Node.Radius),
                     Y = (int)(startY + i / rowLimit * spacing + Node.Radius)
                 };
 
-                // tooltip for the node
-                var graphToolTip = new ToolTip
-                {
-                    Width = 100,
-                    Height = 100,
-                    Content = new TextBlock
-                    {
-                        Text = $"ID: {node.Desc}",
-                        FontSize = 12,
-                        Foreground = Brushes.Black
-                    }
-                };
-                
-                // one node
-                var graphNode = new Ellipse
+                // one node with a tooltip
+                Ellipse graphNode = new()
                 {
                     Width = Node.Radius * 2,
                     Height = Node.Radius * 2,
                     Fill = Brushes.LightBlue,
                     Stroke = Brushes.Black,
                     StrokeThickness = 1,
-                    ToolTip = graphToolTip
+                    ToolTip = new ToolTip
+                    {
+                        Content = new TextBlock
+                        {
+                            Text = $"ID: {node.Desc}",
+                            FontSize = 12,
+                            Foreground = Brushes.Black,
+                        }
+                    }
                 };
 
                 // and its label
-                var txt = new TextBlock
+                TextBlock txt = new()
                 {
                     Text = node.ID,
                     Foreground = Brushes.Black,
                     FontSize = 10,
                     FontWeight = FontWeights.Bold,
                     TextAlignment = TextAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
                     Width = Node.Radius * 2,
                     Height = Node.Radius / 2,
                 };
@@ -170,7 +165,6 @@ namespace Thesis_LIPX05.Util
             WriteSGraphIntoFile();
         }
 
-
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
         private static void DrawEdge(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
@@ -179,7 +173,7 @@ namespace Thesis_LIPX05.Util
             Point end = new(to.X, to.Y + Node.Radius);
 
             // how many edges are drawn from this starting point
-            edgeCountFromNode[from] = (!edgeCountFromNode.TryGetValue(from, out int edgeIndex)) ? 1 : ++edgeIndex;
+            edgeCountFromNode[from] = !edgeCountFromNode.TryGetValue(from, out int edgeIndex) ? 1 : ++edgeIndex;
 
             // first is straight, rest are curved
             double curveOffset = (edgeIndex > 1) ? 20 * (edgeIndex - 1) : 0;
@@ -195,20 +189,12 @@ namespace Thesis_LIPX05.Util
                 control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
 
             // section for the edge (a quadratic Bezier segment which can be curved in case of two edges overlapping)
-            var figure = new PathFigure { StartPoint = start };
-            var segment = new QuadraticBezierSegment { Point1 = control, Point2 = end };
+            PathFigure figure = new() { StartPoint = start };
+            QuadraticBezierSegment segment = new() { Point1 = control, Point2 = end };
             figure.Segments.Add(segment);
-            
-            var geo = new PathGeometry();
+            PathGeometry geo = new();
             geo.Figures.Add(figure);
-
-            var path = new ShapePath
-            {
-                Stroke = color,
-                StrokeThickness = thickness,
-                Data = geo
-            };
-
+            ShapePath path = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
             cv.Children.Add(path);
 
             // section for the arrowhead
@@ -222,9 +208,11 @@ namespace Thesis_LIPX05.Util
             Point base1 = end + arrowDir * headLength + arrowNorm * headWidth;
             Point base2 = end + arrowDir * headLength - arrowNorm * headWidth;
 
-            var arrowHead = new Polygon
+            PointCollection points = [end, base1, base2];
+
+            Polygon arrowHead = new()
             {
-                Points = [end, base1, base2],
+                Points = points,
                 Fill = color,
                 RenderTransform = new RotateTransform(0, to.X, to.Y)
             };
@@ -233,14 +221,14 @@ namespace Thesis_LIPX05.Util
 
             // midpoint of the quadratic Bézier curve at t = 0.5 -> B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
             double t = 0.5;
-            var midCurve = new Point
+            Point midCurve = new()
             {
                 X = (1-t) * (1-t) * start.X + 2 * (1-t) * t * control.X + t * t * end.X,
                 Y = (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
             };
 
             // the weight of the path at the calculated midpoint of the curve
-            var weightBlock = new TextBlock
+            TextBlock weightBlock = new()
             {
                 Text = Convert.ToInt32(weight).ToString(),
                 Foreground = Brushes.Black,
