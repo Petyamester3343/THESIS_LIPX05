@@ -7,6 +7,7 @@ namespace Thesis_LIPX05.Util
 
     {
         private readonly Random rnd = new();
+        private readonly Dictionary<(Node, Node), double> edgeCosts = edges.ToDictionary(e => (e.From, e.To), e => e.Cost);
 
         public List<Node> Optimize()
         {
@@ -60,10 +61,7 @@ namespace Thesis_LIPX05.Util
         {
             double t = 0;
             for (int i = 0; i < path.Count - 1; i++)
-            {
-                var edge = edges.FirstOrDefault(e => e.From == path[i] && e.To == path[i + 1]); // needs some re-check
-                t += (edge is not null) ? edge.Cost : 1000; // large penalty for missing edges 
-            }
+                t += edgeCosts.TryGetValue((path[i], path[i + 1]), out double cost) ? cost : 1000;
             return t;
         }
 
@@ -71,8 +69,8 @@ namespace Thesis_LIPX05.Util
         private List<Node> Crossover(List<Node> p1, List<Node> p2)
         {
             int cut = rnd.Next(1, p1.Count - 1);
-            var child = new List<Node>(p1.Take(cut));
-            foreach (var node in p2) if (!child.Contains(node)) child.Add(node);
+            List<Node> child = [.. p1.Take(cut)];
+            foreach (Node node in p2) if (!child.Contains(node)) child.Add(node);
             return child;
         }
 

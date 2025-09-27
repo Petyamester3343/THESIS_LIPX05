@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Thesis_LIPX05")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65c4fbf90c48b1855fbbad8ee332f360bb52b7fc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+535b1ebe75f1a24b2d8e7ff5ffa93e95b2f62291")]
 [assembly: System.Reflection.AssemblyProductAttribute("Thesis_LIPX05")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Thesis_LIPX05")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
