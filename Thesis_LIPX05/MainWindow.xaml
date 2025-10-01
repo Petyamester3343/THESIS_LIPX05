@@ -23,7 +23,7 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Open BatchML File" Tag="Open file" Click="OpenFile_Click" />
                 <MenuItem Header="_Save BatchML File" Tag="Save file" Click="SaveFile_Click"/>
-                <MenuItem Header="_Close BatchL File" Tag="Close file" Click="CloseFile_Click"/>
+                <MenuItem Header="_Close BatchML File" Tag="Close file" Click="CloseFile_Click"/>
                 <Separator/>
                 <MenuItem Header="_Export current canvas" Click="ExportCanvas_Click"/>
                 <Separator/>

@@ -19,6 +19,7 @@ using Thesis_LIPX05.Util;
 
 using static Thesis_LIPX05.Util.SGraph;
 using static Thesis_LIPX05.Util.Gantt;
+using System.Text;
 
 namespace Thesis_LIPX05
 {
@@ -27,10 +28,6 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool isFileLoaded = false;
-
-        private XElement masterRecipe;
-
         private readonly XNamespace
             batchML,
             customNS;
@@ -45,19 +42,20 @@ namespace Thesis_LIPX05
 
         private readonly List<DataTable> solutionsList;
         private readonly List<CustomSolver> customSolvers;
-
         private readonly List<string> solvers;
 
         private readonly string customSolverPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
 
+        private XElement masterRecipe;
         private double zoom;
-        private bool SGraphExists;
+        private bool isFileLoaded = false, SGraphExists, isFileModified = false;
         private const double baseTimeScale = 10.0;
+        private string currentFilePath = string.Empty;
 
         private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
 
-        [GeneratedRegex(@"^PT(?:(\d+)H)?(?:(\d|[1-5]\d)M)?$", RegexOptions.IgnoreCase, "hu-HU")]
+        [GeneratedRegex(@"^PT(?:(\d+)H)?(?:(\d|[1-5]\d)M)?(?:([0-5]\d)S)?$", RegexOptions.IgnoreCase, "hu-HU")]
         private static partial Regex ISO8601Format();
 
         private readonly Dictionary<string, TableMapper> mappings;
@@ -79,7 +77,19 @@ namespace Thesis_LIPX05
             linkTable = new("Links Table");
             ganttData = [];
             zoom = 1;
-            mappings = new()
+            mappings = InitMappings();
+
+            InitializeComponent();
+
+            customSolvers = [];
+            LoadCustomSolversFromJSON();
+            BuildSolverMenu(SolverMenu);
+
+            solutionsList = [];
+        }
+
+        // Initializes the mappings for XML elements to DataTable columns
+        private static Dictionary<string, TableMapper> InitMappings() => new()
             {
                 {
                     "Links", new()
@@ -120,15 +130,6 @@ namespace Thesis_LIPX05
                     }
                 }
             };
-
-            InitializeComponent();
-
-            customSolvers = [];
-            LoadCustomSolvers();
-            BuildSolverMenu(SolverMenu);
-
-            solutionsList = [];
-        }
 
         // dynamicaly building the solver menu
         private void BuildSolverMenu(MenuItem solverMenu)
@@ -177,7 +178,7 @@ namespace Thesis_LIPX05
                     case MessageBoxResult.Yes:
                         SaveFile_Click(sender, new());
                         var res2 = MessageBox.Show("Do you wish to save your custom solvers?", "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-                        if (res2 is MessageBoxResult.Yes) SaveCustomSolvers();
+                        if (res2 is MessageBoxResult.Yes) SaveCustomSolvers2JSON();
                         Application.Current.Shutdown();
                         break;
                     case MessageBoxResult.No:
@@ -289,7 +290,13 @@ namespace Thesis_LIPX05
                         }
                     default:
                         {
-                            GanttCanvas.Tag = null;
+                            if (SGraphCanvas.Children.Count == 0)
+                            {
+                                MessageBox.Show("No S-Graph to solve!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            var customSolver = customSolvers.FirstOrDefault(cs => cs.Name == menuItem.Tag.ToString());
+                            GanttCanvas.Tag = customSolver?.Name;
                             break;
                         }
                 }
@@ -345,8 +352,10 @@ namespace Thesis_LIPX05
 
             if (dlg.ShowDialog() == true)
             {
-                LoadBatchML(dlg.FileName);
+                currentFilePath = dlg.FileName;
+                LoadBatchML(currentFilePath);
                 isFileLoaded = true;
+                isFileModified = false;
             }
         }
 
@@ -627,7 +636,11 @@ namespace Thesis_LIPX05
         // Handler event for closing a BatchML file
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            if (masterTable.GetChanges() is not null || recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null || linkTable.GetChanges() is not null)
+            if (!isFileModified &&
+                (masterTable.GetChanges() is not null ||
+                recipeElementTable.GetChanges() is not null ||
+                stepTable.GetChanges() is not null ||
+                linkTable.GetChanges() is not null))
             {
                 masterTable.AcceptChanges();
                 recipeElementTable.AcceptChanges();
@@ -764,6 +777,8 @@ namespace Thesis_LIPX05
                     batchSize.SetElementValue(batchML + "UnitOfMeasure", e.Row["UnitOfMeasure"]);
                 }
             }
+
+            isFileModified = true;
         }
 
         // Displays the recipe element table
@@ -802,9 +817,16 @@ namespace Thesis_LIPX05
             redt.RowChanged += (s, e) =>
             {
                 if (e.Row.RowState is not DataRowState.Deleted)
+                {
                     SyncRowToXml(e.Row, "RecipeElement");
+                    isFileModified = true;
+                }
             };
-            redt.RowDeleted += (s, e) => SyncDeleteRowFromXml(e.Row, "RecipeElements");
+            redt.RowDeleted += (s, e) =>
+            {
+                SyncDeleteRowFromXml(e.Row, "RecipeElements");
+                isFileModified = true;
+            };
         }
 
         // Displays the steps table
@@ -842,9 +864,16 @@ namespace Thesis_LIPX05
             sdt.RowChanged += (s, e) =>
             {
                 if (e.Row.RowState is not DataRowState.Deleted)
+                {
                     SyncRowToXml(e.Row, "Steps");
+                    isFileModified = true;
+                }
             };
-            sdt.RowDeleted += (s, e) => SyncDeleteRowFromXml(e.Row, "Steps");
+            sdt.RowDeleted += (s, e) =>
+            {
+                SyncDeleteRowFromXml(e.Row, "Steps");
+                isFileModified = true;
+            };
         }
 
         // Displays the links table
@@ -892,9 +921,16 @@ namespace Thesis_LIPX05
             ldt.RowChanged += (s, e) =>
             {
                 if (e.Row.RowState is not DataRowState.Deleted)
+                {
                     SyncRowToXml(e.Row, "Links");
+                    isFileModified = true;
+                }
             };
-            ldt.RowDeleted += (s, e) => SyncDeleteRowFromXml(e.Row, "Links");
+            ldt.RowDeleted += (s, e) =>
+            {
+                SyncDeleteRowFromXml(e.Row, "Links");
+                isFileModified = true;
+            };
         }
 
         // Event handler for adding a custom solver
@@ -932,7 +968,7 @@ namespace Thesis_LIPX05
         }
 
         // Saves custom solvers to a specific JSON file
-        private void SaveCustomSolvers()
+        private void SaveCustomSolvers2JSON()
         {
             try
             {
@@ -947,7 +983,7 @@ namespace Thesis_LIPX05
         }
 
         // Loads custom solvers from a specific JSON file
-        private void LoadCustomSolvers()
+        private void LoadCustomSolversFromJSON()
         {
             try
             {
@@ -1042,16 +1078,19 @@ namespace Thesis_LIPX05
 
             // if it already looks like an ISO 8601 duration, return it as is (ideally, that is)
             if (regex.IsMatch(raw!)) return raw!;
-            else
+
+            if (TimeSpan.TryParse(raw, out var ts))
             {
-                // HH:MM format
-                if (raw!.Contains(':'))
-                {
-                    int hours = Convert.ToInt32(raw[..2]);
-                    int minutes = Convert.ToInt32(raw[3..2]);
-                    return $"PT{hours}H{minutes}M";
-                }
+                var sb = new StringBuilder("PT");
+                if (ts.Hours > 0) sb.Append($"{ts.Hours}H");
+                if (ts.Minutes > 0) sb.Append($"{ts.Minutes}M");
+                if (ts.Seconds > 0) sb.Append($"{ts.Seconds}S");
+                if (sb.ToString().Equals("PT")) sb.Append("0M"); // zero duration case
+                return sb.ToString();
             }
+
+            // if raw is just a number, assume it's in minutes and convert accordingly
+            if (int.TryParse(raw, out int mins)) return $"PT{mins / 60}H{mins % 60}M";
 
             // default return value if parsing fails
             return "PT0M";
@@ -1065,9 +1104,8 @@ namespace Thesis_LIPX05
             foreach (var el in masterRecipe.Elements(batchML + map.ParentElement))
             {
                 bool allMatch = true;
-                for (int i = 0; i < map.KeyCols.Length; i++)
+                foreach (var col in map.KeyCols)
                 {
-                    string col = map.KeyCols[i];
                     string expected = (drow[col]?.ToString() ?? string.Empty).Trim();
 
                     if (string.IsNullOrEmpty(expected))
@@ -1077,14 +1115,17 @@ namespace Thesis_LIPX05
                     }
 
                     string? actual;
-                    if (col.Equals("Duration"))
+                    if (col.Equals("Duration", StringComparison.OrdinalIgnoreCase))
                     {
-                        actual = el.Element(batchML + "Extension")?
-                                   .Element(customNS + "Duration")?.Value?.Trim();
+                        var dur = el.Element(batchML + "Extension")?.Element(customNS + "Duration")?.Value?.Trim() ?? string.Empty;
+                        actual = ConvertToISO8601(dur);
+                        expected = ConvertToISO8601(expected);
                     }
-                    else if (map.ParentElement.Equals("Link") && (col.Equals("FromID") || col.Equals("ToID")))
+                    else if (map.ParentElement.Equals("Link") &&
+                        (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
+                        col.Equals("To", StringComparison.OrdinalIgnoreCase)))
                     {
-                        actual = el.Element(batchML + col)?
+                        actual = el.Element(batchML + $"{col}ID")?
                                 .Element(batchML + map.Col2El[col])?.Value?.Trim();
                     }
                     else
@@ -1111,8 +1152,6 @@ namespace Thesis_LIPX05
         {
             if (masterRecipe is null || !mappings.TryGetValue(tableName, out var map)) return;
 
-            var keyVals = map.KeyCols.Select(k => row.Table.Columns.Contains(k) ? (row[k]?.ToString() ?? string.Empty) : string.Empty).ToArray();
-
             var existing = FindExistingElement(tableName, row);
 
             if (existing is not null)
@@ -1134,24 +1173,25 @@ namespace Thesis_LIPX05
                         if (durEl is null) ext.Add(new XElement(customNS + "Duration", ConvertToISO8601(val)));
                         else durEl.Value = val;
                     }
-                    else if (map.ParentElement.Equals("Link") && (col.Equals("From") || col.Equals("To")))
+                    else if (map.ParentElement.Equals("Link") &&
+                        (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
+                        col.Equals("To", StringComparison.OrdinalIgnoreCase)))
                     {
-                        var outer = existing.Element(batchML + col);
-                        if (outer is null)
-                        {
-                            outer = new(batchML + col);
-                            existing.Add(outer);
-                        }
+                        var outer = existing.Element(batchML + $"{col}ID") ?? new XElement(batchML + $"{col}ID");
+                        if (outer.Parent is null) existing.Add(outer);
 
                         var inner = outer.Element(batchML + map.Col2El[col]);
-                        if (inner is null) outer.Add(new XElement(batchML + map.Col2El[col], val));
-                        else inner.Value = val;
+                        if (inner is not null) inner.Value = val;
+                        else outer.Add(new XElement(batchML + map.Col2El[col], val));
+
+                        var typeEl = outer.Element(batchML + $"{col}Type");
+                        if (typeEl is null) outer.Add(new XElement(batchML + $"{col}Type", "Step"));
                     }
                     else
                     {
                         var child = existing.Element(batchML + map.Col2El[col]);
-                        if (child is null) existing.Add(new XElement(batchML + map.Col2El[col], val));
-                        else child.Value = val;
+                        if (child is not null) child.Value = val;
+                        else existing.Add(new XElement(batchML + map.Col2El[col], val));
                     }
                 }
             }
@@ -1162,19 +1202,21 @@ namespace Thesis_LIPX05
                 foreach (var col in map.Col2El.Keys)
                 {
                     string val = row[col]?.ToString() ?? string.Empty;
+
                     if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
                     {
                         newEl.Add(new XElement(batchML + "Extension",
-                            new XElement(customNS + "Duration", val)));
+                            new XElement(customNS + "Duration", ConvertToISO8601(val))));
                     }
-                    else if (map.ParentElement.Equals("Link") && (col.Equals("From") || col.Equals("To")))
+                    else if (map.ParentElement.Equals("Link") &&
+                        (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
+                        col.Equals("To", StringComparison.OrdinalIgnoreCase)))
                     {
                         newEl.Add(new XElement(batchML + $"{col}ID",
                             new XElement(batchML + $"{map.Col2El[col]}", val),
-                            new XElement(batchML + $"{map.Col2El[col]}", "Step")));
+                            new XElement(batchML + $"{col}Type", "Step")));
                     }
-                    else
-                        newEl.Add(new XElement(batchML + map.Col2El[col], val));
+                    else newEl.Add(new XElement(batchML + map.Col2El[col], val));
                 }
 
                 var last = masterRecipe.Elements(batchML + map.ParentElement).LastOrDefault();
@@ -1186,13 +1228,15 @@ namespace Thesis_LIPX05
         // Custom event handler for deleting a row from the XML when it's deleted from the DataTable
         private void SyncDeleteRowFromXml(DataRow row, string tableName)
         {
-            if (masterRecipe is null || !mappings.TryGetValue(tableName, out TableMapper? mapping)) return;
+            if (masterRecipe is null || !mappings.TryGetValue(tableName, out TableMapper? _)) return;
 
             var tempRow = row.Table.NewRow();
 
             foreach (var col in mappings[tableName].KeyCols)
+            {
                 if (row.Table.Columns.Contains(col))
                     tempRow[col] = row[col, DataRowVersion.Original];
+            }
 
             var existing = FindExistingElement(tableName, tempRow);
             existing?.Remove();
