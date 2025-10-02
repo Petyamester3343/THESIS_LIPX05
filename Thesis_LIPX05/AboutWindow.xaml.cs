@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Thesis_LIPX05.Util;
 
 namespace Thesis_LIPX05
 {
@@ -15,7 +16,11 @@ namespace Thesis_LIPX05
         }
 
         // Handles the click event of the Close button to close the About window
-        private void Close_Click(object sender, RoutedEventArgs e) => Close();
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, "About window closed.");
+        }
 
         // Handles the mouse left button down event on the YOKAI text block to invert its colors
         private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => InvertColor();
@@ -29,6 +34,7 @@ namespace Thesis_LIPX05
                 var backColor = backBrush.Color;
                 YOKAI.Foreground = new SolidColorBrush(Color.FromArgb(foreColor.A, Convert.ToByte(255 - foreColor.R), Convert.ToByte(255 - foreColor.G), Convert.ToByte(255 - foreColor.B)));
                 YOKAI.Background = new SolidColorBrush(Color.FromArgb(backColor.A, Convert.ToByte(255 - backColor.R), Convert.ToByte(255 - backColor.G), Convert.ToByte(255 - backColor.B)));
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, "YOKAI colors inverted.");
             }
         }
     }

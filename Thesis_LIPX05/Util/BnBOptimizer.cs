@@ -10,12 +10,11 @@ namespace Thesis_LIPX05.Util
 
         public List<Node> Optimize()
         {
-            var start = nodes.Keys
-                .Where(n => !edges.Any(e => e.To.ID == n))
-                .ToList();
+            List<string> start = [.. nodes.Keys.Where(n => !edges.Any(e => e.To.ID == n))];
 
-            foreach (var st in start) ExplorePath([st], 0.0);
+            foreach (string st in start) ExplorePath([st], 0.0);
 
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Best path found with cost: {bestCost}");
             return [.. bestPath.Select(id => nodes[id])];
         }
 
@@ -28,13 +27,20 @@ namespace Thesis_LIPX05.Util
                 {
                     bestCost = totalCost;
                     bestPath = [.. path];
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"New best path found with cost: {bestCost}");
                 }
                 return;
             }
 
-            if (path.Count > nodes.Count) return; // return in case of invalid path length
+            // return in case of invalid path length
+            if (path.Count > nodes.Count)
+            {
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.WARNING, "Path length exceeded number of nodes, backtracking.");
+                return;
+            }
 
             // critical path exploration in a secluded scope
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Exploring path: {string.Join(" -> ", path)} with cost: {totalCost}");
             {
                 string last = path.Last();
                 var successors = edges
@@ -49,7 +55,9 @@ namespace Thesis_LIPX05.Util
                     {
                         bestCost = totalCost;
                         bestPath = [.. path];
+                        MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"New best path found with cost: {bestCost}");
                     }
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, "No successors found, backtracking.");
                     return;
                 }
 
@@ -59,6 +67,7 @@ namespace Thesis_LIPX05.Util
                     path.Add(succ);
                     ExplorePath(path, totalCost + edge.Cost); // recursion into the next node
                     path.RemoveAt(path.Count - 1); // backtracking in case of return
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Backtracked to path: {string.Join(" -> ", path)} with cost: {totalCost}");
                 }
             }
         }

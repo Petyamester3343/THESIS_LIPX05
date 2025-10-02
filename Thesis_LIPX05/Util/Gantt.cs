@@ -43,6 +43,7 @@ namespace Thesis_LIPX05.Util
                 currT += edge.Cost;
             }
 
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Gantt chart built with {ganttItems.Count} items.");
             return ganttItems;
         }
 
@@ -53,9 +54,10 @@ namespace Thesis_LIPX05.Util
             {
                 cv.SnapsToDevicePixels = true;
                 cv.UseLayoutRounding = true;
+                if (cv.Name is "RulerCanvas") cv.Children.Clear();
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"{cv.Name} {(cv.Name is "RulerCanvas" ? "is cleared and" : "is")} set!");
             }
 
-            cv1.Children.Clear();
             int tickCount = Convert.ToInt32(Math.Ceiling(totalTime));
 
             double lblCentY = 15;
@@ -77,6 +79,7 @@ namespace Thesis_LIPX05.Util
                 };
                 RenderOptions.SetEdgeMode(tick, EdgeMode.Aliased);
                 cv1.Children.Add(tick);
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Ruler tick added at {i} min.");
 
                 int lblInterval = (scale < 15) ? 2 : 1;
                 TextBlock label;
@@ -110,6 +113,7 @@ namespace Thesis_LIPX05.Util
                     Canvas.SetLeft(label, left);
                     Canvas.SetTop(label, top);
                     cv1.Children.Add(label);
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Ruler label added at {i} min.");
                 }
             }
 
@@ -133,7 +137,7 @@ namespace Thesis_LIPX05.Util
                     w = item.Duration * scale,
                     y = i * rowH;
 
-                var r = new Rectangle
+                var rectangle = new Rectangle
                 {
                     Width = (int)w,
                     Height = (int)(rowH - 5),
@@ -142,26 +146,25 @@ namespace Thesis_LIPX05.Util
                     StrokeThickness = 1,
                 };
 
-                Canvas.SetLeft(r, x);
-                Canvas.SetTop(r, y);
-                cv.Children.Add(r);
-
-                var tooltip = new ToolTip
-                {
-                    Content = new TextBlock
-                    {
-                        Text = $"{item.Desc}\nStart: {item.Start} min\nDuration: {item.Duration} min",
-                        FontSize = 12,
-                        Foreground = Brushes.Black
-                    },
-                    Width = 200,
-                    Height = 60
-                };
+                Canvas.SetLeft(rectangle, x);
+                Canvas.SetTop(rectangle, y);
+                cv.Children.Add(rectangle);
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Gantt item rectangle for '{item.ID}' drawn at {item.Start} min with width {item.Duration} min.");
 
                 var label = new TextBlock
                 {
                     Text = $"{item.ID}",
-                    ToolTip = tooltip,
+                    ToolTip = new ToolTip
+                    {
+                        Content = new TextBlock
+                        {
+                            Text = $"{item.Desc}\nStart: {item.Start} min\nDuration: {item.Duration} min",
+                            FontSize = 12,
+                            Foreground = Brushes.Black
+                        },
+                        Width = 200,
+                        Height = 60
+                    },
                     FontSize = 12,
                     FontWeight = FontWeights.Bold,
                 };
@@ -169,6 +172,7 @@ namespace Thesis_LIPX05.Util
                 Canvas.SetLeft(label, x + 4);
                 Canvas.SetTop(label, y + 5);
                 cv.Children.Add(label);
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Gantt item '{item.ID}' added at {item.Start} min for {item.Duration} min.");
             }
 
             cv.Width = items.Max(i => i.Start + i.Duration) * scale + 100; // adjust width based on max time

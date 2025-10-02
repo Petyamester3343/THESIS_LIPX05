@@ -3,12 +3,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 using FilePath = System.IO.Path;
 using ShapePath = System.Windows.Shapes.Path;
 
 using static System.Environment;
-using System.Xml.Linq;
+using static Thesis_LIPX05.Util.LogManager;
 
 namespace Thesis_LIPX05.Util
 {
@@ -32,9 +33,9 @@ namespace Thesis_LIPX05.Util
             public required double Cost { get; set; }
         }
 
+        private readonly static List<Edge> edges = [];
         private readonly static Dictionary<string, Node> nodes = new(StringComparer.OrdinalIgnoreCase);
         private readonly static Dictionary<Point, int> edgeCountFromNode = [];
-        private readonly static List<Edge> edges = [];
 
         // Getters for nodes and edges
         public static Dictionary<string, Node> GetNodes() => nodes;
@@ -54,7 +55,7 @@ namespace Thesis_LIPX05.Util
                                 new XAttribute("Desc", n.Value.Desc)
                             )
                         )
-                    )   ,
+                    ),
                     new XElement("Edges",
                         edges.Select(e =>
                             new XElement("Edge",
@@ -67,14 +68,22 @@ namespace Thesis_LIPX05.Util
                 )
             );
 
-            doc.Save(filePath);
+            try
+            {
+                doc.Save(filePath);
+                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Document has been saved to {filePath}"!);
+            }
+            catch (IOException)
+            {
+                MainWindow.GetLogger().Log(LogSeverity.ERROR, "Save unsucessful!");
+                MessageBox.Show("Save unsucessful!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // Adds a node to the graph
         public static void AddNode(string id, string desc, Point position)
         {
-            if (!nodes.ContainsKey(id))
-                nodes.Add(id, new() { ID = id, Desc = desc, Position = position });
+            if (!nodes.ContainsKey(id)) nodes.Add(id, new() { ID = id, Desc = desc, Position = position });
         }
 
         // Adds an edge to the graph
@@ -105,8 +114,8 @@ namespace Thesis_LIPX05.Util
                 Node node = sortedNodes[i];
                 node.Position = new()
                 {
-                    X = (int)(startX + i % rowLimit * spacing + Node.Radius),
-                    Y = (int)(startY + i / rowLimit * spacing + Node.Radius)
+                    X = (int)(startX + (i % rowLimit * spacing) + Node.Radius),
+                    Y = (int)(startY + (i / rowLimit * spacing) + Node.Radius)
                 };
 
                 // one node with a tooltip
@@ -123,7 +132,9 @@ namespace Thesis_LIPX05.Util
                         {
                             Text = $"ID: {node.Desc}",
                             FontSize = 12,
+                            Width = 300,
                             Foreground = Brushes.Black,
+                            TextWrapping = TextWrapping.Wrap,
                         }
                     }
                 };
@@ -144,15 +155,20 @@ namespace Thesis_LIPX05.Util
                 Canvas.SetLeft(graphNode, node.Position.X);
                 Canvas.SetTop(graphNode, node.Position.Y);
                 cv.Children.Add(graphNode);
-                
+                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Node {node.ID} at {node.Position.X};{node.Position.Y}");
+
                 Canvas.SetLeft(txt, node.Position.X - (Node.Radius / 2) + 18);
                 Canvas.SetTop(txt, node.Position.Y + (Node.Radius / 1.333));
                 cv.Children.Add(txt);
+                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Label {node.ID} at {node.Position.X - (Node.Radius / 2) + 18};{node.Position.Y + (Node.Radius / 1.333)}");
             }
 
             // edges
             foreach (var edge in edges)
+            {
                 DrawEdge(cv, edge.From.Position, edge.To.Position, Brushes.DarkBlue, edge.Cost);
+                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Edge from {edge.From.ID} to {edge.To.ID} with cost {edge.Cost}");
+            }
 
             double
                 maxHorSize = nodes.Values.Max(nHor => nHor.Position.X),
@@ -162,6 +178,7 @@ namespace Thesis_LIPX05.Util
             cv.Width = maxHorSize + 100;
             cv.Height = maxVertSize + 100;
 
+            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Canvas size set to {cv.Width}x{cv.Height}");
             WriteSGraphIntoFile();
         }
 
@@ -196,6 +213,7 @@ namespace Thesis_LIPX05.Util
             geo.Figures.Add(figure);
             ShapePath path = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
             cv.Children.Add(path);
+            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Edge drawn from ({start.X};{start.Y}) to ({end.X};{end.Y}) with control point at ({control.X};{control.Y})!");
 
             // section for the arrowhead
             Vector arrowDir = start - end;
@@ -218,13 +236,14 @@ namespace Thesis_LIPX05.Util
             };
 
             cv.Children.Add(arrowHead);
+            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Arrowhead drawn at {end.X};{end.Y}");
 
             // midpoint of the quadratic Bézier curve at t = 0.5 -> B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
             double t = 0.5;
             Point midCurve = new()
             {
-                X = (1-t) * (1-t) * start.X + 2 * (1-t) * t * control.X + t * t * end.X,
-                Y = (1-t) * (1-t) * start.Y + 2 * (1-t) * t * control.Y + t * t * end.Y
+                X = (1 - t) * (1 - t) * start.X + 2 * (1 - t) * t * control.X + t * t * end.X,
+                Y = (1 - t) * (1 - t) * start.Y + 2 * (1 - t) * t * control.Y + t * t * end.Y
             };
 
             // the weight of the path at the calculated midpoint of the curve
@@ -236,6 +255,7 @@ namespace Thesis_LIPX05.Util
                 FontSize = 10,
                 FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
                 Width = 18,
                 Height = 12
             };
@@ -244,6 +264,7 @@ namespace Thesis_LIPX05.Util
             Canvas.SetTop(weightBlock, midCurve.Y - weightBlock.Height / 2);
 
             cv.Children.Add(weightBlock);
+            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Weight {weight} drawn at {midCurve.X - weightBlock.Width / 2};{midCurve.Y - weightBlock.Height / 2}");
         }
     }
 }

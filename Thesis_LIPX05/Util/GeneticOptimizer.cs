@@ -15,6 +15,7 @@ namespace Thesis_LIPX05.Util
             var population = Enumerable.Range(0, populationSize)
                 .Select(_ => nodes.Values.OrderBy(_ => rnd.Next()).ToList())
                 .ToList();
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Initial population of {populationSize} paths created.");
 
             var best = population[0];
             double bestFitness = Evaluate(best);
@@ -26,18 +27,21 @@ namespace Thesis_LIPX05.Util
                     .Select(p => new { Path = p, Score = Evaluate(p) })
                     .OrderBy(x => x.Score)
                     .ToList();
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Generation {i + 1}/{generations} evaluated.");
 
                 if (scored[0].Score < bestFitness)
                 {
                     bestFitness = scored[0].Score;
                     best = scored[0].Path;
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"New best path found with cost: {bestFitness}");
                 }
 
                 // selecting top 20%
                 var parents = scored.Take(populationSize / 5).Select(x => x.Path).ToList();
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Generation {i + 1}/{generations} best path cost: {scored[0].Score}");
 
                 // mutation and crossover to create new generation
-                var newPopulation = new List<List<Node>>(parents);
+                List<List<Node>> newPopulation = [..parents];
 
                 while (newPopulation.Count < populationSize)
                 {
@@ -51,8 +55,10 @@ namespace Thesis_LIPX05.Util
                 }
 
                 population = newPopulation;
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Generation {i + 1}/{generations} evolved.");
             }
 
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Optimization completed. Best path cost: {bestFitness}");
             return best;
         }
 
@@ -62,6 +68,7 @@ namespace Thesis_LIPX05.Util
             double t = 0;
             for (int i = 0; i < path.Count - 1; i++)
                 t += edgeCosts.TryGetValue((path[i], path[i + 1]), out double cost) ? cost : 1000;
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Path evaluated with total cost: {t}");
             return t;
         }
 
@@ -71,6 +78,7 @@ namespace Thesis_LIPX05.Util
             int cut = rnd.Next(1, p1.Count - 1);
             List<Node> child = [.. p1.Take(cut)];
             foreach (Node node in p2) if (!child.Contains(node)) child.Add(node);
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Crossover performed at cut index {cut}.");
             return child;
         }
 
@@ -81,6 +89,7 @@ namespace Thesis_LIPX05.Util
                 i = rnd.Next(path.Count),
                 j = rnd.Next(path.Count);
             (path[i], path[j]) = (path[j], path[i]); // swap the two nodes within tuples
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Mutation performed by swapping indices {i} and {j}.");
         }
     }
 }

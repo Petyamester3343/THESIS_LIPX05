@@ -26,6 +26,7 @@ namespace Thesis_LIPX05.Util
                     {
                         dist[v] = dist[u] + cost;
                         pred[v] = u;
+                        MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Updated distance for {v} to {dist[v]} via {u}");
                     }
                 }
             }
@@ -37,8 +38,10 @@ namespace Thesis_LIPX05.Util
             {
                 path.Push(end);
                 pred.TryGetValue(end, out end!);
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Backtracking path, current node: {end}");
             }
 
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Longest path found with cost: {dist[path.Peek()]}");
             return [.. path.Select(id => nodes[id])];
         }
 
@@ -55,14 +58,23 @@ namespace Thesis_LIPX05.Util
             {
                 var node = queue.Dequeue();
                 sorted.Add(node);
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Node {node} added to topological sort.");
 
                 foreach (var edge in edges.Where(e => e.From.ID == node))
                 {
                     inDeg[edge.To.ID]--;
                     if (inDeg[edge.To.ID] == 0) queue.Enqueue(edge.To.ID);
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Decreased in-degree of {edge.To.ID} to {inDeg[edge.To.ID]}");
                 }
             }
 
+            if (sorted.Count != nodes.Count)
+            {
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.ERROR, "Graph has at least one cycle, topological sort not possible.");
+                throw new InvalidOperationException("Graph has at least one cycle, topological sort not possible.");
+            }
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, "Topological sort completed successfully.");
             return sorted;
         }
     }
