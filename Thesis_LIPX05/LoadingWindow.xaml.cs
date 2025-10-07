@@ -15,11 +15,8 @@ namespace Thesis_LIPX05
         // Decides the loading status based on the given range value (asynchronous)
         public async Task UpdateProgressAsync(string status)
         {
-            if (Dispatcher.CheckAccess())
-            {
-                await Dispatcher.InvokeAsync(() => UpdateProgress(status));
-                return;
-            }
+            if (!Dispatcher.CheckAccess()) await Dispatcher.InvokeAsync(() => UpdateProgress(status));
+            else UpdateProgress(status);
         }
 
         // Updates the loading text with the given status (synchronous)

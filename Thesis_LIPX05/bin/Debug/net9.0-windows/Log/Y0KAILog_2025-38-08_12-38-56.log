@@ -1,0 +1,34 @@
+2025. 38. 08. 12:38:56 // INFO // Heuristic solver added!
+2025. 38. 08. 12:38:56 // INFO // BnB solver added!
+2025. 38. 08. 12:38:56 // INFO // Genetic solver added!
+2025. 38. 08. 12:38:56 // INFO // Solver menu successfully built!
+2025. 38. 08. 12:38:56 // INFO // Initialization complete!
+2025. 39. 08. 12:39:00 // INFO // Open file dialog initiated...
+2025. 39. 08. 12:39:05 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 39. 08. 12:39:05 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 39. 08. 12:39:05 // INFO // Steps Table datatable displayed in new tab!
+2025. 39. 08. 12:39:05 // INFO // Links Table datatable displayed in new tab!
+2025. 39. 08. 12:39:05 // INFO // BatchML file loaded and data tables populated!
+2025. 39. 08. 12:39:05 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 39. 08. 12:39:21 // INFO // Custom deterministic solver "Dijkstra" added with path: C:\Users\Phant0m\Desktop\Y0KAI_Dijkstra\Y0KAI_Dijkstra\bin\Debug\net9.0\Y0KAI_Dijkstra.exe
+2025. 39. 08. 12:39:21 // INFO // Custom solvers saved to JSON file!
+2025. 39. 08. 12:39:21 // INFO // Custom solvers saved to JSON file!
+2025. 39. 08. 12:39:21 // INFO // Custom solver menu item "Dijkstra" addedto the menu!
+2025. 39. 08. 12:39:21 // INFO // Heuristic solver added!
+2025. 39. 08. 12:39:21 // INFO // BnB solver added!
+2025. 39. 08. 12:39:21 // INFO // Genetic solver added!
+2025. 39. 08. 12:39:21 // INFO // Custom solver menu item "Dijkstra" addedto the menu!
+2025. 39. 08. 12:39:21 // INFO // Dijkstra (deterministic type) solver added!
+2025. 39. 08. 12:39:21 // INFO // Solver menu successfully built!
+2025. 39. 08. 12:39:41 // INFO // Custom metaheuristic solver "Simulated Annealing" added with path: C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.exe
+2025. 39. 08. 12:39:41 // INFO // Custom solvers saved to JSON file!
+2025. 39. 08. 12:39:41 // INFO // Custom solvers saved to JSON file!
+2025. 39. 08. 12:39:41 // INFO // Custom solver menu item "Simulated Annealing" addedto the menu!
+2025. 39. 08. 12:39:41 // INFO // Heuristic solver added!
+2025. 39. 08. 12:39:41 // INFO // BnB solver added!
+2025. 39. 08. 12:39:41 // INFO // Genetic solver added!
+2025. 39. 08. 12:39:41 // INFO // Custom solver menu item "Dijkstra" addedto the menu!
+2025. 39. 08. 12:39:41 // INFO // Dijkstra (deterministic type) solver added!
+2025. 39. 08. 12:39:41 // INFO // Custom solver menu item "Simulated Annealing" addedto the menu!
+2025. 39. 08. 12:39:41 // INFO // Simulated Annealing (metaheuristic type) solver added!
+2025. 39. 08. 12:39:41 // INFO // Solver menu successfully built!

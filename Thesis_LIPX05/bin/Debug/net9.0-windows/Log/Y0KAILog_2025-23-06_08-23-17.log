@@ -1,0 +1,45 @@
+2025. 23. 06. 08:23:17 // INFO // Heuristic solver added!
+2025. 23. 06. 08:23:17 // INFO // BnB solver added!
+2025. 23. 06. 08:23:17 // INFO // Genetic solver added!
+2025. 23. 06. 08:23:17 // INFO // Solver menu successfully built!
+2025. 23. 06. 08:23:17 // INFO // Initialization complete!
+2025. 23. 06. 08:23:19 // INFO // Open file dialog initiated...
+2025. 23. 06. 08:23:22 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 23. 06. 08:23:22 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 23. 06. 08:23:22 // INFO // Steps Table datatable displayed in new tab!
+2025. 23. 06. 08:23:22 // INFO // Links Table datatable displayed in new tab!
+2025. 23. 06. 08:23:22 // INFO // BatchML file loaded and data tables populated!
+2025. 23. 06. 08:23:22 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // WARNING // Key column "ID" in table "Links" is empty, cannot match!
+2025. 25. 06. 08:25:27 // INFO // No existing XML element found for table "Links" matching the DataRow keys.
+2025. 25. 06. 08:25:27 // INFO // Converting raw duration "" to ISO 8601 format...
+2025. 25. 06. 08:25:27 // INFO // Raw duration "" is not in ISO 8601 format, trying to parse as TimeSpan...
+2025. 25. 06. 08:25:27 // INFO // Raw duration "" is not a valid TimeSpan, trying to parse as integer minutes...
+2025. 25. 06. 08:25:27 // WARNING // Raw duration "" could not be parsed, defaulting to zero duration (PT0M)!
+2025. 25. 06. 08:25:27 // INFO // Synchronized DataRow to XML for table "Links".
+2025. 25. 06. 08:25:34 // INFO // Changes made to Master Recipe table synced to XML!
+2025. 26. 06. 08:26:35 // INFO // SGraphCanvas has been cleared!
+2025. 26. 06. 08:26:35 // INFO // GanttCanvas has been cleared!
+2025. 26. 06. 08:26:35 // INFO // RulerCanvas has been cleared!
+2025. 26. 06. 08:26:35 // INFO // S-Graph nodes cleared!
+2025. 26. 06. 08:26:35 // INFO // S-Graph edges cleared!
+2025. 26. 06. 08:26:35 // INFO // Master Recipe Table datatable purged!
+2025. 26. 06. 08:26:35 // INFO // Recipe Element Table datatable purged!
+2025. 26. 06. 08:26:35 // INFO // Steps Table datatable purged!
+2025. 26. 06. 08:26:35 // INFO // Links Table datatable purged!
+2025. 26. 06. 08:26:35 // INFO // _Gantt chart tab removed!
+2025. 26. 06. 08:26:35 // INFO // _Gantt chart tab removed!
+2025. 26. 06. 08:26:35 // INFO // _Gantt chart tab removed!
+2025. 26. 06. 08:26:35 // INFO // _Gantt chart tab removed!
+2025. 26. 06. 08:26:35 // INFO // BatchML file closed and all data cleared!
+2025. 26. 06. 08:26:42 // INFO // No changes were made, exiting app...

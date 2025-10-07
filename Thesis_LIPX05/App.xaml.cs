@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 
 using static System.Diagnostics.Process;
 
@@ -23,48 +24,40 @@ namespace Thesis_LIPX05
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            string mutexName = "Y0KAI Task Scheduler";
-            appMutex = new(true, mutexName, out var createdNew);
+            const string MutexName = "Y0KAI Task Scheduler";
 
-            // Check if the mutex was created successfully
-            if (!createdNew)
+            try
             {
-                // If another instance is already running, bring it to the foreground
-                var currentProcess = GetCurrentProcess();
-                var runningProcess = GetProcessesByName(currentProcess.ProcessName)
-                    .FirstOrDefault(p => p.Id != currentProcess.Id);
+                appMutex = new(true, MutexName, out var createdNew);
 
-                if (runningProcess != null)
+                if (!createdNew)
                 {
-                    ShowWindow(runningProcess.MainWindowHandle, 5); // 5 -> SW_SHOW
-                    SetForegroundWindow(runningProcess.MainWindowHandle);
+                    var currID = Environment.ProcessId;
+                    
+                    var runningProc = GetProcessesByName(GetCurrentProcess().ProcessName)
+                        .FirstOrDefault(p => p.Id != currID);
 
-                    Shutdown(0);
+                    if (runningProc is not null && runningProc.MainWindowHandle != IntPtr.Zero)
+                    {
+                        // Ensure the window is restored before bringing to foreground
+                        ShowWindow(runningProc.MainWindowHandle, 9); // 9 -> SW_RESTORE
+                        SetForegroundWindow(runningProc.MainWindowHandle);
+                    }
+
+                    Shutdown();
                     return;
                 }
-                else appMutex = new(true, mutexName, out createdNew);
-                
-                try
-                {
-                    base.OnStartup(e);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Startup failed: {ex.Message}\n{ex.StackTrace}", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Shutdown(-1);
-                }
+
+                base.OnStartup(e);
+                ShutdownMode = ShutdownMode.OnLastWindowClose;
+                Dispatcher.BeginInvoke(new Action(() => ApplicationStartupLogic(e)),
+                    DispatcherPriority.Loaded);
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    base.OnStartup(e);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Startup failed: {ex.Message}\n{ex.StackTrace}", "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Shutdown(-1);
-                }
+                MessageBox.Show($"Fatal startup error during Mutex check: {ex.Message}",
+                    "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Shutdown(-1);
             }
         }
 
@@ -85,23 +78,11 @@ namespace Thesis_LIPX05
             FIFTH
         }
 
-        private Window? jumper; // used to jump to the main window after loading
-
         // The main entry point for the application
-        private async void Application_Startup(object sender, StartupEventArgs e)
+        private async void ApplicationStartupLogic(StartupEventArgs e)
         {
             var loading = new LoadingWindow();
             loading.Show();
-
-            // Create a jumper window to prevent the main window from showing up before the loading is complete
-            jumper = new Window
-            {
-                Width = 0,
-                Height = 0,
-                WindowStyle = WindowStyle.None,
-                ShowInTaskbar = false
-            };
-            jumper.Show();
 
             // Simulate loading progress by updating the loading window's progress text
             for (int i = 0; i <= 100; i++)
@@ -129,28 +110,23 @@ namespace Thesis_LIPX05
             }
 
             // Show the main window and close the jumper window with the loading window
-            await loading.Dispatcher.InvokeAsync(loading.Close);
-
-            await Dispatcher.InvokeAsync(() =>
-            {
+            await Dispatcher.InvokeAsync(() => {
                 var ts_app = new MainWindow();
                 MainWindow = ts_app;
                 ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 ts_app.Show();
                 ts_app.Activate();
+                loading.Close();
             });
-
-            jumper.Close();
-            jumper = null;
         }
 
         // Decides the loading status based on the given integer value
         public static LoadingStatusHelper DecideRang(int i)
         {
             if (i <= 20) return LoadingStatusHelper.FIRST;
-            else if (i >= 20 && i <= 40) return LoadingStatusHelper.SECOND;
-            else if (i >= 40 && i <= 60) return LoadingStatusHelper.THIRD;
-            else if (i >= 60 && i <= 80) return LoadingStatusHelper.FOURTH;
+            else if (i <= 40) return LoadingStatusHelper.SECOND;
+            else if (i <= 60) return LoadingStatusHelper.THIRD;
+            else if (i <= 80) return LoadingStatusHelper.FOURTH;
             else return LoadingStatusHelper.FIFTH;
         }
     }

@@ -50,21 +50,28 @@ namespace Thesis_LIPX05.Util
         // Draws the ruler on the Gantt chart canvas and the scroll view
         public static void DrawRuler(Canvas cv1, Canvas cv2, double totalTime, double scale)
         {
+            cv1.Children.Clear();
+
             foreach (Canvas cv in new[] { cv1, cv2 })
             {
                 cv.SnapsToDevicePixels = true;
                 cv.UseLayoutRounding = true;
-                if (cv.Name is "RulerCanvas") cv.Children.Clear();
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"{cv.Name} {(cv.Name is "RulerCanvas" ? "is cleared and" : "is")} set!");
             }
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Canvases are ready to be used!");
 
             int tickCount = Convert.ToInt32(Math.Ceiling(totalTime));
 
             double lblCentY = 15;
 
+            int
+                ticksDrawn = 0,
+                labelsDrawn = 0;
+
             for (int i = 0; i <= tickCount; i++)
             {
-                double x = i * scale;
+                double x = Math.Round(i * scale) + 0.5;
 
                 // vertical tick line across both canvases
                 Line tick = new()
@@ -72,21 +79,20 @@ namespace Thesis_LIPX05.Util
                     X1 = x,
                     Y1 = 0,
                     X2 = x,
-                    Y2 = cv1.ActualHeight, // extended below the ruler to the end of GanttCanvas
+                    Y2 = cv1.ActualHeight + cv2.ActualHeight, // extended below the ruler to the end of GanttCanvas
                     Stroke = Brushes.LightGray,
                     StrokeThickness = 1,
                     SnapsToDevicePixels = true,
                 };
                 RenderOptions.SetEdgeMode(tick, EdgeMode.Aliased);
                 cv1.Children.Add(tick);
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Ruler tick added at {i} min.");
+                ticksDrawn++;
 
                 int lblInterval = (scale < 15) ? 2 : 1;
-                TextBlock label;
 
                 if (i % lblInterval == 0)
                 {
-                    label = new TextBlock
+                    TextBlock label = new()
                     {
                         Text = $"{i}",
                         FontSize = 10,
@@ -98,11 +104,6 @@ namespace Thesis_LIPX05.Util
                         UseLayoutRounding = true,
                     };
 
-                    TextOptions.SetTextFormattingMode(label, TextFormattingMode.Display);
-
-                    RenderOptions.SetBitmapScalingMode(label, BitmapScalingMode.HighQuality);
-                    RenderOptions.SetEdgeMode(label, EdgeMode.Aliased);
-
                     label.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity));
                     var measured = label.DesiredSize;
 
@@ -113,9 +114,12 @@ namespace Thesis_LIPX05.Util
                     Canvas.SetLeft(label, left);
                     Canvas.SetTop(label, top);
                     cv1.Children.Add(label);
-                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Ruler label added at {i} min.");
+                    labelsDrawn++;
                 }
             }
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Ruler drawn: {ticksDrawn} ticks and {labelsDrawn} labels.");
 
             double cvW = totalTime * scale + 100;
             cv1.Width = cvW;
@@ -128,6 +132,8 @@ namespace Thesis_LIPX05.Util
             cv.Children.Clear();
             double rowH = 30;
 
+            int itemsDrawn = 0;
+
             for (int i = 0; i < items.Count; i++)
             {
                 var item = items[i];
@@ -137,10 +143,10 @@ namespace Thesis_LIPX05.Util
                     w = item.Duration * scale,
                     y = i * rowH;
 
-                var rectangle = new Rectangle
+                Rectangle rectangle = new()
                 {
-                    Width = (int)w,
-                    Height = (int)(rowH - 5),
+                    Width = Math.Round(w),
+                    Height = Math.Round(rowH - 5),
                     Fill = Brushes.LightGreen,
                     Stroke = Brushes.Black,
                     StrokeThickness = 1,
@@ -149,7 +155,6 @@ namespace Thesis_LIPX05.Util
                 Canvas.SetLeft(rectangle, x);
                 Canvas.SetTop(rectangle, y);
                 cv.Children.Add(rectangle);
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Gantt item rectangle for '{item.ID}' drawn at {item.Start} min with width {item.Duration} min.");
 
                 var label = new TextBlock
                 {
@@ -158,12 +163,10 @@ namespace Thesis_LIPX05.Util
                     {
                         Content = new TextBlock
                         {
-                            Text = $"{item.Desc}\nStart: {item.Start} min\nDuration: {item.Duration} min",
+                            Text = $"{item.Desc}\nStart: {item.Start:F2} min\nDuration: {item.Duration:F2} min",
                             FontSize = 12,
                             Foreground = Brushes.Black
-                        },
-                        Width = 200,
-                        Height = 60
+                        }
                     },
                     FontSize = 12,
                     FontWeight = FontWeights.Bold,
@@ -172,10 +175,14 @@ namespace Thesis_LIPX05.Util
                 Canvas.SetLeft(label, x + 4);
                 Canvas.SetTop(label, y + 5);
                 cv.Children.Add(label);
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Gantt item '{item.ID}' added at {item.Start} min for {item.Duration} min.");
+                itemsDrawn++;
             }
 
-            cv.Width = items.Max(i => i.Start + i.Duration) * scale + 100; // adjust width based on max time
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Gantt chart rendering complete: {itemsDrawn} items was drawn.");
+
+            double maxTime = items.Count != 0 ? items.Max(i => i.Start + i.Duration) : 0;
+            cv.Width = maxTime * scale + 100; // adjust width based on max time
             cv.Height = items.Count * rowH + 50; // adjust height based on number of items
         }
     }

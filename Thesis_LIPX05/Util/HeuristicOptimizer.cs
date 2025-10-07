@@ -7,13 +7,14 @@ namespace Thesis_LIPX05.Util
     {
         public List<Node> Optimize()
         {
-            var topo = TopologicalSort(nodes, edges);
+            var topo = TopoSort(nodes, edges);
             var dist = nodes.Keys.ToDictionary(k => k, _ => double.NegativeInfinity);
             Dictionary<string, string> pred = [];
 
-            foreach (var n in nodes.Keys)
-                if (!edges.Any(e => e.To.ID == n))
-                    dist[n] = 0; // start nodes with no incoming edges
+            var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
+            foreach (var edge in edges) inDeg[edge.To.ID]++;
+
+            foreach (var kvp in inDeg.Where(kvp => kvp.Value == 0)) dist[kvp.Key] = 0.0;
 
             foreach (var u in topo)
             {
@@ -31,27 +32,32 @@ namespace Thesis_LIPX05.Util
                 }
             }
 
-            string end = dist.Aggregate((a, b) => a.Value > b.Value ? a : b).Key;
+            string endNodeID = dist.Aggregate((a, b) => a.Value > b.Value ? a : b).Key;
             Stack<string> path = [];
 
-            while (end != null)
+            string? curr = endNodeID;
+            while (curr != null)
             {
-                path.Push(end);
-                pred.TryGetValue(end, out end!);
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Backtracking path, current node: {end}");
+                path.Push(curr);
+                if (pred.TryGetValue(curr, out string? predID))
+                {
+                    curr = predID;
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Backtracking path, current node: {curr}");
+                }
+                else curr = null;
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Longest path found with cost: {dist[path.Peek()]}");
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Longest path found with cost: {endNodeID}");
             return [.. path.Select(id => nodes[id])];
         }
 
         // Topological sort using Kahn's algorithm
-        protected static List<string> TopologicalSort(Dictionary<string, Node> nodes, List<Edge> edges)
+        protected static List<string> TopoSort(Dictionary<string, Node> nodes, List<Edge> edges)
         {
             var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
             foreach (var edge in edges) inDeg[edge.To.ID]++;
 
-            var queue = new Queue<string>(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
+            Queue<string> queue = new(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
             List<string> sorted = [];
 
             while (queue.Count != 0)

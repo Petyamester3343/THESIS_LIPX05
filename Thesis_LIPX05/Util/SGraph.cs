@@ -185,69 +185,84 @@ namespace Thesis_LIPX05.Util
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
         private static void DrawEdge(Canvas cv, Point from, Point to, Brush color, double weight, double thickness = 2)
         {
-            // offset starting point to the right edge of the source node
-            Point start = new(from.X + 2 * Node.Radius, from.Y + Node.Radius);
-            Point end = new(to.X, to.Y + Node.Radius);
+            // Calculating node centers
+            Point centerFrom = new(from.X + Node.Radius, from.Y + Node.Radius);
+            Point centerTo = new(to.X + Node.Radius, to.Y + Node.Radius);
 
-            // how many edges are drawn from this starting point
-            edgeCountFromNode[from] = !edgeCountFromNode.TryGetValue(from, out int edgeIndex) ? 1 : ++edgeIndex;
+            // Calculating connection points
+            Vector delta = centerTo - centerFrom;
+            double dist = delta.Length;
 
-            // first is straight, rest are curved
-            double curveOffset = (edgeIndex > 1) ? 20 * (edgeIndex - 1) : 0;
+            // If nodes are too close, skip drawing edges
+            if (dist <= Node.Radius * 2 + 1)
+            {
+                MainWindow.GetLogger().Log(LogSeverity.WARNING,
+                    "Nodes are too close or overlapping; skipping edge line!");
+                return;
+            }
 
-            // direction of the arrow
-            Vector dir = end - start;
-            dir.Normalize();
-            Vector normal = new(-dir.Y, dir.X);
+            Vector dirTo = delta / dist; // normalized direction from A's center to B's center
 
-            // midpoint and curve control
+            // Calculating connection points on the circumference
+            Point
+                start = centerFrom + dirTo * Node.Radius,
+                end = centerTo - dirTo * Node.Radius; // subtract to move backward from centerTo
+
+            // Handling multiple edges
+            edgeCountFromNode[from] = edgeCountFromNode.TryGetValue(from, out int edgeCount) ? ++edgeCount : 1;
+
+            // If there are multiple edges, curve the nth (where n > 1), otherwise do nothing
+            double dCurve = (edgeCount > 1) ? 20 * (edgeCount - 1) : 0;
+
+            // Calculating the Bezier curve's control point
+            Vector normal = new(-dirTo.Y, dirTo.X); // 90 degree rotation
             Point
                 mid = new((start.X + end.X) / 2, (start.Y + end.Y) / 2),
-                control = (edgeIndex > 1) ? mid + normal * curveOffset : mid;
+                control = mid + normal * dCurve;
 
-            // section for the edge (a quadratic Bezier segment which can be curved in case of two edges overlapping)
+            // Drawing the edge
             PathFigure figure = new() { StartPoint = start };
             QuadraticBezierSegment segment = new() { Point1 = control, Point2 = end };
             figure.Segments.Add(segment);
+
             PathGeometry geo = new();
             geo.Figures.Add(figure);
-            ShapePath path = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
-            cv.Children.Add(path);
-            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Edge drawn from ({start.X};{start.Y}) to ({end.X};{end.Y}) with control point at ({control.X};{control.Y})!");
+            ShapePath shapePath = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
+            cv.Children.Add(shapePath);
+            MainWindow.GetLogger().Log(LogSeverity.INFO,
+                $"Edge drawn from ({start.X:F1};{start.Y:F1}) to ({end.X:F1};{end.Y:F1})!");
 
-            // section for the arrowhead
-            Vector arrowDir = start - end;
+            // Drawing the arrowhead
+            // It relies on the geometrically correct 'end' point
+            Vector arrowDir = control - end;
             arrowDir.Normalize();
             Vector arrowNorm = new(-arrowDir.Y, arrowDir.X);
 
-            double headLength = 10;
-            double headWidth = 5;
+            double
+                headL = 10,
+                headW = 5;
 
-            Point base1 = end + arrowDir * headLength + arrowNorm * headWidth;
-            Point base2 = end + arrowDir * headLength - arrowNorm * headWidth;
-
-            PointCollection points = [end, base1, base2];
+            Point
+                b1 = end + arrowDir * headL + arrowNorm * headW,
+                b2 = end + arrowDir * headL - arrowNorm * headW;
 
             Polygon arrowHead = new()
             {
-                Points = points,
-                Fill = color,
-                RenderTransform = new RotateTransform(0, to.X, to.Y)
+                Points = [end, b1, b2],
+                Fill = color
             };
 
             cv.Children.Add(arrowHead);
-            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Arrowhead drawn at {end.X};{end.Y}");
 
-            // midpoint of the quadratic Bézier curve at t = 0.5 -> B(t) = (1 - t)^2 * P0 + 2(1 - t)t * P1 + t^2 * P2
+            // Drawing the weight label
             double t = 0.5;
             Point midCurve = new()
             {
-                X = (1 - t) * (1 - t) * start.X + 2 * (1 - t) * t * control.X + t * t * end.X,
-                Y = (1 - t) * (1 - t) * start.Y + 2 * (1 - t) * t * control.Y + t * t * end.Y
+                X = Math.Pow(1 - t, 2) * start.X + 2 * (1 - t) * t * control.X + Math.Pow(t, 2) * end.X,
+                Y = Math.Pow(1 - t, 2) * start.Y + 2 * (1 - t) * t * control.Y + Math.Pow(t, 2) * end.Y
             };
 
-            // the weight of the path at the calculated midpoint of the curve
-            TextBlock weightBlock = new()
+            TextBlock weightTXT = new()
             {
                 Text = Convert.ToInt32(weight).ToString(),
                 Foreground = Brushes.Black,
@@ -255,16 +270,15 @@ namespace Thesis_LIPX05.Util
                 FontSize = 10,
                 FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center,
-                TextWrapping = TextWrapping.Wrap,
                 Width = 18,
                 Height = 12
             };
 
-            Canvas.SetLeft(weightBlock, midCurve.X - weightBlock.Width / 2);
-            Canvas.SetTop(weightBlock, midCurve.Y - weightBlock.Height / 2);
-
-            cv.Children.Add(weightBlock);
-            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Weight {weight} drawn at {midCurve.X - weightBlock.Width / 2};{midCurve.Y - weightBlock.Height / 2}");
+            Canvas.SetLeft(weightTXT, midCurve.X - weightTXT.Width / 2);
+            Canvas.SetTop(weightTXT, midCurve.Y - weightTXT.Height / 2);
+            cv.Children.Add(weightTXT);
+            MainWindow.GetLogger().Log(LogSeverity.INFO,
+                $"Weight {weight} drawn at ({midCurve.X};{midCurve.Y})!");
         }
     }
 }

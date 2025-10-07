@@ -1,0 +1,29 @@
+2025. 36. 08. 12:36:39 // INFO // Custom solver menu item "Dijkstra" addedto the menu!
+2025. 36. 08. 12:36:39 // INFO // Custom solvers loaded from JSON file!
+2025. 36. 08. 12:36:42 // INFO // Heuristic solver added!
+2025. 36. 08. 12:36:42 // INFO // BnB solver added!
+2025. 36. 08. 12:36:42 // INFO // Genetic solver added!
+2025. 36. 08. 12:36:42 // INFO // Custom solver menu item "Dijkstra" addedto the menu!
+2025. 36. 08. 12:36:42 // INFO // Dijkstra (Deterministic type) solver added!
+2025. 36. 08. 12:36:42 // INFO // Solver menu successfully built!
+2025. 36. 08. 12:36:42 // INFO // Initialization complete!
+2025. 36. 08. 12:36:44 // INFO // Open file dialog initiated...
+2025. 36. 08. 12:36:51 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 36. 08. 12:36:51 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 36. 08. 12:36:51 // INFO // Steps Table datatable displayed in new tab!
+2025. 36. 08. 12:36:51 // INFO // Links Table datatable displayed in new tab!
+2025. 36. 08. 12:36:51 // INFO // BatchML file loaded and data tables populated!
+2025. 36. 08. 12:36:51 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 37. 08. 12:37:19 // INFO // Custom metaheuristic solver "Simulated Annealing" added with path: C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.exe
+2025. 37. 08. 12:37:19 // INFO // Custom solvers saved to JSON file!
+2025. 37. 08. 12:37:19 // INFO // Custom solvers saved to JSON file!
+2025. 37. 08. 12:37:19 // INFO // Custom solver menu item "Simulated Annealing" addedto the menu!
+2025. 37. 08. 12:37:19 // INFO // Heuristic solver added!
+2025. 37. 08. 12:37:19 // INFO // BnB solver added!
+2025. 37. 08. 12:37:19 // INFO // Genetic solver added!
+2025. 37. 08. 12:37:19 // INFO // Custom solver menu item "Dijkstra" addedto the menu!
+2025. 37. 08. 12:37:19 // INFO // Dijkstra (Deterministic type) solver added!
+2025. 37. 08. 12:37:19 // INFO // Custom solver menu item "Simulated Annealing" addedto the menu!
+2025. 37. 08. 12:37:19 // INFO // Simulated Annealing (metaheuristic type) solver added!
+2025. 37. 08. 12:37:19 // INFO // Solver menu successfully built!
+2025. 37. 08. 12:37:36 // INFO // No changes were made, exiting app...

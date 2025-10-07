@@ -7,7 +7,12 @@ namespace Thesis_LIPX05.Util
 
     {
         private readonly Random rnd = new();
-        private readonly Dictionary<(Node, Node), double> edgeCosts = edges.ToDictionary(e => (e.From, e.To), e => e.Cost);
+        private readonly Dictionary<(Node, Node), double> edgeCosts =
+            edges.ToDictionary(e => (e.From, e.To), e => e.Cost);
+        private readonly Dictionary<(Node, Node), bool> dependencyCheck =
+            edges.ToDictionary(e => (e.From, e.To), e => true);
+
+        private const double DependencyPenalty = 100000;
 
         public List<Node> Optimize()
         {
@@ -15,33 +20,39 @@ namespace Thesis_LIPX05.Util
             var population = Enumerable.Range(0, populationSize)
                 .Select(_ => nodes.Values.OrderBy(_ => rnd.Next()).ToList())
                 .ToList();
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Initial population of {populationSize} paths created.");
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Initial population of {populationSize} paths created.");
 
             var best = population[0];
-            double bestFitness = Evaluate(best);
+            double bestFitness = double.MinValue;
 
             // evolve population over generations
             for (int i = 0; i < generations; i++)
             {
                 var scored = population
                     .Select(p => new { Path = p, Score = Evaluate(p) })
-                    .OrderBy(x => x.Score)
+                    .OrderByDescending(x => x.Score)
                     .ToList();
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Generation {i + 1}/{generations} evaluated.");
 
-                if (scored[0].Score < bestFitness)
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                    $"Generation {i + 1}/{generations} evaluated.");
+
+                if (scored[0].Score > bestFitness)
                 {
                     bestFitness = scored[0].Score;
                     best = scored[0].Path;
-                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"New best path found with cost: {bestFitness}");
+                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                        $"New best path found with cost: {bestFitness}");
                 }
 
                 // selecting top 20%
-                var parents = scored.Take(populationSize / 5).Select(x => x.Path).ToList();
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Generation {i + 1}/{generations} best path cost: {scored[0].Score}");
+                List<List<Node>> parents = [.. scored.Take(populationSize / 5).Select(x => x.Path)];
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                    $"Generation {i + 1}/{generations} best path cost: {scored[0].Score}");
 
                 // mutation and crossover to create new generation
-                List<List<Node>> newPopulation = [..parents];
+                List<List<Node>> newPopulation = [.. parents];
 
                 while (newPopulation.Count < populationSize)
                 {
@@ -55,21 +66,34 @@ namespace Thesis_LIPX05.Util
                 }
 
                 population = newPopulation;
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Generation {i + 1}/{generations} evolved.");
+                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                    $"Generation {i + 1}/{generations} evolved.");
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Optimization completed. Best path cost: {bestFitness}");
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Optimization completed. Best path cost: {bestFitness}");
             return best;
         }
 
         // Evaluates the fitness of a path by summing the costs of its edges
         private double Evaluate(List<Node> path)
         {
-            double t = 0;
+            double
+                total = 0,
+                penalty = 0;
+
             for (int i = 0; i < path.Count - 1; i++)
-                t += edgeCosts.TryGetValue((path[i], path[i + 1]), out double cost) ? cost : 1000;
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Path evaluated with total cost: {t}");
-            return t;
+            {
+                var from = path[i];
+                var to = path[i + 1];
+
+                total += edgeCosts.TryGetValue((from, to), out double cost) ? cost : 0;
+                penalty += dependencyCheck.ContainsKey((to, from)) ? DependencyPenalty : 0;
+            }
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Path evaluated with total cost: {total}, penalty: {penalty}");
+            return total - penalty;
         }
 
         // Performs crossover between two parent paths to create a child path
@@ -78,7 +102,9 @@ namespace Thesis_LIPX05.Util
             int cut = rnd.Next(1, p1.Count - 1);
             List<Node> child = [.. p1.Take(cut)];
             foreach (Node node in p2) if (!child.Contains(node)) child.Add(node);
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Crossover performed at cut index {cut}.");
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Crossover performed at cut index {cut}.");
             return child;
         }
 
@@ -88,8 +114,11 @@ namespace Thesis_LIPX05.Util
             int
                 i = rnd.Next(path.Count),
                 j = rnd.Next(path.Count);
+
             (path[i], path[j]) = (path[j], path[i]); // swap the two nodes within tuples
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Mutation performed by swapping indices {i} and {j}.");
+
+            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                $"Mutation performed by swapping indices {i} and {j}.");
         }
     }
 }
