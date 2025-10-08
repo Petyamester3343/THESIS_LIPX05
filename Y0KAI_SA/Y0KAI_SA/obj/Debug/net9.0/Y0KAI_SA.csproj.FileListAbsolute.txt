@@ -1,0 +1,14 @@
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.AssemblyInfoInputs.cache
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.AssemblyInfo.cs
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.csproj.CoreCompileInputs.cache
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.exe
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.deps.json
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.runtimeconfig.json
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.dll
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.pdb
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.dll
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\refint\Y0KAI_SA.dll
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.pdb
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\Y0KAI_SA.genruntimeconfig.cache
+C:\Users\Phant0m\Desktop\Y0KAI_SA\Y0KAI_SA\obj\Debug\net9.0\ref\Y0KAI_SA.dll

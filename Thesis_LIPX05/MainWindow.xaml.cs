@@ -29,39 +29,41 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly XNamespace
-            batchML,
-            customNS;
-
-        private readonly DataTable
-            masterTable,
-            recipeElementTable,
-            stepTable,
-            linkTable;
-
-        private List<GanttItem> ganttData;
+        private readonly XNamespace batchML, customNS;
+        private readonly DataTable masterTable, recipeElementTable, stepTable, linkTable;
+        private readonly string customSolverPath = Path.Combine
+            (
+                Environment.GetFolderPath
+                (
+                    Environment.SpecialFolder.ApplicationData
+                ),
+                "Y0KAI_TaskScheduler",
+                "custom_solvers.json"
+            );
 
         private readonly List<DataTable> solutionsList;
         private readonly List<CustomSolver> customSolvers;
         private readonly List<string> solvers;
         private readonly Dictionary<string, TableMapper> mappings;
-        private readonly string customSolverPath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Y0KAI_TaskScheduler", "custom_solvers.json");
-
 
         private XElement masterRecipe;
         private double zoom;
         private bool isFileLoaded = false, SGraphExists, isFileModified = false;
         private string currentFilePath = string.Empty;
-        private static LogManager? logger;
 
-        private const double baseTimeScale = 10.0;
+        private List<GanttItem> ganttData;
 
-        private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
+        private const double BaseTimeScale = 10.0;
+        private const string
+            IntegratedHeurSolver = "Heuristic",
+            IntegratedBnBSolver = "Branch and Bound",
+            IntegratedGenSolver = "Genetic";
 
         [GeneratedRegex(@"^PT(?:(\d+)H)?(?:(\d|[1-5]\d)M)?(?:([0-5]\d)S)?$", RegexOptions.IgnoreCase, "hu-HU")]
         private static partial Regex ISO8601Format();
+        private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
 
+        private static LogManager? logger;
 
         public MainWindow()
         {
@@ -81,7 +83,7 @@ namespace Thesis_LIPX05
 
             mappings = InitMappings();
 
-            solvers = ["Heuristic", "Branch & Bound", "Genetic"];
+            solvers = [IntegratedHeurSolver, IntegratedBnBSolver, IntegratedGenSolver];
             customSolvers = [];
             solutionsList = [];
 
@@ -161,6 +163,8 @@ namespace Thesis_LIPX05
                 }
             };
 
+        private static void AddSeparator(MenuItem solverMenu) => solverMenu.Items.Add(new Separator());
+
         // dynamicaly building the solver menu
         private void BuildSolverMenu(MenuItem solverMenu)
         {
@@ -179,16 +183,14 @@ namespace Thesis_LIPX05
                     solverMenu.Items.Add(item);
                     logger?.Log(LogSeverity.INFO, $"{item.Tag} solver added!");
                 }
-
-                solverMenu.Items.Add(newItem: new Separator());
+                AddSeparator(solverMenu);
 
                 foreach (var cs in customSolvers)
                 {
                     AddCustomSolverMenuItem(cs);
                     logger?.Log(LogSeverity.INFO, $"{cs.Name} ({cs.TypeID} type) solver added!");
                 }
-
-                solverMenu.Items.Add(newItem: new Separator());
+                AddSeparator(solverMenu);
 
                 var addSolverItem = new MenuItem
                 {
@@ -284,7 +286,6 @@ namespace Thesis_LIPX05
         // Calls the heursitic solver
         private void SolveHeuristically()
         {
-            logger?.Log(LogSeverity.INFO, "Heuristic solver selected!");
             var heurOpt = new HeuristicOptimizer(GetNodes(), GetEdges());
             var heurPath = heurOpt.Optimize();
 
@@ -292,7 +293,7 @@ namespace Thesis_LIPX05
             logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
             double heurTotalTime = ganttData.Max(x => x.Start + x.Duration);
             int heurRowC = ganttData.Count;
-            double heurTimeScale = baseTimeScale * zoom;
+            double heurTimeScale = BaseTimeScale * zoom;
 
             Render(GanttCanvas, ganttData, heurTimeScale);
             DrawRuler(RulerCanvas, GanttCanvas, heurTotalTime, heurTimeScale);
@@ -302,7 +303,6 @@ namespace Thesis_LIPX05
         // Calls the Branch and Bound solver
         private void SolveWithBnB()
         {
-            logger?.Log(LogSeverity.INFO, "Branch & Bound solver selected!");
             var bnbOpt = new BnBOptimizer(GetNodes(), GetEdges());
             var bnbPath = bnbOpt.Optimize();
 
@@ -310,7 +310,7 @@ namespace Thesis_LIPX05
             logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
             double bnbTotalTime = ganttData.Max(x => x.Start + x.Duration);
             int bnbRowC = ganttData.Count;
-            double bnbTimeScale = baseTimeScale * zoom;
+            double bnbTimeScale = BaseTimeScale * zoom;
 
             Render(GanttCanvas, ganttData, bnbTimeScale);
             DrawRuler(RulerCanvas, GanttCanvas, bnbTotalTime, bnbTimeScale);
@@ -320,7 +320,6 @@ namespace Thesis_LIPX05
         // Calls the Genetic Algorithm solver
         private void SolveWithGenetic()
         {
-            logger?.Log(LogSeverity.INFO, "Genetic Algorithm solver selected!");
             var gaOpt = new GeneticOptimizer(GetNodes(), GetEdges());
             var gaPath = gaOpt.Optimize();
 
@@ -328,7 +327,7 @@ namespace Thesis_LIPX05
             logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
             double gaTotalTime = ganttData.Max(x => x.Start + x.Duration);
             int gaRowC = ganttData.Count;
-            double gaTimeScale = baseTimeScale * zoom;
+            double gaTimeScale = BaseTimeScale * zoom;
 
             Render(GanttCanvas, ganttData, gaTimeScale);
             DrawRuler(RulerCanvas, GanttCanvas, gaTotalTime, gaTimeScale);
@@ -343,20 +342,23 @@ namespace Thesis_LIPX05
             {
                 switch (menuItem?.Tag.ToString())
                 {
-                    case "Heuristic":
+                    case IntegratedHeurSolver:
                         {
+                            logger?.Log(LogSeverity.INFO, "Heuristic solver selected!");
                             SolveHeuristically();
                             GanttCanvas.Tag = menuItem?.Tag;
                             break;
                         }
-                    case "Branch & Bound":
+                    case IntegratedBnBSolver:
                         {
+                            logger?.Log(LogSeverity.INFO, "Branch & Bound solver selected!");
                             SolveWithBnB();
                             GanttCanvas.Tag = menuItem?.Tag;
                             break;
                         }
-                    case "Genetic":
+                    case IntegratedGenSolver:
                         {
+                            logger?.Log(LogSeverity.INFO, "Genetic Algorithm solver selected!");
                             SolveWithGenetic();
                             GanttCanvas.Tag = menuItem?.Tag;
                             break;
@@ -379,15 +381,14 @@ namespace Thesis_LIPX05
                             {
                                 logger?.Log(LogSeverity.INFO,
                                     $"Gathering parameters for {customSolver.Name}");
-
-                                GatherArgs(launchArgs);
+                                GatherArgs4Metaheur(launchArgs);
                             }
                             else if (customSolver.TypeID.Equals("Deterministic", StringComparison.OrdinalIgnoreCase))
                                 logger?.Log(LogSeverity.INFO,
                                     "Deterministic solver selected; skipping numeric parameter gathering...");
 
                             MessageBoxResult silentRes = MessageBox.Show(
-                                "Run solver in silent mode (-s)? This suppresses detailed logging and improves speed.",
+                                "Run solver in silent mode (-s or --silent)? This suppresses detailed logging and improves speed.",
                                 "Solver Configuration",
                                 MessageBoxButton.YesNo,
                                 MessageBoxImage.Question);
@@ -400,7 +401,7 @@ namespace Thesis_LIPX05
                                 customSolver.Arguments.AddRange(launchArgs);
 
                                 StringBuilder argsBuilder = new();
-                                foreach (var arg in customSolver.Arguments) argsBuilder.Append(arg).Append(' ');
+                                foreach (string arg in customSolver.Arguments) argsBuilder.Append(arg).Append(' ');
 
                                 Process proc = new()
                                 {
@@ -412,37 +413,45 @@ namespace Thesis_LIPX05
                                         RedirectStandardOutput = true,
                                         RedirectStandardError = true,
                                         UseShellExecute = false,
-                                        CreateNoWindow = true
+                                        CreateNoWindow = argsBuilder.ToString().Contains("-s")
                                     }
                                 };
                                 proc.Start();
 
-                                using StreamWriter writer = proc.StandardInput;
-                                if (writer.BaseStream.CanWrite)
                                 {
-                                    foreach (Node node in GetNodes().Values) writer.WriteLine($"NODE {node.ID} {node.Desc}");
-                                    foreach (Edge edge in GetEdges()) writer.WriteLine($"EDGE {edge.From.ID} {edge.To.ID} {edge.Cost}");
-                                }
-                                else
-                                {
-                                    logger?.Log(LogSeverity.ERROR, "Cannot write to custom solver's standard input!");
-                                    MessageBox.Show("Cannot write to custom solver's standard input!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
+                                    using StreamWriter writer = proc.StandardInput;
+                                    if (writer.BaseStream.CanWrite)
+                                    {
+                                        foreach (Node node in GetNodes().Values) writer.WriteLine($"NODE {node.ID} {node.Desc}");
+                                        foreach (Edge edge in GetEdges()) writer.WriteLine($"EDGE {edge.From.ID} {edge.To.ID} {edge.Cost}");
+                                    }
+                                    else
+                                    {
+                                        logger?.Log(LogSeverity.ERROR,
+                                            "Cannot write to custom solver's standard input!");
+                                        MessageBox.Show("Cannot write to custom solver's standard input!",
+                                            "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        return;
+                                    }
                                 }
 
                                 List<string> output = [];
-                                while (!proc.StandardOutput.EndOfStream)
-                                {
-                                    string line = proc.StandardOutput.ReadLine()!;
-                                    if (line is not null) output.Add(line);
-                                    logger?.Log(LogSeverity.INFO, $"Custom solver output: {line}");
-                                }
+
+                                string
+                                    stdOut = proc.StandardOutput.ReadToEnd(),
+                                    stdErr = proc.StandardError.ReadToEnd();
+
                                 proc.WaitForExit();
+
+                                output.AddRange(stdOut.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries));
+
                                 if (proc.ExitCode != 0)
                                 {
-                                    string err = proc.StandardError.ReadToEnd();
-                                    logger?.Log(LogSeverity.ERROR, $"Custom solver exited with code {proc.ExitCode}: {err}");
-                                    MessageBox.Show($"Custom solver exited with code {proc.ExitCode}:\n{err}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    if (!string.IsNullOrEmpty(stdErr))
+                                    {
+                                        logger?.Log(LogSeverity.ERROR, $"Custom solver exited with code {proc.ExitCode}: {stdErr}");
+                                        MessageBox.Show($"Custom solver exited with code {proc.ExitCode}:\n{stdErr}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    }
                                     return;
                                 }
 
@@ -467,7 +476,7 @@ namespace Thesis_LIPX05
                                 logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
                                 double totalTime = ganttData.Max(x => x.Start + x.Duration);
                                 int rowC = ganttData.Count;
-                                double timeScale = baseTimeScale * zoom;
+                                double timeScale = BaseTimeScale * zoom;
                                 Render(GanttCanvas, ganttData, timeScale);
                                 DrawRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
                                 logger?.Log(LogSeverity.INFO, $"{customSolver.Name} custom solver finished!");
@@ -484,7 +493,7 @@ namespace Thesis_LIPX05
             }
         }
 
-        private static void GatherArgs(List<string> launchArgs)
+        private static void GatherArgs4Metaheur(List<string> launchArgs)
         {
             string inTemp = Interaction.InputBox(
                 "Enter Initial Temperature (e.g., 1000.0):",
@@ -544,7 +553,7 @@ namespace Thesis_LIPX05
             if (ganttData is null || ganttData.Count == 0) return;
 
             zoom = Math.Pow(2, e.NewValue);
-            double scale = baseTimeScale * zoom;
+            double scale = BaseTimeScale * zoom;
 
             double totalTime = ganttData.Max(x => x.Start + x.Duration);
             int rowC = ganttData.Count;
@@ -637,7 +646,7 @@ namespace Thesis_LIPX05
                 if (menuItem?.Tag.ToString() == "Exit" || menuItem?.Tag.ToString() == "Close File")
                 {
                     logger?.Log(LogSeverity.WARNING, "Prompting user to save changes before closing either the app or the file!");
-                    MessageBox.Show("Please save changes before exporting!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please save changes before exiting!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
                 var saveDlg = new SaveFileDialog
@@ -652,6 +661,7 @@ namespace Thesis_LIPX05
                     {
                         masterRecipe.Document?.Save(saveDlg.FileName);
                         MessageBox.Show($"BatchML file saved as {saveDlg.FileName}", "Save Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                        isFileModified = false;
                     }
                     catch (Exception ex)
                     {
@@ -1324,10 +1334,7 @@ namespace Thesis_LIPX05
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Question);
 
-                    string typeID =
-                        typeRes == MessageBoxResult.Yes
-                        ? "metaheuristic"
-                        : "deterministic";
+                    string typeID = typeRes == MessageBoxResult.Yes ? "metaheuristic" : "deterministic";
 
                     CustomSolver newSolver = new()
                     {
@@ -1356,7 +1363,7 @@ namespace Thesis_LIPX05
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(customSolverPath)!);
-                var json = JsonSerializer.Serialize(customSolvers, CachedOptions)!;
+                string json = JsonSerializer.Serialize(customSolvers, CachedOptions);
                 File.WriteAllText(customSolverPath, json);
                 logger?.Log(LogSeverity.INFO, "Custom solvers saved to JSON file!");
             }
@@ -1375,12 +1382,12 @@ namespace Thesis_LIPX05
                 if (File.Exists(customSolverPath))
                 {
                     string json = File.ReadAllText(customSolverPath);
-                    var loaded = JsonSerializer.Deserialize<List<CustomSolver>>(json);
+                    List<CustomSolver> loaded = JsonSerializer.Deserialize<List<CustomSolver>>(json)!;
                     if (loaded != null)
                     {
                         customSolvers.Clear();
                         customSolvers.AddRange(loaded);
-                        foreach (var solver in customSolvers) AddCustomSolverMenuItem(solver);
+                        foreach (var cs in customSolvers) AddCustomSolverMenuItem(cs);
                     }
                     logger?.Log(LogSeverity.INFO, "Custom solvers loaded from JSON file!");
                 }
@@ -1407,8 +1414,9 @@ namespace Thesis_LIPX05
                 Tag = solver.Name,
                 IsEnabled = SGraphExists
             };
+            item.Click += SolveClick;
             SolverMenu.Items.Add(item);
-            logger?.Log(LogSeverity.INFO, $"Custom solver menu item \"{solver.Name}\" addedto the menu!");
+            logger?.Log(LogSeverity.INFO, $"Custom solver menu item \"{solver.Name} ({solver.TypeID})\" addedto the menu!");
         }
 
         // Event handler for creating a solution table from the Gantt chart
@@ -1450,7 +1458,7 @@ namespace Thesis_LIPX05
             }
 
             // if raw is just a number, assume it's in minutes and convert accordingly
-            logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is not a valid TimeSpan, trying to parse as integer minutes...");
+            logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is not a valid TimeSpan either, trying to parse as integer minutes...");
             if (int.TryParse(raw, out int mins))
             {
                 string dur = (mins < 0) ? $"PT{mins / 60}H{mins % 60}M" : "PT0M"; // no negative durations are allowed

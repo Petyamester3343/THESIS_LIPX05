@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "PQnedLH3aBY=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Phant0m\\Desktop\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\9.0.9\\microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.9\\microsoft.net.illink.tasks.9.0.9.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\9.0.9\\runtime.win-x64.microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}

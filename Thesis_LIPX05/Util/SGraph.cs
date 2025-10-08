@@ -41,45 +41,6 @@ namespace Thesis_LIPX05.Util
         public static Dictionary<string, Node> GetNodes() => nodes;
         public static List<Edge> GetEdges() => edges;
 
-        // Writes the S-graph's nodes and edges into an .xml file
-        public static void WriteSGraphIntoFile()
-        {
-            string filePath = FilePath.Combine(GetFolderPath(SpecialFolder.Desktop), "sgraph.xml");
-
-            XDocument doc = new(
-                new XElement("SGraph",
-                    new XElement("Nodes",
-                        nodes.Select(n =>
-                            new XElement("Node",
-                                new XAttribute("ID", n.Value.ID),
-                                new XAttribute("Desc", n.Value.Desc)
-                            )
-                        )
-                    ),
-                    new XElement("Edges",
-                        edges.Select(e =>
-                            new XElement("Edge",
-                                new XAttribute("From", e.From.ID),
-                                new XAttribute("To", e.To.ID),
-                                new XAttribute("Cost", e.Cost)
-                            )
-                        )
-                    )
-                )
-            );
-
-            try
-            {
-                doc.Save(filePath);
-                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Document has been saved to {filePath}"!);
-            }
-            catch (IOException)
-            {
-                MainWindow.GetLogger().Log(LogSeverity.ERROR, "Save unsucessful!");
-                MessageBox.Show("Save unsucessful!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         // Adds a node to the graph
         public static void AddNode(string id, string desc, Point position)
         {
@@ -179,7 +140,6 @@ namespace Thesis_LIPX05.Util
             cv.Height = maxVertSize + 100;
 
             MainWindow.GetLogger().Log(LogSeverity.INFO, $"Canvas size set to {cv.Width}x{cv.Height}");
-            WriteSGraphIntoFile();
         }
 
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas

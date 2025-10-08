@@ -2,7 +2,7 @@
 <batchML:BatchInformation xmlns:batchML="http://www.wbf.org/xml/BatchML-V02" xmlns:custom="http://lipx05.y0kai.com/batchml/custom">
   <batchML:MasterRecipe>
     <batchML:ID>Example-MR-001</batchML:ID>
-    <batchML:Version>1.1</batchML:Version>
+    <batchML:Version>1.5</batchML:Version>
     <batchML:Description>Master Recipe example for thesis</batchML:Description>
     <batchML:Header>
       <batchML:ModificationLog>
@@ -26,7 +26,7 @@
     <batchML:RecipeElement>
       <batchML:ID>Input-Phase</batchML:ID>
       <batchML:RecipeElementType>Phase</batchML:RecipeElementType>
-      <batchML:Description>Putting ingredients into the mixer</batchML:Description>
+      <batchML:Description>Putting the ingredients into a mixer</batchML:Description>
     </batchML:RecipeElement>
     <batchML:RecipeElement>
       <batchML:ID>Mix-Phase</batchML:ID>
@@ -77,7 +77,7 @@
       </batchML:Step>
       <batchML:Step>
         <batchML:ID>Step2</batchML:ID>
-        <batchML:RecipeElementID>Mix-Phase</batchML:RecipeElementID>
+        <batchML:RecipeElementID>Mixing-Phase</batchML:RecipeElementID>
       </batchML:Step>
       <batchML:Step>
         <batchML:ID>Step3</batchML:ID>
@@ -152,7 +152,7 @@
         </batchML:ToID>
         <batchML:LinkType>ControlLink</batchML:LinkType>
         <batchML:Extension>
-          <custom:Duration>PT55M</custom:Duration>
+          <custom:Duration>PT50M</custom:Duration>
           <!-- 1 hour 30 minutes -->
         </batchML:Extension>
       </batchML:Link>
@@ -282,20 +282,6 @@
         <batchML:Extension>
           <custom:Duration>PT20M</custom:Duration>
           <!-- 20 minutes -->
-        </batchML:Extension>
-      </batchML:Link>
-      <batchML:Link>
-        <batchML:ID></batchML:ID>
-        <batchML:FromID>
-          <batchML:FromIDValue></batchML:FromIDValue>
-          <batchML:FromType>Step</batchML:FromType>
-        </batchML:FromID>
-        <batchML:ToID>
-          <batchML:ToIDValue></batchML:ToIDValue>
-          <batchML:ToType>Step</batchML:ToType>
-        </batchML:ToID>
-        <batchML:Extension>
-          <custom:Duration>PT0M</custom:Duration>
         </batchML:Extension>
       </batchML:Link>
     </batchML:ProcedureLogic>
