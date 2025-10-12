@@ -10,12 +10,12 @@ namespace Y0KAI_Dijkstra
         {
             PriorityQueue<string, double> pq = new();
 
-            var dist = g.Nodes.Keys.ToDictionary(k => k, _ => double.PositiveInfinity);
+            Dictionary<string, double> dist = g.Nodes.Keys.ToDictionary(k => k, _ => double.PositiveInfinity);
             Dictionary<string, string> pred = [];
 
-            var start = g.Nodes.Keys.Where(n => !g.Edges.Any(e => e.ToID == n));
+            List<string> start = [.. g.Nodes.Keys.Where(n => !g.Edges.Any(e => e.ToID == n))];
 
-            foreach (var s in start)
+            foreach (string s in start)
             {
                 dist[s] = 0;
                 pq.Enqueue(s, 0); // node's ID, cost
@@ -35,7 +35,7 @@ namespace Y0KAI_Dijkstra
                     continue;
                 }
 
-                foreach (var edge in g.Edges.Where(e => e.FromID == uID))
+                foreach (Edge edge in g.Edges.Where(e => e.FromID == uID))
                 {
                     string vID = edge.ToID;
                     double negCost = -edge.Cost;
@@ -50,16 +50,16 @@ namespace Y0KAI_Dijkstra
                 }
             }
 
-            var endNode = dist.Aggregate((min, next) => next.Value < min.Value ? next : min).Key;
+            string endNode = dist.Aggregate((min, next) => next.Value < min.Value ? next : min).Key;
 
             Stack<string> path = [];
-            string? curr = endNode;
+            string curr = endNode;
 
             while (curr is not null && dist[curr] is not double.PositiveInfinity)
             {
                 path.Push(curr);
                 if (!isSilent) WriteLine($"Node \"{curr}\" has been pushed into the path stack!");
-                if (!pred.TryGetValue(curr, out curr)) 
+                if (!pred.TryGetValue(curr, out curr!)) 
                 {
                     WriteLine($"Current node is unavailable, halting iteration...");
                     break;

@@ -4,13 +4,16 @@ namespace Y0KAI_SA
 {
     internal class SimulatedAnnealing
     {
+        // Custom equality comparer for tuples of strings to ensure case-insensitive comparison
         private class TupleStringEqualityComparer : IEqualityComparer<(string, string)>
         {
+            // Override Equals to ensure that tuples (a, b) and (a, b) are considered equal (in a case-insensitive manner)
             public bool Equals((string, string) x, (string, string) y) =>
                 StringComparer.OrdinalIgnoreCase.Equals(x.Item1, y.Item1)
                 &&
                 StringComparer.OrdinalIgnoreCase.Equals(x.Item2, y.Item2);
 
+            // Override GetHashCode to ensure that (a, b) and (b, a) produce different hash codes (with using XOR)
             public int GetHashCode((string, string) obj) =>
                 StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Item1 ?? string.Empty)
                 ^
@@ -24,6 +27,7 @@ namespace Y0KAI_SA
         private readonly Dictionary<(string, string), double> edgeCostLookup;
         private readonly Dictionary<(string, string), bool> reverseDependencyCheck;
 
+        // Constructor to initialize the SimulatedAnnealing instance with a graph
         public SimulatedAnnealing(Graph g)
         {
             graph = g;
@@ -35,6 +39,7 @@ namespace Y0KAI_SA
             );
         }
 
+        // Main method to perform the simulated annealing algorithm
         public List<string> Solve(double initTemp, double coolRate, int maxIt, bool isSilent)
         {
             List<string>
@@ -69,6 +74,7 @@ namespace Y0KAI_SA
             return FilterPathToDAG(bestPath);
         }
 
+        // Evaluate the total cost of a given path, applying penalties for any reverse dependencies
         private double EvalPath(List<string> path, bool isSilent)
         {
             double
@@ -84,14 +90,13 @@ namespace Y0KAI_SA
                 total += edgeCostLookup.TryGetValue((from, to), out double cost) ? cost : 0;
                 penalty += reverseDependencyCheck.ContainsKey((from, to)) ? DependencyPenalty : 0;
                 if (!isSilent)
-                {
                     Console.WriteLine($"{i + 1}. iteration\ncost: {cost}\npenalty: {penalty}\ntotal: {total}\ncurrent value: {total - penalty}\n");
-                }
             }
 
             return total - penalty;
         }
 
+        // Generate a neighboring solution by swapping two random nodes in the path
         private List<string> GenNeighbor(List<string> path)
         {
             List<string> neighbor = [.. path];
@@ -108,6 +113,7 @@ namespace Y0KAI_SA
             return neighbor;
         }
 
+        // Filter the best path to ensure it forms a valid Directed Acyclic Graph (DAG) by removing nodes that violate dependencies
         private List<string> FilterPathToDAG(List<string> best)
         {
             List<string> valid = [];

@@ -19,8 +19,8 @@ using System.Text.RegularExpressions;
 using Thesis_LIPX05.Util;
 
 using static Thesis_LIPX05.Util.Gantt;
-using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
+using static Thesis_LIPX05.Util.LogManager;
 
 namespace Thesis_LIPX05
 {
@@ -51,7 +51,7 @@ namespace Thesis_LIPX05
         private bool isFileLoaded = false, SGraphExists, isFileModified = false;
         private string currentFilePath = string.Empty;
 
-        private List<GanttItem> ganttData;
+        private List<GanttItem> GanttData;
 
         private const double BaseTimeScale = 10.0;
         private const string
@@ -63,12 +63,13 @@ namespace Thesis_LIPX05
         private static partial Regex ISO8601Format();
         private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
 
-        private static LogManager? logger;
+        private static string? SGraphFilePath;
+
+        public static string GetSGraphFilePath() => SGraphFilePath ?? string.Empty;
+        public static void SetSGraphFilePath(string path) => SGraphFilePath = path;
 
         public MainWindow()
         {
-            logger = new();
-
             masterRecipe = new("MasterRecipe");
             batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02");
             customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom");
@@ -78,7 +79,7 @@ namespace Thesis_LIPX05
             stepTable = new("Steps Table");
             linkTable = new("Links Table");
 
-            ganttData = [];
+            GanttData = [];
             zoom = 1;
 
             mappings = InitMappings();
@@ -94,7 +95,9 @@ namespace Thesis_LIPX05
 
             ManageFileHandlers();
 
-            logger.Log(LogSeverity.INFO, "Initialization complete!");
+            SGraphFilePath = string.Empty;
+
+            Log(LogSeverity.INFO, "Initialization complete!");
         }
 
         // Enables or disables the saving and closing by checking is a file is loaded
@@ -103,20 +106,6 @@ namespace Thesis_LIPX05
             foreach (var mi in new[] { SaveFileMenuItem, CloseFileMenuItem })
             {
                 mi.IsEnabled = isFileLoaded;
-            }
-        }
-
-        public static LogManager GetLogger()
-        {
-            try
-            {
-                if (logger is not null) return logger;
-                else throw new Exception("Logger not initialized!");
-            }
-            catch
-            {
-                logger?.Log(LogSeverity.WARNING, "Logger not initialized! Creating new one...");
-                return new();
             }
         }
 
@@ -173,7 +162,7 @@ namespace Thesis_LIPX05
                 SolverMenu.Items.Clear();
                 foreach (var solver in solvers)
                 {
-                    var item = new MenuItem
+                    MenuItem item = new()
                     {
                         Header = solver,
                         Tag = solver,
@@ -181,31 +170,93 @@ namespace Thesis_LIPX05
                     };
                     item.Click += SolveClick;
                     solverMenu.Items.Add(item);
-                    logger?.Log(LogSeverity.INFO, $"{item.Tag} solver added!");
+                    Log(LogSeverity.INFO, $"{item.Tag} solver added!");
                 }
                 AddSeparator(solverMenu);
 
                 foreach (var cs in customSolvers)
                 {
                     AddCustomSolverMenuItem(cs);
-                    logger?.Log(LogSeverity.INFO, $"{cs.Name} ({cs.TypeID} type) solver added!");
+                    Log(LogSeverity.INFO, $"{cs.Name} ({cs.TypeID} type) solver added!");
                 }
                 AddSeparator(solverMenu);
 
-                var addSolverItem = new MenuItem
+                MenuItem addSolverItem = new()
                 {
                     Header = "Add Custom Solver...",
                     IsEnabled = true
                 };
                 addSolverItem.Click += AddCustomSolver_Click;
                 solverMenu.Items.Add(addSolverItem);
+                AddSeparator(solverMenu);
 
-                logger?.Log(LogSeverity.INFO, "Solver menu successfully built!");
+                MenuItem loadSolutionItem = new()
+                {
+                    Header = "Load Solution from File...",
+                    IsEnabled = SGraphExists
+                };
+                loadSolutionItem.Click += LoadSolutionItem_Click;
+                solverMenu.Items.Add(loadSolutionItem);
+
+                Log(LogSeverity.INFO, "Solver menu successfully built!");
             }
             catch (Exception ex)
             {
-                logger?.Log(LogSeverity.INFO, $"Error building solver menu: {ex.Message}");
+                Log(LogSeverity.INFO, $"Error building solver menu: {ex.Message}");
                 MessageBox.Show($"Error building solver menu: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadSolutionItem_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new()
+            {
+                DefaultExt = ".txt",
+                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
+                Title = "Load Solution from Text File"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    string[] lines = File.ReadAllLines(dlg.FileName);
+                    List<Node> path = [];
+                    foreach (var line in lines)
+                    {
+                        string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length == 2 && parts[0].Contains("NODE")) // expecting lines like "NODE <nodeId>"
+                        {
+                            string nodeId = parts[1];
+                            if (GetNodes().TryGetValue(nodeId, out Node? node))
+                            {
+                                path.Add(node);
+                                Log(LogSeverity.INFO, $"Node {nodeId} added to solution path from file.");
+                            }
+                            else Log(LogSeverity.WARNING, $"Node {nodeId} not found in current S-Graph, skipping...");
+                        }
+                    }
+                    if (path.Count == 0)
+                    {
+                        Log(LogSeverity.ERROR, "Loaded solution file contains no valid nodes!");
+                        MessageBox.Show("Loaded solution file contains no valid nodes!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    GanttData = BuildChartFromPath(path, GetEdges());
+                    Log(LogSeverity.INFO, $"Gantt data built with {GanttData.Count} items from loaded solution!");
+                    double totalTime = GanttData.Max(x => x.Start + x.Duration);
+                    int rowC = GanttData.Count;
+                    double timeScale = BaseTimeScale * zoom;
+                    Render(GanttCanvas, GanttData, timeScale);
+                    DrawRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
+                    Log(LogSeverity.INFO, "Loaded solution rendered successfully!");
+                }
+                catch (Exception ex)
+                {
+                    Log(LogSeverity.ERROR, $"Error loading solution from file: {ex.Message}");
+                    MessageBox.Show($"Error loading solution from file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -218,120 +269,109 @@ namespace Thesis_LIPX05
                 stepTable.GetChanges() is not null ||
                 linkTable.GetChanges() is not null))
             {
-                logger?.Log(LogSeverity.WARNING, "App is about to be shut down with unsaved changes! Prompting user to save before exiting!");
+                Log(LogSeverity.WARNING, "App is about to be shut down with unsaved changes! Prompting user to save before exiting!");
                 var res = MessageBox.Show("Do you wish to save changes before exiting?", "Confirm Exit", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
                 switch (res)
                 {
                     case MessageBoxResult.Yes:
                         {
-                            logger?.Log(LogSeverity.INFO, "User opted to save changes in the datatables to the BatchML file before exiting!");
+                            Log(LogSeverity.INFO, "User opted to save changes in the datatables to the BatchML file before exiting!");
                             SaveFile_Click(sender, new());
                             var res2 = MessageBox.Show("Do you wish to save your custom solvers?", "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                             if (res2 is MessageBoxResult.Yes)
                             {
                                 SaveCustomSolvers2JSON();
-                                logger?.Log(LogSeverity.INFO, "Shutting down after saving custom solvers and the changes made to the datatable...");
+                                Log(LogSeverity.INFO, "Shutting down after saving custom solvers and the changes made to the datatable...");
                             }
-                            else logger?.Log(LogSeverity.INFO, "Shutting down after saving the changes made to the datatable, without saving custom solvers...");
-                            Application.Current.Shutdown();
+                            else Log(LogSeverity.INFO, "Shutting down after saving the changes made to the datatable, without saving custom solvers...");
                             break;
                         }
                     case MessageBoxResult.No:
                         {
-                            logger?.Log(LogSeverity.WARNING, "User opted to exit without saving changes in the datatables to the BatchML file before exiting!");
+                            Log(LogSeverity.WARNING, "User opted to exit without saving changes in the datatables to the BatchML file before exiting!");
                             var res3 = MessageBox.Show("Do you wish to save your custom solvers?", "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                             if (res3 is MessageBoxResult.Yes)
                             {
                                 SaveCustomSolvers2JSON();
-                                logger?.Log(LogSeverity.WARNING, "Shutting down with saving only the custom solvers...");
+                                Log(LogSeverity.WARNING, "Shutting down with saving only the custom solvers...");
                             }
-                            else logger?.Log(LogSeverity.WARNING, "Shutting down without saving anything...");
-                            Application.Current.Shutdown();
+                            else Log(LogSeverity.WARNING, "Shutting down without saving anything...");
                             break;
                         }
                     case MessageBoxResult.Cancel:
                         e.Cancel = true; // Cancel the closing event
-                        logger?.Log(LogSeverity.INFO, $"Application exit cancelled by user!");
+                        Log(LogSeverity.INFO, $"Application exit cancelled by user!");
                         break;
                 }
             }
-            else
-            {
-                logger?.Log(LogSeverity.INFO, "No changes were made, exiting app...");
-                Application.Current.Shutdown();
-            }
+            else Log(LogSeverity.INFO, "No changes were made, exiting app...");
         }
 
         // Event handler for the Exit menu item click event
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            switch (isFileModified &&
-                (masterTable.GetChanges() is not null ||
-                recipeElementTable.GetChanges() is not null ||
-                stepTable.GetChanges() is not null ||
-                linkTable.GetChanges() is not null))
+            if (isFileModified && HasUnsavedChanges())
             {
-                case true:
-                    logger?.Log(LogSeverity.WARNING, "Unsaved changes detected, prompting user to save before exiting!");
-                    MainWindow_Closing(sender, new(false));
-                    break;
-                case false:
-                    logger?.Log(LogSeverity.INFO, "No changes were made, shutting down...");
-                    Application.Current.Shutdown();
-                    break;
+                Log(LogSeverity.WARNING, "Unsaved changes detected, prompting user to save before exiting!");
+                MainWindow_Closing(sender, new(false));
+            }
+            else
+            {
+                Log(LogSeverity.INFO, "No changes were made, shutting down...");
+                Application.Current.Shutdown();
             }
         }
 
         // Calls the heursitic solver
         private void SolveHeuristically()
         {
-            var heurOpt = new HeuristicOptimizer(GetNodes(), GetEdges());
-            var heurPath = heurOpt.Optimize();
+            HeuristicOptimizer heurOpt = new(GetNodes(), GetEdges());
+            List<Node> heurPath = heurOpt.Optimize();
 
-            ganttData = BuildChartFromPath(heurPath, GetEdges());
-            logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
-            double heurTotalTime = ganttData.Max(x => x.Start + x.Duration);
-            int heurRowC = ganttData.Count;
+            GanttData = BuildChartFromPath(heurPath, GetEdges());
+            Log(LogSeverity.INFO, $"Gantt data built with {GanttData.Count} items!");
+            double heurTotalTime = GanttData.Max(x => x.Start + x.Duration);
+            int heurRowC = GanttData.Count;
             double heurTimeScale = BaseTimeScale * zoom;
 
-            Render(GanttCanvas, ganttData, heurTimeScale);
+            Render(GanttCanvas, GanttData, heurTimeScale);
             DrawRuler(RulerCanvas, GanttCanvas, heurTotalTime, heurTimeScale);
-            logger?.Log(LogSeverity.INFO, "Heuristic solver finished!");
+            Log(LogSeverity.INFO, "Heuristic solver finished!");
         }
 
         // Calls the Branch and Bound solver
         private void SolveWithBnB()
         {
-            var bnbOpt = new BnBOptimizer(GetNodes(), GetEdges());
-            var bnbPath = bnbOpt.Optimize();
+            BnBOptimizer bnbOpt = new (GetNodes(), GetEdges());
+            List<Node> bnbPath = bnbOpt.Optimize();
 
-            ganttData = BuildChartFromPath(bnbPath, GetEdges());
-            logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
-            double bnbTotalTime = ganttData.Max(x => x.Start + x.Duration);
-            int bnbRowC = ganttData.Count;
+            GanttData = BuildChartFromPath(bnbPath, GetEdges());
+            Log(LogSeverity.INFO, $"Gantt data built with {GanttData.Count} items!");
+            double bnbTotalTime = GanttData.Max(x => x.Start + x.Duration);
+            int bnbRowC = GanttData.Count;
             double bnbTimeScale = BaseTimeScale * zoom;
 
-            Render(GanttCanvas, ganttData, bnbTimeScale);
+            Render(GanttCanvas, GanttData, bnbTimeScale);
             DrawRuler(RulerCanvas, GanttCanvas, bnbTotalTime, bnbTimeScale);
-            logger?.Log(LogSeverity.INFO, "Branch & Bound solver finished!");
+            Log(LogSeverity.INFO, "Branch & Bound solver finished!");
         }
 
         // Calls the Genetic Algorithm solver
         private void SolveWithGenetic()
         {
-            var gaOpt = new GeneticOptimizer(GetNodes(), GetEdges());
-            var gaPath = gaOpt.Optimize();
+            GeneticOptimizer gaOpt = new(GetNodes(), GetEdges());
+            List<Node> gaPath = gaOpt.Optimize();
 
-            ganttData = BuildChartFromPath(gaPath, GetEdges());
-            logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
-            double gaTotalTime = ganttData.Max(x => x.Start + x.Duration);
-            int gaRowC = ganttData.Count;
+            GanttData = BuildChartFromPath(gaPath, GetEdges());
+            Log(LogSeverity.INFO, $"Gantt data built with {GanttData.Count} items!");
+            double gaTotalTime = GanttData.Max(x => x.Start + x.Duration);
+            int gaRowC = GanttData.Count;
             double gaTimeScale = BaseTimeScale * zoom;
 
-            Render(GanttCanvas, ganttData, gaTimeScale);
+            Render(GanttCanvas, GanttData, gaTimeScale);
             DrawRuler(RulerCanvas, GanttCanvas, gaTotalTime, gaTimeScale);
-            logger?.Log(LogSeverity.INFO, "Genetic Algorithm solver finished!");
+            Log(LogSeverity.INFO, "Genetic Algorithm solver finished!");
         }
 
         // Event handler for the Solve menu item click event
@@ -344,47 +384,51 @@ namespace Thesis_LIPX05
                 {
                     case IntegratedHeurSolver:
                         {
-                            logger?.Log(LogSeverity.INFO, "Heuristic solver selected!");
+                            Log(LogSeverity.INFO, "Heuristic solver selected!");
                             SolveHeuristically();
                             GanttCanvas.Tag = menuItem?.Tag;
                             break;
                         }
                     case IntegratedBnBSolver:
                         {
-                            logger?.Log(LogSeverity.INFO, "Branch & Bound solver selected!");
+                            Log(LogSeverity.INFO, "Branch & Bound solver selected!");
                             SolveWithBnB();
                             GanttCanvas.Tag = menuItem?.Tag;
                             break;
                         }
                     case IntegratedGenSolver:
                         {
-                            logger?.Log(LogSeverity.INFO, "Genetic Algorithm solver selected!");
+                            Log(LogSeverity.INFO, "Genetic Algorithm solver selected!");
                             SolveWithGenetic();
                             GanttCanvas.Tag = menuItem?.Tag;
                             break;
                         }
+                    // reserved for external solvers reading from and writing to standard input/output
                     default:
                         {
-                            var customSolver = customSolvers.FirstOrDefault(cs => cs.Name == menuItem?.Tag.ToString());
+                            CustomSolver? customSolver = customSolvers.FirstOrDefault(cs => cs.Name == menuItem?.Tag.ToString());
                             if (customSolver is null)
                             {
-                                logger?.Log(LogSeverity.ERROR, "Custom solver not found!");
+                                Log(LogSeverity.ERROR, "Custom solver not found!");
                                 MessageBox.Show("Custom solver not found!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
 
-                            logger?.Log(LogSeverity.INFO, $"{customSolver.Name} custom solver selected!");
+                            Log(LogSeverity.INFO, $"{customSolver.Name} custom solver selected!");
+                            SolverLogManager logManager = new(customSolver.Name);
 
                             List<string> launchArgs = [];
 
                             if (customSolver.TypeID.Equals("Metaheuristic", StringComparison.OrdinalIgnoreCase))
                             {
-                                logger?.Log(LogSeverity.INFO,
+                                logManager.LogSolverActivity(LogSeverity.INFO,
                                     $"Gathering parameters for {customSolver.Name}");
                                 GatherArgs4Metaheur(launchArgs);
+                                logManager.LogSolverActivity(LogSeverity.INFO,
+                                    $"Parameters gathered: {string.Join(", ", launchArgs)}");
                             }
                             else if (customSolver.TypeID.Equals("Deterministic", StringComparison.OrdinalIgnoreCase))
-                                logger?.Log(LogSeverity.INFO,
+                                logManager.LogSolverActivity(LogSeverity.INFO,
                                     "Deterministic solver selected; skipping numeric parameter gathering...");
 
                             MessageBoxResult silentRes = MessageBox.Show(
@@ -395,104 +439,27 @@ namespace Thesis_LIPX05
 
                             if (silentRes == MessageBoxResult.Yes) launchArgs.Add("-s");
 
-                            try
+                            customSolver.Arguments.Clear();
+                            customSolver.Arguments.AddRange(launchArgs);
+
+                            ProcessStartInfo psi = new()
                             {
-                                customSolver.Arguments.Clear();
-                                customSolver.Arguments.AddRange(launchArgs);
+                                FileName = customSolver.Path,
+                                Arguments = string.Join(' ', customSolver.Arguments),
+                                RedirectStandardInput = false,
+                                RedirectStandardOutput = false,
+                                RedirectStandardError = true,
+                                UseShellExecute = false,
+                                CreateNoWindow = customSolver.Arguments.Contains("-s")
+                            };
 
-                                StringBuilder argsBuilder = new();
-                                foreach (string arg in customSolver.Arguments) argsBuilder.Append(arg).Append(' ');
-
-                                Process proc = new()
-                                {
-                                    StartInfo = new()
-                                    {
-                                        FileName = customSolver.Path,
-                                        Arguments = argsBuilder.ToString().Trim(),
-                                        RedirectStandardInput = true,
-                                        RedirectStandardOutput = true,
-                                        RedirectStandardError = true,
-                                        UseShellExecute = false,
-                                        CreateNoWindow = argsBuilder.ToString().Contains("-s")
-                                    }
-                                };
-                                proc.Start();
-
-                                {
-                                    using StreamWriter writer = proc.StandardInput;
-                                    if (writer.BaseStream.CanWrite)
-                                    {
-                                        foreach (Node node in GetNodes().Values) writer.WriteLine($"NODE {node.ID} {node.Desc}");
-                                        foreach (Edge edge in GetEdges()) writer.WriteLine($"EDGE {edge.From.ID} {edge.To.ID} {edge.Cost}");
-                                    }
-                                    else
-                                    {
-                                        logger?.Log(LogSeverity.ERROR,
-                                            "Cannot write to custom solver's standard input!");
-                                        MessageBox.Show("Cannot write to custom solver's standard input!",
-                                            "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                        return;
-                                    }
-                                }
-
-                                List<string> output = [];
-
-                                string
-                                    stdOut = proc.StandardOutput.ReadToEnd(),
-                                    stdErr = proc.StandardError.ReadToEnd();
-
-                                proc.WaitForExit();
-
-                                output.AddRange(stdOut.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries));
-
-                                if (proc.ExitCode != 0)
-                                {
-                                    if (!string.IsNullOrEmpty(stdErr))
-                                    {
-                                        logger?.Log(LogSeverity.ERROR, $"Custom solver exited with code {proc.ExitCode}: {stdErr}");
-                                        MessageBox.Show($"Custom solver exited with code {proc.ExitCode}:\n{stdErr}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    }
-                                    return;
-                                }
-
-                                List<Node> path = [];
-                                foreach (var line in output)
-                                {
-                                    string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                                    if (parts.Length == 2 && parts[0].Equals("NODE"))
-                                    {
-                                        string nodeId = parts[1];
-                                        if (GetNodes().TryGetValue(nodeId, out var node)) path.Add(node);
-                                    }
-                                }
-                                if (path.Count == 0)
-                                {
-                                    logger?.Log(LogSeverity.ERROR, "Custom solver returned an empty path!");
-                                    MessageBox.Show("Custom solver returned an empty path!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    return;
-                                }
-
-                                ganttData = BuildChartFromPath(path, GetEdges());
-                                logger?.Log(LogSeverity.INFO, $"Gantt data built with {ganttData.Count} items!");
-                                double totalTime = ganttData.Max(x => x.Start + x.Duration);
-                                int rowC = ganttData.Count;
-                                double timeScale = BaseTimeScale * zoom;
-                                Render(GanttCanvas, ganttData, timeScale);
-                                DrawRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
-                                logger?.Log(LogSeverity.INFO, $"{customSolver.Name} custom solver finished!");
-                                GanttCanvas.Tag = customSolver.Name;
-                            }
-                            catch (Exception ex)
-                            {
-                                logger?.Log(LogSeverity.ERROR, $"Error executing custom solver: {ex.Message}");
-                                MessageBox.Show($"Error executing custom solver: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
                             break;
                         }
                 }
             }
         }
 
+        // Gathers arguments for metaheuristic solvers via input boxes
         private static void GatherArgs4Metaheur(List<string> launchArgs)
         {
             string inTemp = Interaction.InputBox(
@@ -500,31 +467,32 @@ namespace Thesis_LIPX05
                 "Solver Parameter",
                 "1000.0");
 
-            if (double.TryParse(inTemp, out _)) launchArgs.Add(inTemp);
-            else return;
-
             string inCool = Interaction.InputBox(
                 "Enter Initial Cooling Rate (e.g., 0.995)",
                 "Solver Paramter",
                 "0.995");
-
-            if (double.TryParse(inCool, out _)) launchArgs.Add(inCool);
-            else return;
 
             string inIter = Interaction.InputBox(
                 "Enter Initial Iteration Rate (e.g., 5000)",
                 "Solver Parameter",
                 "5000");
 
-            if (int.TryParse(inIter, out _)) launchArgs.Add(inIter);
-            else return;
+            if (double.TryParse(inTemp, out _) && double.TryParse(inCool, out _) && int.TryParse(inIter, out _))
+                foreach (string s in new[] { inTemp, inCool, inIter })
+                    launchArgs.Add(s);
+            else
+            {
+                Log(LogSeverity.WARNING, "Invalid parameters entered, proceeding with default values.");
+                MessageBox.Show("Invalid parameters entered, proceeding with default values.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
         }
 
         // Event handler for the About menu item click event (only a static, disposable window)
         private void About_Click(object sender, RoutedEventArgs e)
         {
             new AboutWindow().Show();
-            logger?.Log(LogSeverity.INFO, "\"About\" window opened!");
+            Log(LogSeverity.INFO, "\"About\" window opened!");
         }
 
         // Event handler for the zoom slider's PreviewMouseDown event
@@ -532,7 +500,7 @@ namespace Thesis_LIPX05
         {
             if (sender is not Slider slider)
             {
-                logger?.Log(LogSeverity.ERROR, "Zoom slider sender is not a Slider!");
+                Log(LogSeverity.ERROR, "Zoom slider sender is not a Slider!");
                 return;
             }
 
@@ -543,30 +511,30 @@ namespace Thesis_LIPX05
                 double newValue = slider.Minimum + (slider.Maximum - slider.Minimum) * ratio;
                 slider.Value = newValue;
                 e.Handled = true; // Prevents slider from moving
-                logger?.Log(LogSeverity.INFO, $"Zoom slider clicked at position {pos.X}, setting value to {newValue}!");
+                Log(LogSeverity.INFO, $"Zoom slider clicked at position {pos.X}, setting value to {newValue}!");
             }
         }
 
         // Event handler for the zoom slider's ValueChanged event
         private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (ganttData is null || ganttData.Count == 0) return;
+            if (GanttData is null || GanttData.Count == 0) return;
 
             zoom = Math.Pow(2, e.NewValue);
             double scale = BaseTimeScale * zoom;
 
-            double totalTime = ganttData.Max(x => x.Start + x.Duration);
-            int rowC = ganttData.Count;
+            double totalTime = GanttData.Max(x => x.Start + x.Duration);
+            int rowC = GanttData.Count;
 
             GanttCanvas.LayoutTransform = Transform.Identity;
 
             GanttCanvas.Width = totalTime * scale + 100; // +100 for padding
             RulerCanvas.Width = GanttCanvas.Width;
 
-            Render(GanttCanvas, ganttData, scale);
+            Render(GanttCanvas, GanttData, scale);
             DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale);
 
-            logger?.Log(LogSeverity.INFO, $"Zoom level changed to {e.NewValue}, scale set to {scale}!");
+            Log(LogSeverity.INFO, $"Zoom level changed to {e.NewValue}, scale set to {scale}!");
         }
 
         private bool HasUnsavedChanges() =>
@@ -583,7 +551,7 @@ namespace Thesis_LIPX05
             {
                 if (HasUnsavedChanges())
                 {
-                    logger?.Log(LogSeverity.WARNING,
+                    Log(LogSeverity.WARNING,
                         "Attempting to open new file with unsaved changes present in the actual one; prompting user!");
 
                     MessageBoxResult res = MessageBox.Show(
@@ -596,7 +564,7 @@ namespace Thesis_LIPX05
                     if (res == MessageBoxResult.Yes) SaveFile_Click(sender, new());
                     else if (res == MessageBoxResult.Cancel)
                     {
-                        logger?.Log(LogSeverity.INFO,
+                        Log(LogSeverity.INFO,
                             "New file opening cancelled by user (unsaved changes prompt).");
                         return;
                     }
@@ -606,7 +574,7 @@ namespace Thesis_LIPX05
                 PurgeDataTables();
             }
 
-            logger?.Log(LogSeverity.INFO, "Open file dialog initiated...");
+            Log(LogSeverity.INFO, "Open file dialog initiated...");
             OpenFileDialog dlg = new()
             {
                 DefaultExt = ".xml",
@@ -622,10 +590,10 @@ namespace Thesis_LIPX05
                 isFileModified = false;
                 ManageFileHandlers();
 
-                logger?.Log(LogSeverity.INFO,
+                Log(LogSeverity.INFO,
                     $"BatchML file loaded from {currentFilePath}!");
             }
-            else logger?.Log(LogSeverity.INFO,
+            else Log(LogSeverity.INFO,
                 "Open file dialog cancelled by user.");
         }
 
@@ -634,7 +602,7 @@ namespace Thesis_LIPX05
         {
             if (!isFileLoaded || masterRecipe is null)
             {
-                logger?.Log(LogSeverity.WARNING, "No BatchML file loaded to save!");
+                Log(LogSeverity.WARNING, "No BatchML file loaded to save!");
                 MessageBox.Show("No BatchML file loaded to save!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -645,7 +613,7 @@ namespace Thesis_LIPX05
 
                 if (menuItem?.Tag.ToString() == "Exit" || menuItem?.Tag.ToString() == "Close File")
                 {
-                    logger?.Log(LogSeverity.WARNING, "Prompting user to save changes before closing either the app or the file!");
+                    Log(LogSeverity.WARNING, "Prompting user to save changes before closing either the app or the file!");
                     MessageBox.Show("Please save changes before exiting!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
@@ -666,7 +634,7 @@ namespace Thesis_LIPX05
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Error saving BatchML file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        logger?.Log(LogSeverity.ERROR, $"Error saving BatchML file: {ex.Message}");
+                        Log(LogSeverity.ERROR, $"Error saving BatchML file: {ex.Message}");
                     }
                 }
             }
@@ -686,13 +654,13 @@ namespace Thesis_LIPX05
                 catch (Exception ex)
                 {
                     MessageBox.Show($"{ex}", "Input Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    logger?.Log(LogSeverity.ERROR, $"Error building S-Graph from XML: {ex.Message}");
+                    Log(LogSeverity.ERROR, $"Error building S-Graph from XML: {ex.Message}");
                 }
             }
             else
             {
                 MessageBox.Show("No BatchML File loaded! Drawing example graph...", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                logger?.Log(LogSeverity.WARNING, "No BatchML file loaded, drawing example S-Graph!");
+                Log(LogSeverity.WARNING, "No BatchML file loaded, drawing example S-Graph!");
                 DrawExampleGraph();
             }
         }
@@ -701,31 +669,26 @@ namespace Thesis_LIPX05
         private void PurgeDataTables()
         {
             masterTable.Clear();
-            masterTable.Rows.Clear();
             masterTable.Columns.Clear();
-            logger?.Log(LogSeverity.INFO, $"{masterTable.TableName} datatable purged!");
+            Log(LogSeverity.INFO, $"{masterTable.TableName} datatable purged!");
 
             recipeElementTable.Clear();
-            recipeElementTable.Rows.Clear();
             recipeElementTable.Columns.Clear();
-            logger?.Log(LogSeverity.INFO, $"{recipeElementTable.TableName} datatable purged!");
+            Log(LogSeverity.INFO, $"{recipeElementTable.TableName} datatable purged!");
 
             stepTable.Clear();
-            stepTable.Rows.Clear();
             stepTable.Columns.Clear();
-            logger?.Log(LogSeverity.INFO, $"{stepTable.TableName} datatable purged!");
+            Log(LogSeverity.INFO, $"{stepTable.TableName} datatable purged!");
 
             linkTable.Clear();
-            linkTable.Rows.Clear();
             linkTable.Columns.Clear();
-            logger?.Log(LogSeverity.INFO, $"{linkTable.TableName} datatable purged!");
+            Log(LogSeverity.INFO, $"{linkTable.TableName} datatable purged!");
 
             foreach (DataTable dt in solutionsList)
             {
                 dt.Clear();
-                dt.Rows.Clear();
                 dt.Columns.Clear();
-                logger?.Log(LogSeverity.INFO, $"{dt.TableName} datatable purged!");
+                Log(LogSeverity.INFO, $"{dt.TableName} datatable purged!");
             }
 
             for (int i = MainTab.Items.Count - 1; i >= 0; i--)
@@ -733,7 +696,7 @@ namespace Thesis_LIPX05
                 if (CheckPresentTabs((MainTab.Items[i] as TabItem)!))
                 {
                     MainTab.Items.RemoveAt(i);
-                    logger?.Log(LogSeverity.INFO, $"{(MainTab.Items[i] as TabItem)?.Header} tab removed!");
+                    Log(LogSeverity.INFO, $"{(MainTab.Items[i] as TabItem)?.Header} tab removed!");
                     continue;
                 }
             }
@@ -747,20 +710,20 @@ namespace Thesis_LIPX05
             tab.Tag.ToString()?.Equals("Links") is true ||
             tab.Tag.ToString()?.Contains("Solution") is true;
 
-        // A helper method to flush the containers ad clean the canvases in one go
+        // A helper method to flush the containers and clean the canvases in one go
         private void Purge()
         {
             foreach (Canvas cv in new[] { SGraphCanvas, GanttCanvas, RulerCanvas })
             {
                 cv.Children.Clear();
-                logger?.Log(LogSeverity.INFO, $"{cv.Name} has been cleared!");
+                Log(LogSeverity.INFO, $"{cv.Name} has been cleared!");
             }
 
             GetNodes().Clear();
-            logger?.Log(LogSeverity.INFO, "S-Graph nodes cleared!");
+            Log(LogSeverity.INFO, "S-Graph nodes cleared!");
 
             GetEdges().Clear();
-            logger?.Log(LogSeverity.INFO, "S-Graph edges cleared!");
+            Log(LogSeverity.INFO, "S-Graph edges cleared!");
         }
 
         // A helper method to enable solvers after the initial S-Graph is rendered
@@ -773,7 +736,7 @@ namespace Thesis_LIPX05
                 if (x is MenuItem menuItem && !menuItem.Name.Contains("Add new"))
                 {
                     menuItem.IsEnabled = SGraphExists;
-                    logger?.Log(LogSeverity.INFO, $"{menuItem.Tag} solver enabled!");
+                    Log(LogSeverity.INFO, $"{menuItem.Tag} solver enabled!");
                 }
                 else continue;
             }
@@ -804,9 +767,10 @@ namespace Thesis_LIPX05
 
             Render(SGraphCanvas, 4);
 
-            logger?.Log(LogSeverity.INFO, "Example S-Graph drawn!");
+            Log(LogSeverity.INFO, "Example S-Graph drawn!");
 
             EnableSolvers();
+            WriteSGraph2XML();
         }
 
         // Builds the S-Graph from the loaded BatchML file
@@ -890,9 +854,10 @@ namespace Thesis_LIPX05
 
             Render(SGraphCanvas, 3);
 
-            logger?.Log(LogSeverity.INFO, "S-Graph built from BatchML file!");
+            Log(LogSeverity.INFO, "S-Graph built from BatchML file!");
 
             EnableSolvers();
+            WriteSGraph2XML();
         }
 
         // Loads the BatchML file and populates the data tables
@@ -917,12 +882,12 @@ namespace Thesis_LIPX05
                 // Links datatable
                 DisplayLinkTable(linkTable, batchML, customNS);
 
-                logger?.Log(LogSeverity.INFO, "BatchML file loaded and data tables populated!");
+                Log(LogSeverity.INFO, "BatchML file loaded and data tables populated!");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading BatchML file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                logger?.Log(LogSeverity.ERROR, $"Error loading BatchML file: {ex.Message}");
+                Log(LogSeverity.ERROR, $"Error loading BatchML file: {ex.Message}");
             }
         }
 
@@ -931,14 +896,14 @@ namespace Thesis_LIPX05
         {
             if (!isFileLoaded)
             {
-                logger?.Log(LogSeverity.WARNING, "No BatchML file loaded to close!");
+                Log(LogSeverity.WARNING, "No BatchML file loaded to close!");
                 MessageBox.Show("No BatchML file loaded to close!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (HasUnsavedChanges())
             {
-                logger?.Log(LogSeverity.WARNING,
+                Log(LogSeverity.WARNING,
                     "Attempting to close file with unsaved changes; prompting user!");
 
                 MessageBoxResult res = MessageBox.Show(
@@ -957,7 +922,7 @@ namespace Thesis_LIPX05
                 }
                 else if (res == MessageBoxResult.Cancel)
                 {
-                    logger?.Log(LogSeverity.INFO,
+                    Log(LogSeverity.INFO,
                         "File closing cancelled by user.");
                     return;
                 }
@@ -969,12 +934,12 @@ namespace Thesis_LIPX05
                 PurgeDataTables();
                 isFileLoaded = false;
                 ManageFileHandlers();
-                logger?.Log(LogSeverity.INFO, "BatchML file closed and all data cleared!");
+                Log(LogSeverity.INFO, "BatchML file closed and all data cleared!");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error closing BatchML: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                logger?.Log(LogSeverity.ERROR, $"Error closing BatchML: {ex.Message}");
+                Log(LogSeverity.ERROR, $"Error closing BatchML: {ex.Message}");
             }
         }
 
@@ -1001,7 +966,7 @@ namespace Thesis_LIPX05
             MainTab.Items.Insert(0, tab);
             MainTab.SelectedIndex = 0;
 
-            logger?.Log(LogSeverity.INFO, $"{dt.TableName} datatable displayed in new tab!");
+            Log(LogSeverity.INFO, $"{dt.TableName} datatable displayed in new tab!");
         }
 
         // Exports an S-Graph to a JPEG file
@@ -1019,7 +984,7 @@ namespace Thesis_LIPX05
                             return;
                         }
                         else JPEGExporter.ExportOneCanvas(SGraphCanvas, "S-Graph");
-                        logger?.Log(LogSeverity.INFO, "S-Graph exported as JPEG file!");
+                        Log(LogSeverity.INFO, "S-Graph exported as JPEG file!");
                         break;
                     }
                 case "Gantt":
@@ -1030,7 +995,7 @@ namespace Thesis_LIPX05
                             return;
                         }
                         else JPEGExporter.ExportMultipleCanvases(RulerCanvas, GanttCanvas, "Gantt Chart");
-                        logger?.Log(LogSeverity.INFO, "Gantt chart exported as JPEG file!");
+                        Log(LogSeverity.INFO, "Gantt chart exported as JPEG file!");
                         break;
                     }
             }
@@ -1077,54 +1042,50 @@ namespace Thesis_LIPX05
             masterRecipe.SetElementValue(batchML + "ID", e.Row["RecipeID"]);
             masterRecipe.SetElementValue(batchML + "Version", e.Row["Version"]);
 
-            var desc = masterRecipe.Elements(batchML + "Description").LastOrDefault();
-            if (desc is not null) desc.Value = e.Row["Description"].ToString() ?? string.Empty;
-
-            var header = masterRecipe.Element(batchML + "Header");
-            if (header is not null)
+            XElement? desc = masterRecipe.Element(batchML + "Description");
+            if (desc is null)
             {
-                header.SetElementValue(batchML + "ProductID", e.Row["ProductID"]);
-                header.SetElementValue(batchML + "ProductName", e.Row["ProductName"]);
-                var batchSize = header.Element(batchML + "BatchSize");
-                if (batchSize is not null)
-                {
-                    batchSize.SetElementValue(batchML + "Nominal", e.Row["NominalBatchSize"]);
-                    batchSize.SetElementValue(batchML + "Min", e.Row["MinBatchSize"]);
-                    batchSize.SetElementValue(batchML + "Max", e.Row["MaxBatchSize"]);
-                    batchSize.SetElementValue(batchML + "UnitOfMeasure", e.Row["UnitOfMeasure"]);
-                }
+                desc = new(batchML + "Description");
+                masterRecipe.Add(desc);
             }
+            desc.Value = e.Row["Description"].ToString() ?? string.Empty;
 
-            logger?.Log(LogSeverity.INFO, "Changes made to Master Recipe table synced to XML!");
+            XElement header = masterRecipe.Element(batchML + "Header") ?? new(batchML + "Header");
+            if (header is null) masterRecipe.Add(header);
+
+            header?.SetElementValue(batchML + "ProductID", e.Row["ProductID"]);
+            header?.SetElementValue(batchML + "ProductName", e.Row["ProductName"]);
+
+            XElement batchSize = header?.Element(batchML + "BatchSize") ?? new(batchML + "BatchSize");
+            if (batchSize is null) header?.Add(batchSize);
+
+            batchSize?.SetElementValue(batchML + "Nominal", e.Row["NominalBatchSize"]);
+            batchSize?.SetElementValue(batchML + "Min", e.Row["MinBatchSize"]);
+            batchSize?.SetElementValue(batchML + "Max", e.Row["MaxBatchSize"]);
+            batchSize?.SetElementValue(batchML + "UnitOfMeasure", e.Row["UnitOfMeasure"]);
+
+            Log(LogSeverity.INFO, "Changes made to Master Recipe table synced to XML!");
             isFileModified = true;
         }
 
         // Displays the recipe element table
         private void DisplayRecipeElementTable(DataTable redt, XNamespace batchML)
         {
-            var recipeElements =
-
             redt.Columns.Add("ID");
             redt.Columns.Add("Description");
 
+            var reList = masterRecipe.Descendants(batchML + "RecipeElement")
+                .Select(x => new
+                {
+                    ID = x.Element(batchML + "ID")?.Value.Trim(),
+                    Desc = x.Element(batchML + "Description")?.Value.Trim()
+                })
+                .Where(x => !string.IsNullOrEmpty(x.ID) && !string.IsNullOrEmpty(x.Desc))
+                .ToList();
 
-            if (masterRecipe.Descendants(batchML + "RecipeElement")
-                .Select(x => new
-                {
-                    ID = x.Element(batchML + "ID")?.Value.Trim(),
-                    Desc = x.Element(batchML + "Description")?.Value.Trim()
-                })
-                .Where(x => !string.IsNullOrEmpty(x.ID) && !string.IsNullOrEmpty(x.Desc))
-                .ToList() is not null)
+            if (reList.Count != 0)
             {
-                foreach (var re in masterRecipe.Descendants(batchML + "RecipeElement")
-                .Select(x => new
-                {
-                    ID = x.Element(batchML + "ID")?.Value.Trim(),
-                    Desc = x.Element(batchML + "Description")?.Value.Trim()
-                })
-                .Where(x => !string.IsNullOrEmpty(x.ID) && !string.IsNullOrEmpty(x.Desc))
-                .ToList()!)
+                foreach (var re in reList)
                 {
                     DataRow dr = redt.NewRow();
                     dr["ID"] = re.ID;
@@ -1135,7 +1096,7 @@ namespace Thesis_LIPX05
             }
             else
             {
-                logger?.Log(LogSeverity.WARNING, "No Recipe Elements found in the BatchML file.");
+                Log(LogSeverity.WARNING, "No Recipe Elements found in the BatchML file.");
                 MessageBox.Show("No Recipe Elements found in the BatchML file.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -1150,7 +1111,7 @@ namespace Thesis_LIPX05
             };
             redt.RowDeleted += (s, e) =>
             {
-                SyncDeleteRowFromXml(e.Row, "RecipeElements");
+                SyncRowToXml(e.Row, "RecipeElements");
                 isFileModified = true;
             };
         }
@@ -1158,8 +1119,6 @@ namespace Thesis_LIPX05
         // Displays the steps table
         private void DisplayStepTable(DataTable sdt, XNamespace batchML)
         {
-            var steps =
-
             sdt.Columns.Add("ID");
             sdt.Columns.Add("RecipeElementID");
 
@@ -1190,7 +1149,7 @@ namespace Thesis_LIPX05
             }
             else
             {
-                logger?.Log(LogSeverity.WARNING, "No Steps found in the BatchML file.");
+                Log(LogSeverity.WARNING, "No Steps found in the BatchML file.");
                 MessageBox.Show("No Steps found in the BatchML file.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -1205,7 +1164,7 @@ namespace Thesis_LIPX05
             };
             sdt.RowDeleted += (s, e) =>
             {
-                SyncDeleteRowFromXml(e.Row, "Steps");
+                SyncRowToXml(e.Row, "Steps");
                 isFileModified = true;
             };
         }
@@ -1213,7 +1172,6 @@ namespace Thesis_LIPX05
         // Displays the links table
         private void DisplayLinkTable(DataTable ldt, XNamespace batchML, XNamespace customNS)
         {
-
             ldt.Columns.Add("ID");
             ldt.Columns.Add("From");
             ldt.Columns.Add("To");
@@ -1259,7 +1217,7 @@ namespace Thesis_LIPX05
             }
             else
             {
-                logger?.Log(LogSeverity.WARNING, "No Links found in the BatchML file.");
+                Log(LogSeverity.WARNING, "No Links found in the BatchML file.");
                 MessageBox.Show("No Links found in the BatchML file.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -1274,7 +1232,7 @@ namespace Thesis_LIPX05
             };
             ldt.RowDeleted += (s, e) =>
             {
-                SyncDeleteRowFromXml(e.Row, "Links");
+                SyncRowToXml(e.Row, "Links");
                 isFileModified = true;
             };
         }
@@ -1301,7 +1259,7 @@ namespace Thesis_LIPX05
 
             solutionsList.Add(sdt);
             DisplayDataTable(sdt, sdt.TableName);
-            logger?.Log(LogSeverity.INFO, $"Solution table for \"{GanttCanvas.Tag.ToString() ?? string.Empty}\" displayed in new tab!");
+            Log(LogSeverity.INFO, $"Solution table for \"{GanttCanvas.Tag.ToString() ?? string.Empty}\" displayed in new tab!");
         }
 
         // Event handler for adding a custom solver
@@ -1323,7 +1281,7 @@ namespace Thesis_LIPX05
                 {
                     if (customSolvers.Any(s => s.Name.Equals(input, StringComparison.OrdinalIgnoreCase)))
                     {
-                        logger?.Log(LogSeverity.WARNING, "A solver with this name already exists! Aborting assignment!");
+                        Log(LogSeverity.WARNING, "A solver with this name already exists! Aborting assignment!");
                         MessageBox.Show("A solver with this name already exists!", "Duplicate Name", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
@@ -1344,11 +1302,11 @@ namespace Thesis_LIPX05
                         Arguments = []
                     };
                     customSolvers.Add(newSolver);
-                    logger?.Log(LogSeverity.INFO,
+                    Log(LogSeverity.INFO,
                         $"Custom {newSolver.TypeID} solver \"{newSolver.Name}\" added with path: {newSolver.Path}");
 
                     SaveCustomSolvers2JSON();
-                    logger?.Log(LogSeverity.INFO,
+                    Log(LogSeverity.INFO,
                         "Custom solvers saved to JSON file!");
 
                     AddCustomSolverMenuItem(newSolver);
@@ -1365,12 +1323,12 @@ namespace Thesis_LIPX05
                 Directory.CreateDirectory(Path.GetDirectoryName(customSolverPath)!);
                 string json = JsonSerializer.Serialize(customSolvers, CachedOptions);
                 File.WriteAllText(customSolverPath, json);
-                logger?.Log(LogSeverity.INFO, "Custom solvers saved to JSON file!");
+                Log(LogSeverity.INFO, "Custom solvers saved to JSON file!");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving custom solvers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                logger?.Log(LogSeverity.ERROR, $"Error saving custom solvers: {ex.Message}");
+                Log(LogSeverity.ERROR, $"Error saving custom solvers: {ex.Message}");
             }
         }
 
@@ -1389,13 +1347,13 @@ namespace Thesis_LIPX05
                         customSolvers.AddRange(loaded);
                         foreach (var cs in customSolvers) AddCustomSolverMenuItem(cs);
                     }
-                    logger?.Log(LogSeverity.INFO, "Custom solvers loaded from JSON file!");
+                    Log(LogSeverity.INFO, "Custom solvers loaded from JSON file!");
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading custom solvers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                logger?.Log(LogSeverity.ERROR, $"Error loading custom solvers: {ex.Message}");
+                Log(LogSeverity.ERROR, $"Error loading custom solvers: {ex.Message}");
             }
         }
 
@@ -1416,16 +1374,16 @@ namespace Thesis_LIPX05
             };
             item.Click += SolveClick;
             SolverMenu.Items.Add(item);
-            logger?.Log(LogSeverity.INFO, $"Custom solver menu item \"{solver.Name} ({solver.TypeID})\" addedto the menu!");
+            Log(LogSeverity.INFO, $"Custom solver menu item \"{solver.Name} ({solver.TypeID})\" addedto the menu!");
         }
 
         // Event handler for creating a solution table from the Gantt chart
         private void CreateSolutionTableBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (GanttCanvas.Children.Count != 0) DisplaySolutionAsTable(ganttData);
+            if (GanttCanvas.Children.Count != 0) DisplaySolutionAsTable(GanttData);
             else
             {
-                logger?.Log(LogSeverity.WARNING, "No Gantt chart was present to create solution table from!");
+                Log(LogSeverity.WARNING, "No Gantt chart was present to create solution table from!");
                 MessageBox.Show("No Gantt chart to create solution table from!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -1436,16 +1394,16 @@ namespace Thesis_LIPX05
             // A special pattern to match ISO 8601 duration format (PTnHnM)
             Regex regex = ISO8601Format();
 
-            // if it already looks like an ISO 8601 duration, return it as is (ideally, that is)
-            logger?.Log(LogSeverity.INFO, $"Converting raw duration \"{raw}\" to ISO 8601 format...");
+            // If it already looks like an ISO 8601 duration, return it as is (ideally, that is)
+            Log(LogSeverity.INFO, $"Converting raw duration \"{raw}\" to ISO 8601 format...");
             if (regex.IsMatch(raw!))
             {
-                logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is already in ISO 8601 format.");
+                Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is already in ISO 8601 format.");
                 return raw!;
             }
 
-            // try to parse it as a TimeSpan first
-            logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is not in ISO 8601 format, trying to parse as TimeSpan...");
+            // Otherwise, try to parse it as a TimeSpan first
+            Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is not in ISO 8601 format, trying to parse as TimeSpan...");
             if (TimeSpan.TryParse(raw, out var ts))
             {
                 var sb = new StringBuilder("PT");
@@ -1453,30 +1411,30 @@ namespace Thesis_LIPX05
                 if (ts.Minutes > 0) sb.Append($"{ts.Minutes}M");
                 if (ts.Seconds > 0) sb.Append($"{ts.Seconds}S");
                 if (sb.ToString().Equals("PT")) sb.Append("0M"); // zero duration case
-                logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" parsed as TimeSpan and converted to ISO 8601 format: {sb}");
+                Log(LogSeverity.INFO, $"Raw duration \"{raw}\" parsed as TimeSpan and converted to ISO 8601 format: {sb}");
                 return sb.ToString();
             }
 
-            // if raw is just a number, assume it's in minutes and convert accordingly
-            logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is not a valid TimeSpan either, trying to parse as integer minutes...");
+            // Then, if it's just a number, perceive it as minutes and convert accordingly
+            Log(LogSeverity.INFO, $"Raw duration \"{raw}\" is not a valid TimeSpan either, trying to parse as integer minutes...");
             if (int.TryParse(raw, out int mins))
             {
                 string dur = (mins < 0) ? $"PT{mins / 60}H{mins % 60}M" : "PT0M"; // no negative durations are allowed
-                logger?.Log(LogSeverity.INFO, $"Raw duration \"{raw}\" parsed as Int32, about to return as ISO 8601: {dur}");
+                Log(LogSeverity.INFO, $"Raw duration \"{raw}\" parsed as Int32, about to return as ISO 8601: {dur}");
                 return dur;
             }
 
             // default return value if parsing fails
-            logger?.Log(LogSeverity.WARNING, $"Raw duration \"{raw}\" could not be parsed, defaulting to zero duration (PT0M)!");
+            Log(LogSeverity.WARNING, $"Raw duration \"{raw}\" could not be parsed, defaulting to zero duration (PT0M)!");
             return "PT0M";
         }
 
         // A helper method to find an existing XML element based on key columns in the DataRow
-        private XElement? FindExistingElement(string tableName, DataRow drow)
+        private XElement? FindExistingElement(string tableName, DataRow drow, DataRowVersion dVer)
         {
             if (masterRecipe is null || !mappings.TryGetValue(tableName, out var map))
             {
-                logger?.Log(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!");
+                Log(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!");
                 return null;
             }
 
@@ -1485,40 +1443,32 @@ namespace Thesis_LIPX05
                 bool allMatch = true;
                 foreach (var col in map.KeyCols)
                 {
-                    string expected = (drow.RowState == DataRowState.Deleted ?
-                        (drow[col, DataRowVersion.Original]?.ToString() ?? string.Empty) :
-                        (drow[col]?.ToString() ?? string.Empty)).Trim();
-
-                    if (string.IsNullOrEmpty(expected))
-                    {
-                        logger?.Log(LogSeverity.WARNING, $"Key column \"{col}\" in table \"{tableName}\" is empty, cannot match!");
-                        allMatch = false;
-                        break;
-                    }
-
-                    string? actual;
+                    string
+                        expected = drow[col, dVer]?.ToString()?.Trim() ?? string.Empty,
+                        actual = string.Empty;
                     if (col.Equals("Duration", StringComparison.OrdinalIgnoreCase))
                     {
                         var dur = el.Element(batchML + "Extension")?.Element(customNS + "Duration")?.Value?.Trim() ?? string.Empty;
                         actual = ConvertToISO8601(dur);
                         expected = ConvertToISO8601(expected);
                     }
-                    else if (map.ParentElement.Equals("Link") &&
-                        (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
+                    else if (map.ParentElement.Equals("Link")
+                        &&
+                        (col.Equals("From", StringComparison.OrdinalIgnoreCase)
+                        ||
                         col.Equals("To", StringComparison.OrdinalIgnoreCase)))
                     {
-                        actual = el.Element(batchML + $"{col}ID")?
-                                .Element(batchML + map.Col2El[col])?.Value?.Trim();
+                        actual = el.Element(batchML + $"{col}ID")?.Element(batchML + map.Col2El[col])?.Value?.Trim().ToLowerInvariant()!;
+                        expected = expected.ToLowerInvariant();
                     }
                     else
                     {
                         var xmlName = map.Col2El[col];
-                        actual = el.Element(batchML + xmlName)?.Value?.Trim();
+                        actual = el.Element(batchML + xmlName)?.Value?.Trim()!;
                     }
 
                     if (!string.Equals(expected, actual, StringComparison.OrdinalIgnoreCase))
                     {
-                        logger?.Log(LogSeverity.INFO, $"No match for key column \"{col}\": expected \"{expected}\", actual \"{actual}\"");
                         allMatch = false;
                         break;
                     }
@@ -1526,12 +1476,12 @@ namespace Thesis_LIPX05
 
                 if (allMatch)
                 {
-                    logger?.Log(LogSeverity.INFO, $"Found existing XML element for table \"{tableName}\" matching the DataRow keys.");
+                    Log(LogSeverity.INFO, $"Found existing XML element for table \"{tableName}\" matching the DataRow keys.");
                     return el;
                 }
             }
 
-            logger?.Log(LogSeverity.INFO, $"No existing XML element found for table \"{tableName}\" matching the DataRow keys.");
+            Log(LogSeverity.INFO, $"No existing XML element found for table \"{tableName}\" matching the DataRow keys.");
             return null;
         }
 
@@ -1540,139 +1490,116 @@ namespace Thesis_LIPX05
         {
             if (masterRecipe is null || !mappings.TryGetValue(tableName, out var map))
             {
-                logger?.Log(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!");
+                Log(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!");
                 return;
             }
 
-            if (row.RowState is DataRowState.Added)
-            {
-                bool hasValidKeys = true;
-                foreach (var col in map.KeyCols)
-                {
-                    if (string.IsNullOrWhiteSpace(row[col]?.ToString()))
-                    {
-                        hasValidKeys = !hasValidKeys;
-                        break;
-                    }
-                }
+            // Determine which version of the row's data to use for the lookup.
+            // If the row was modified or deleted, we MUST use the original values to find it.
+            DataRowVersion versionToUse = (row.RowState == DataRowState.Modified || row.RowState == DataRowState.Deleted)
+                ? DataRowVersion.Original
+                : DataRowVersion.Current;
 
-                if (!hasValidKeys)
+            bool missingKey = map.KeyCols.Any(col => row[col, versionToUse] == DBNull.Value || string.IsNullOrWhiteSpace(row[col, versionToUse]?.ToString()?.Trim()));
+            
+            if (missingKey)
+            {
+                string versionStr = versionToUse == DataRowVersion.Original ? "Original" : "Current";
+                Log(LogSeverity.WARNING,
+                    $"Aborting sync for row in '{tableName}' (State: {row.RowState}): Missing required primary key data in {versionStr} version.");
+                return;
+            }
+            
+            // Call the updated FindExistingElement with the correct version.
+            XElement? targetElement = FindExistingElement(tableName, row, versionToUse);
+
+            // Handle Deletion first.
+            if (row.RowState == DataRowState.Deleted)
+            {
+                if (targetElement is not null)
                 {
-                    logger?.Log(LogSeverity.INFO,
-                        $"Aborting sync for new row in '{tableName}': Missing requid primary key data.");
-                    return;
+                    targetElement.Remove();
+                    Log(LogSeverity.INFO, $"Deleted XML element from \"{tableName}\"");
                 }
+                return; // Stop processing after deletion
             }
 
-            var existing = FindExistingElement(tableName, row);
-
-            if (existing is not null)
+            // If the element doesn't exist, create it and add it to the document.
+            // This handles both 'Added' rows and 'Modified' rows where the key was changed.
+            if (targetElement is null)
             {
-                foreach (var col in map.Col2El.Keys)
-                {
-                    var val = row[col]?.ToString() ?? string.Empty;
-
-                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
-                    {
-                        XElement? ext = existing.Element(batchML + "Extension");
-                        if (ext is null)
-                        {
-                            ext = new(batchML + "Extension");
-                            existing.Add(ext);
-                        }
-
-                        XElement durEl = ext.Element(customNS + "Duration") ?? new XElement(customNS + "Duration");
-                        durEl.Value = ConvertToISO8601(val);
-                        if (durEl.Parent is null) ext?.Add(durEl);
-                    }
-                    else if (map.ParentElement.Equals("Link") &&
-                        (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
-                        col.Equals("To", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        XElement outer = existing.Element(batchML + $"{col}ID")
-                            ?? new XElement(batchML + $"{col}ID");
-                        if (outer.Parent is null) existing.Add(outer);
-
-                        XElement inner = outer.Element(batchML + map.Col2El[col])
-                            ?? new XElement(batchML + map.Col2El[col]);
-                        inner.Value = val;
-                        if (inner.Parent is null) outer.Add(inner);
-
-                        XElement typeEl = outer.Element(batchML + $"{col}Type")
-                            ?? new XElement(batchML + $"{col}Type", "Step");
-                        if (typeEl.Parent is null) outer.Add(typeEl);
-                    }
-                    else
-                    {
-                        var child = existing.Element(batchML + map.Col2El[col]) ?? new XElement(batchML + map.Col2El[col]);
-                        child.Value = val;
-                        if (child.Parent is null) existing.Add(child);
-                    }
-                }
-            }
-            else
-            {
-                var newEl = new XElement(batchML + map.ParentElement);
-
-                foreach (var col in map.Col2El.Keys)
-                {
-                    string val = row[col]?.ToString() ?? string.Empty;
-
-                    if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
-                    {
-                        newEl.Add(new XElement(batchML + "Extension",
-                            new XElement(customNS + "Duration", ConvertToISO8601(val))));
-                    }
-                    else if (map.ParentElement.Equals("Link") &&
-                        (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
-                        col.Equals("To", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        newEl.Add(new XElement(batchML + $"{col}ID",
-                            new XElement(batchML + $"{map.Col2El[col]}", val),
-                            new XElement(batchML + $"{col}Type", "Step")));
-                    }
-                    else newEl.Add(new XElement(batchML + map.Col2El[col], val));
-                }
-
-                XElement insertionPoint;
-                if (map.ParentElement.Equals("Step") || map.ParentElement.Equals("Link"))
-                {
-                    insertionPoint = masterRecipe.Element(batchML + "ProcedureLogic")!;
-                    if (insertionPoint is null)
-                    {
-                        insertionPoint = new(batchML + "ProcedureLogic");
-                        masterRecipe.Add(insertionPoint);
-
-                        logger?.Log(LogSeverity.WARNING,
-                            "Missing <ProcedureLogic> element added to the document!");
-                    }
-                }
-                else insertionPoint = masterRecipe;
-
+                targetElement = new XElement(batchML + map.ParentElement);
+                XElement insertionPoint = GetInsertionPoint(map.ParentElement);
                 var last = insertionPoint.Elements(batchML + map.ParentElement).LastOrDefault();
-                if (last is not null) last.AddAfterSelf(newEl);
-                else insertionPoint.Add(newEl);
+
+                if (last is not null) last.AddAfterSelf(targetElement);
+                else insertionPoint.Add(targetElement);
             }
 
-            logger?.Log(LogSeverity.INFO, $"Synchronized DataRow to XML for table \"{tableName}\".");
+            // --- UNIFIED UPDATE LOGIC ---
+            // Now that we have a guaranteed targetElement (either found or created),
+            // update all its fields with the CURRENT values from the DataRow.
+            foreach (var col in map.Col2El.Keys)
+            {
+                var val = row[col, DataRowVersion.Current]?.ToString() ?? string.Empty;
+
+                if (string.Equals(col, "Duration", StringComparison.OrdinalIgnoreCase))
+                {
+                    XElement ext = targetElement.Element(batchML + "Extension") ?? new(batchML + "Extension");
+                    if (ext.Parent is null) targetElement.Add(ext);
+
+                    XElement durEl = ext.Element(customNS + "Duration") ?? new(customNS + "Duration");
+                    durEl.Value = ConvertToISO8601(val);
+                    if (durEl.Parent is null) ext.Add(durEl);
+                }
+                else if (map.ParentElement.Equals("Link") &&
+                         (col.Equals("From", StringComparison.OrdinalIgnoreCase) ||
+                          col.Equals("To", StringComparison.OrdinalIgnoreCase)))
+                {
+                    XElement outer = targetElement.Element(batchML + $"{col}ID") ?? new(batchML + $"{col}ID");
+                    if (outer.Parent is null) targetElement.Add(outer);
+
+                    XElement inner = outer.Element(batchML + map.Col2El[col]) ?? new(batchML + map.Col2El[col]);
+                    inner.Value = val;
+                    if (inner.Parent is null) outer.Add(inner);
+
+                    // Correctly create and add the 'Type' element if it's missing
+                    XElement? typeEl = outer.Element(batchML + $"{col}Type");
+                    if (typeEl is null)
+                    {
+                        typeEl = new(batchML + $"{col}Type", "Step");
+                        outer.Add(typeEl);
+                    }
+                }
+                else
+                {
+                    XElement? child = targetElement.Element(batchML + map.Col2El[col]);
+                    if (child is null)
+                    {
+                        child = new(batchML + map.Col2El[col]);
+                        targetElement.Add(child);
+                    }
+                }
+            }
+
+            Log(LogSeverity.INFO, $"Synchronized DataRow to XML for table \"{tableName}\".");
         }
 
-        // Custom event handler for deleting a row from the XML when it's deleted from the DataTable
-        private void SyncDeleteRowFromXml(DataRow row, string tableName)
+        private XElement GetInsertionPoint(string parentElName)
         {
-            if (masterRecipe is null || !mappings.TryGetValue(tableName, out TableMapper? _)) return;
-
-            var tempRow = row.Table.NewRow();
-
-            foreach (var col in mappings[tableName].KeyCols)
+            if (parentElName.Equals("Step") || parentElName.Equals("Link"))
             {
-                if (row.Table.Columns.Contains(col))
-                    tempRow[col] = row[col, DataRowVersion.Original];
+                XElement? procLogic = masterRecipe.Element(batchML + "ProcedureLogic");
+                if (procLogic is null)
+                {
+                    procLogic = new(batchML + "ProcedureLogic");
+                    masterRecipe.Add(procLogic);
+                    Log(LogSeverity.WARNING,
+                        "Missing <batchML:ProcedureLogic> element added to the master recipe!");
+                }
+                return procLogic;
             }
-
-            var existing = FindExistingElement(tableName, tempRow);
-            existing?.Remove();
-            logger?.Log(LogSeverity.INFO, $"Deleted XML element for table \"{tableName}\" corresponding to the deleted DataRow.");
+            return masterRecipe;
         }
     }
 

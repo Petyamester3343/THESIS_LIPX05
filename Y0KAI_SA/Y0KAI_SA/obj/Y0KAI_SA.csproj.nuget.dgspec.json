@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Phant0m\\Desktop\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj": {}
+    "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Phant0m\\Desktop\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj": {
+    "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Phant0m\\Desktop\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj",
+        "projectUniqueName": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj",
         "projectName": "Y0KAI_SA",
-        "projectPath": "C:\\Users\\Phant0m\\Desktop\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj",
+        "projectPath": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_SA\\Y0KAI_SA\\Y0KAI_SA.csproj",
         "packagesPath": "C:\\Users\\Phant0m\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Phant0m\\Desktop\\Y0KAI_SA\\Y0KAI_SA\\obj\\",
+        "outputPath": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_SA\\Y0KAI_SA\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

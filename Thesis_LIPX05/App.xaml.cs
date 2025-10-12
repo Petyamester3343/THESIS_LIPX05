@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -28,14 +29,14 @@ namespace Thesis_LIPX05
 
             try
             {
-                appMutex = new(true, MutexName, out var createdNew);
+                appMutex = new(true, MutexName, out bool createdNew);
 
                 if (!createdNew)
                 {
-                    var currID = Environment.ProcessId;
-                    
-                    var runningProc = GetProcessesByName(GetCurrentProcess().ProcessName)
-                        .FirstOrDefault(p => p.Id != currID);
+                    int currID = Environment.ProcessId;
+
+                    Process runningProc = GetProcessesByName(GetCurrentProcess().ProcessName)
+                        .FirstOrDefault(p => p.Id != currID)!;
 
                     if (runningProc is not null && runningProc.MainWindowHandle != IntPtr.Zero)
                     {
@@ -50,8 +51,7 @@ namespace Thesis_LIPX05
 
                 base.OnStartup(e);
                 ShutdownMode = ShutdownMode.OnLastWindowClose;
-                Dispatcher.BeginInvoke(new Action(() => ApplicationStartupLogic(e)),
-                    DispatcherPriority.Loaded);
+                Dispatcher.BeginInvoke(new Action(() => ApplicationStartupLogic(e)), DispatcherPriority.Loaded);
             }
             catch (Exception ex)
             {
@@ -68,20 +68,10 @@ namespace Thesis_LIPX05
             base.OnExit(e);
         }
 
-        // The loading status helper enum to determine the current loading stage (through simulation)
-        public enum LoadingStatusHelper
-        {
-            FIRST,
-            SECOND,
-            THIRD,
-            FOURTH,
-            FIFTH
-        }
-
         // The main entry point for the application
         private async void ApplicationStartupLogic(StartupEventArgs e)
         {
-            var loading = new LoadingWindow();
+            LoadingWindow loading = new();
             loading.Show();
 
             // Simulate loading progress by updating the loading window's progress text
@@ -109,16 +99,23 @@ namespace Thesis_LIPX05
                 await Task.Delay(33);
             }
 
-            // Show the main window and close the jumper window with the loading window
-            await Dispatcher.InvokeAsync(() => {
-                var ts_app = new MainWindow();
+            // Show the main window and close the loading window
+            LaunchMainWindowAsync();
+            loading.Close();
+
+            e.Equals(null);
+        }
+
+        // Launches the main application window asynchronously
+        private async void LaunchMainWindowAsync() => await Dispatcher.InvokeAsync(() =>
+            {
+                MainWindow ts_app = new();
                 MainWindow = ts_app;
                 ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 ts_app.Show();
                 ts_app.Activate();
-                loading.Close();
             });
-        }
+
 
         // Decides the loading status based on the given integer value
         public static LoadingStatusHelper DecideRang(int i)
@@ -129,5 +126,15 @@ namespace Thesis_LIPX05
             else if (i <= 80) return LoadingStatusHelper.FOURTH;
             else return LoadingStatusHelper.FIFTH;
         }
+    }
+
+    // The loading status helper enum to determine the current loading stage (through simulation)
+    public enum LoadingStatusHelper
+    {
+        FIRST,
+        SECOND,
+        THIRD,
+        FOURTH,
+        FIFTH
     }
 }

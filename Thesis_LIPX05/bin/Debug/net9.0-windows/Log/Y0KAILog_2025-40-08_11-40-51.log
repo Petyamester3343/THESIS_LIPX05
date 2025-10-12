@@ -1,0 +1,40 @@
+2025. 40. 08. 11:40:51 // INFO // Heuristic solver added!
+2025. 40. 08. 11:40:51 // INFO // Branch and Bound solver added!
+2025. 40. 08. 11:40:51 // INFO // Genetic solver added!
+2025. 40. 08. 11:40:51 // INFO // Solver menu successfully built!
+2025. 40. 08. 11:40:51 // INFO // Initialization complete!
+2025. 40. 08. 11:40:55 // INFO // Open file dialog initiated...
+2025. 40. 08. 11:40:57 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 40. 08. 11:40:57 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 40. 08. 11:40:57 // INFO // Steps Table datatable displayed in new tab!
+2025. 40. 08. 11:40:57 // INFO // Links Table datatable displayed in new tab!
+2025. 40. 08. 11:40:57 // INFO // BatchML file loaded and data tables populated!
+2025. 40. 08. 11:40:57 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 41. 08. 11:41:06 // INFO // Found existing XML element for table "Links" matching the DataRow keys.
+2025. 41. 08. 11:41:06 // INFO // Converting raw duration "PT1H" to ISO 8601 format...
+2025. 41. 08. 11:41:06 // INFO // Raw duration "PT1H" is already in ISO 8601 format.
+2025. 41. 08. 11:41:06 // INFO // Synchronized DataRow to XML for table "Links".
+2025. 41. 08. 11:41:21 // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+2025. 41. 08. 11:41:21 // INFO // Synchronized DataRow to XML for table "Steps".
+2025. 41. 08. 11:41:28 // INFO // No existing XML element found for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:28 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 41. 08. 11:41:40 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:40 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 41. 08. 11:41:43 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:43 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 41. 08. 11:41:48 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:48 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 41. 08. 11:41:51 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:51 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 41. 08. 11:41:54 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:54 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 41. 08. 11:41:59 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 41. 08. 11:41:59 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 42. 08. 11:42:03 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 42. 08. 11:42:03 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 42. 08. 11:42:06 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 42. 08. 11:42:06 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 42. 08. 11:42:13 // INFO // Changes made to Master Recipe table synced to XML!
+2025. 42. 08. 11:42:29 // INFO // Changes made to Master Recipe table synced to XML!
+2025. 42. 08. 11:42:52 // INFO // Changes made to Master Recipe table synced to XML!
+2025. 43. 08. 11:43:03 // INFO // Changes made to Master Recipe table synced to XML!

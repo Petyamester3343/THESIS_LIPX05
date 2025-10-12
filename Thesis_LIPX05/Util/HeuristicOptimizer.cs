@@ -1,33 +1,35 @@
-﻿using static Thesis_LIPX05.Util.SGraph;
+﻿using static Thesis_LIPX05.Util.LogManager;
+using static Thesis_LIPX05.Util.SGraph;
 
 namespace Thesis_LIPX05.Util
 {
-    internal class HeuristicOptimizer(Dictionary<string, Node> nodes, List<Edge> edges)
-        : IOptimizer
+    internal class HeuristicOptimizer(Dictionary<string, Node> nodes, List<Edge> edges) : IOptimizer
     {
+        private readonly SolverLogManager logManager = new("HeuristicOptimizer");
+
         public List<Node> Optimize()
         {
-            var topo = TopoSort(nodes, edges);
-            var dist = nodes.Keys.ToDictionary(k => k, _ => double.NegativeInfinity);
+            List<string> topo = TopoSort(nodes, edges);
+            Dictionary<string, double> dist = nodes.Keys.ToDictionary(k => k, _ => double.NegativeInfinity);
             Dictionary<string, string> pred = [];
 
-            var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
-            foreach (var edge in edges) inDeg[edge.To.ID]++;
+            Dictionary<string, int> inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
+            foreach (Edge edge in edges) inDeg[edge.To.ID]++;
 
-            foreach (var kvp in inDeg.Where(kvp => kvp.Value == 0)) dist[kvp.Key] = 0.0;
+            foreach (KeyValuePair<string, int> kvp in inDeg.Where(kvp => kvp.Value == 0)) dist[kvp.Key] = 0.0;
 
-            foreach (var u in topo)
+            foreach (string u in topo)
             {
-                foreach (var edge in edges.Where(e => e.From.ID == u))
+                foreach (Edge edge in edges.Where(e => e.From.ID == u))
                 {
-                    var v = edge.To.ID;
-                    var cost = edge.Cost;
+                    string v = edge.To.ID;
+                    double cost = edge.Cost;
 
                     if (dist[v] < (dist[u] + cost))
                     {
                         dist[v] = dist[u] + cost;
                         pred[v] = u;
-                        MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Updated distance for {v} to {dist[v]} via {u}");
+                        logManager.LogSolverActivity(LogSeverity.INFO, $"Updated distance for {v} to {dist[v]} via {u}.");
                     }
                 }
             }
@@ -42,45 +44,47 @@ namespace Thesis_LIPX05.Util
                 if (pred.TryGetValue(curr, out string? predID))
                 {
                     curr = predID;
-                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Backtracking path, current node: {curr}");
+                    logManager.LogSolverActivity(LogSeverity.INFO, $"Backtracking path, current node: {curr}.");
                 }
                 else curr = null;
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Longest path found with cost: {endNodeID}");
+            logManager.LogSolverActivity(LogSeverity.INFO,
+                $"Longest path found with cost: {endNodeID} with cost: {dist[endNodeID]}.");
             return [.. path.Select(id => nodes[id])];
         }
 
         // Topological sort using Kahn's algorithm
-        protected static List<string> TopoSort(Dictionary<string, Node> nodes, List<Edge> edges)
+        protected List<string> TopoSort(Dictionary<string, Node> nodes, List<Edge> edges)
         {
-            var inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
-            foreach (var edge in edges) inDeg[edge.To.ID]++;
+            Dictionary<string, int> inDeg = nodes.Keys.ToDictionary(n => n, _ => 0);
+            foreach (Edge edge in edges) inDeg[edge.To.ID]++;
 
             Queue<string> queue = new(inDeg.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
             List<string> sorted = [];
 
             while (queue.Count != 0)
             {
-                var node = queue.Dequeue();
+                string node = queue.Dequeue();
                 sorted.Add(node);
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Node {node} added to topological sort.");
+                logManager.LogSolverActivity(LogSeverity.INFO, $"Node {node} added to topological sort.");
 
-                foreach (var edge in edges.Where(e => e.From.ID == node))
+                foreach (Edge edge in edges.Where(e => e.From.ID == node))
                 {
                     inDeg[edge.To.ID]--;
                     if (inDeg[edge.To.ID] == 0) queue.Enqueue(edge.To.ID);
-                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Decreased in-degree of {edge.To.ID} to {inDeg[edge.To.ID]}");
+                    logManager.LogSolverActivity(LogSeverity.INFO, $"Decreased in-degree of {edge.To.ID} to {inDeg[edge.To.ID]}");
                 }
             }
 
             if (sorted.Count != nodes.Count)
             {
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.ERROR, "Graph has at least one cycle, topological sort not possible.");
-                throw new InvalidOperationException("Graph has at least one cycle, topological sort not possible.");
+                logManager.LogSolverActivity(LogSeverity.ERROR,
+                    "Graph has at least one cycle, topological sort not possible!");
+                throw new InvalidOperationException("Graph is not a DAG, topological sort not possible.");
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, "Topological sort completed successfully.");
+            logManager.LogSolverActivity(LogSeverity.INFO, "Topological sort completed successfully.");
             return sorted;
         }
     }

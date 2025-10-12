@@ -1,11 +1,13 @@
-﻿using System.IO;
+﻿using Microsoft.Win32;
+
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-using Microsoft.Win32;
+using static Thesis_LIPX05.Util.LogManager;
 
 namespace Thesis_LIPX05.Util
 {
@@ -32,12 +34,12 @@ namespace Thesis_LIPX05.Util
                 PixelFormats.Pbgra32);
 
             rtb.Render(cv);
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"{ctx} RenderTargetBitmap created with size {cv.Width}x{cv.Height} at {DPI_VALUE} DPI.");
 
             JpegBitmapEncoder enc = new();
             enc.Frames.Add(BitmapFrame.Create(rtb));
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"{ctx} JpegBitmapEncoder created and frame added.");
 
             if (dlg.ShowDialog() == true)
@@ -45,14 +47,14 @@ namespace Thesis_LIPX05.Util
                 using FileStream stream = new(dlg.FileName, FileMode.Create);
                 enc.Save(stream);
 
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                Log(LogSeverity.INFO,
                     $"{ctx} exported successfully as {dlg.FileName}.");
                 MessageBox.Show($"Canvas exported as {dlg.FileName}",
                     "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                Log(LogSeverity.INFO,
                     $"{ctx} export cancelled by user.");
                 MessageBox.Show($"Export of {dlg.FileName} was cancelled",
                     "Info", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -68,7 +70,8 @@ namespace Thesis_LIPX05.Util
             
             panel.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
             panel.Arrange(finalRect: new(panel.DesiredSize)); // arrange the panel to apply the measurements
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"{ctx} combined panel measured and arranged with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height}.");
+            Log(LogSeverity.INFO,
+                $"{ctx} combined panel measured and arranged with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height}.");
 
             RenderTargetBitmap rtb = new(
                 Convert.ToInt32(panel.DesiredSize.Width),
@@ -76,12 +79,12 @@ namespace Thesis_LIPX05.Util
                 DPI_VALUE, DPI_VALUE,
                 PixelFormats.Pbgra32);
             rtb.Render(panel);
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"{ctx} combined RenderTargetBitmap created with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height} at {DPI_VALUE} DPI.");
 
             JpegBitmapEncoder enc = new();
             enc.Frames.Add(BitmapFrame.Create(rtb));
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"{ctx} JpegBitmapEncoder created and frame added.");
 
             SaveFileDialog dlg = new()
@@ -97,14 +100,14 @@ namespace Thesis_LIPX05.Util
             {
                 using FileStream stream = new(dlg.FileName, FileMode.Create);
                 enc.Save(stream);
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                Log(LogSeverity.INFO,
                     $"{ctx} exported successfully as {dlg.FileName}.");
                 MessageBox.Show($"Canvas exported as {dlg.FileName}",
                     "Export Successful!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                Log(LogSeverity.INFO,
                     $"{ctx} export cancelled by user.");
                 MessageBox.Show($"Export of {dlg.FileName} was cancelled",
                     "Info", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -137,11 +140,11 @@ namespace Thesis_LIPX05.Util
                     if (!double.IsNaN(top)) Canvas.SetTop(deepCopy, top);
 
                     clone.Children.Add(deepCopy);
-                    MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+                    Log(LogSeverity.INFO,
                         $"Child element of type {uie.GetType().Name} cloned and added to canvas.");
                 }
             }
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"Canvas cloned with {clone.Children.Count} children.");
             return clone;
         }

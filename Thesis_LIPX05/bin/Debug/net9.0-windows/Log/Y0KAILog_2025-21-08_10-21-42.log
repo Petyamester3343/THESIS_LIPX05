@@ -1,0 +1,84 @@
+2025. 21. 08. 10:21:42 // INFO // Heuristic solver added!
+2025. 21. 08. 10:21:42 // INFO // Branch and Bound solver added!
+2025. 21. 08. 10:21:42 // INFO // Genetic solver added!
+2025. 21. 08. 10:21:42 // INFO // Solver menu successfully built!
+2025. 21. 08. 10:21:42 // INFO // Initialization complete!
+2025. 31. 08. 10:31:20 // INFO // Open file dialog initiated...
+2025. 31. 08. 10:31:27 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 31. 08. 10:31:27 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 31. 08. 10:31:27 // INFO // Steps Table datatable displayed in new tab!
+2025. 31. 08. 10:31:27 // INFO // Links Table datatable displayed in new tab!
+2025. 31. 08. 10:31:27 // INFO // BatchML file loaded and data tables populated!
+2025. 31. 08. 10:31:27 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 31. 08. 10:31:47 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 31. 08. 10:31:47 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 31. 08. 10:31:52 // INFO // No match for key column "ID": expected "Flavoring-Phase", actual "Input-Phase"
+2025. 31. 08. 10:31:52 // INFO // No match for key column "ID": expected "Flavoring-Phase", actual "Mix-Phase"
+2025. 31. 08. 10:31:52 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 31. 08. 10:31:52 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 31. 08. 10:31:56 // INFO // No match for key column "ID": expected "Preservation-Phase", actual "Input-Phase"
+2025. 31. 08. 10:31:56 // INFO // No match for key column "ID": expected "Preservation-Phase", actual "Mix-Phase"
+2025. 31. 08. 10:31:56 // INFO // No match for key column "ID": expected "Preservation-Phase", actual "Flavoring-Phase"
+2025. 31. 08. 10:31:56 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 31. 08. 10:31:56 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 32. 08. 10:32:00 // INFO // No match for key column "ID": expected "Dehydration-Phase", actual "Input-Phase"
+2025. 32. 08. 10:32:00 // INFO // No match for key column "ID": expected "Dehydration-Phase", actual "Mix-Phase"
+2025. 32. 08. 10:32:00 // INFO // No match for key column "ID": expected "Dehydration-Phase", actual "Flavoring-Phase"
+2025. 32. 08. 10:32:00 // INFO // No match for key column "ID": expected "Dehydration-Phase", actual "Preservation-Phase"
+2025. 32. 08. 10:32:00 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 32. 08. 10:32:00 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Input-Phase"
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Mix-Phase"
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Flavoring-Phase"
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Preservation-Phase"
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Dehydration-Phase"
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Measuring-Phase"
+2025. 32. 08. 10:32:09 // INFO // No match for key column "ID": expected "Packaging-Phase", actual "Chopping-Phase"
+2025. 32. 08. 10:32:09 // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+2025. 32. 08. 10:32:09 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 32. 08. 10:32:30 // INFO // Changes made to Master Recipe table synced to XML!
+2025. 32. 08. 10:32:46 // INFO // Changes made to Master Recipe table synced to XML!
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Input-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Mix-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Flavoring-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Preservation-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Dehydration-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Measuring-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Chopping-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Packaging-Phase"
+2025. 32. 08. 10:32:58 // INFO // No match for key column "ID": expected "Mixing-Phase", actual "Deployment-Phase"
+2025. 32. 08. 10:32:58 // INFO // No existing XML element found for table "RecipeElements" matching the DataRow keys.
+2025. 32. 08. 10:32:58 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 33. 08. 10:33:04 // INFO // No match for key column "ID": expected "Step2", actual "Step1"
+2025. 33. 08. 10:33:04 // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+2025. 33. 08. 10:33:04 // INFO // Synchronized DataRow to XML for table "Steps".
+2025. 33. 08. 10:33:12 // INFO // No match for key column "ID": expected "Link3", actual "Link1"
+2025. 33. 08. 10:33:12 // INFO // No match for key column "ID": expected "Link3", actual "Link2"
+2025. 33. 08. 10:33:12 // INFO // Found existing XML element for table "Links" matching the DataRow keys.
+2025. 33. 08. 10:33:12 // INFO // Converting raw duration "PT50M" to ISO 8601 format...
+2025. 33. 08. 10:33:12 // INFO // Raw duration "PT50M" is already in ISO 8601 format.
+2025. 33. 08. 10:33:12 // INFO // Synchronized DataRow to XML for table "Links".
+2025. 33. 08. 10:33:16 // INFO // No match for key column "ID": expected "Link5", actual "Link1"
+2025. 33. 08. 10:33:16 // INFO // No match for key column "ID": expected "Link5", actual "Link2"
+2025. 33. 08. 10:33:16 // INFO // No match for key column "ID": expected "Link5", actual "Link3"
+2025. 33. 08. 10:33:16 // INFO // No match for key column "ID": expected "Link5", actual "Link4"
+2025. 33. 08. 10:33:16 // INFO // Found existing XML element for table "Links" matching the DataRow keys.
+2025. 33. 08. 10:33:16 // INFO // Converting raw duration "PT1H" to ISO 8601 format...
+2025. 33. 08. 10:33:16 // INFO // Raw duration "PT1H" is already in ISO 8601 format.
+2025. 33. 08. 10:33:16 // INFO // Synchronized DataRow to XML for table "Links".
+2025. 33. 08. 10:33:31 // WARNING // Attempting to close file with unsaved changes; prompting user!
+2025. 33. 08. 10:33:36 // INFO // SGraphCanvas has been cleared!
+2025. 33. 08. 10:33:36 // INFO // GanttCanvas has been cleared!
+2025. 33. 08. 10:33:36 // INFO // RulerCanvas has been cleared!
+2025. 33. 08. 10:33:36 // INFO // S-Graph nodes cleared!
+2025. 33. 08. 10:33:36 // INFO // S-Graph edges cleared!
+2025. 33. 08. 10:33:36 // INFO // Master Recipe Table datatable purged!
+2025. 33. 08. 10:33:36 // INFO // Recipe Element Table datatable purged!
+2025. 33. 08. 10:33:36 // INFO // Steps Table datatable purged!
+2025. 33. 08. 10:33:36 // INFO // Links Table datatable purged!
+2025. 33. 08. 10:33:36 // INFO // _Gantt chart tab removed!
+2025. 33. 08. 10:33:36 // INFO // _Gantt chart tab removed!
+2025. 33. 08. 10:33:36 // INFO // _Gantt chart tab removed!
+2025. 33. 08. 10:33:36 // INFO // _Gantt chart tab removed!
+2025. 33. 08. 10:33:36 // INFO // BatchML file closed and all data cleared!
+2025. 35. 08. 10:35:37 // INFO // No changes were made, exiting app...

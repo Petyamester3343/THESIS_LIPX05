@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
+using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
 
 namespace Thesis_LIPX05.Util
@@ -26,8 +27,9 @@ namespace Thesis_LIPX05.Util
 
             for (int i = 0; i < path.Count - 1; i++)
             {
-                var from = path[i];
-                var to = path[i + 1];
+                Node
+                    from = path[i],
+                    to = path[i + 1];
 
                 var edge = edges.FirstOrDefault(e => e.From == from && e.To == to);
                 if (edge == null) continue;
@@ -43,7 +45,7 @@ namespace Thesis_LIPX05.Util
                 currT += edge.Cost;
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO, $"Gantt chart built with {ganttItems.Count} items.");
+            Log(LogSeverity.INFO, $"Gantt chart built with {ganttItems.Count} items.");
             return ganttItems;
         }
 
@@ -58,7 +60,7 @@ namespace Thesis_LIPX05.Util
                 cv.UseLayoutRounding = true;
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"Canvases are ready to be used!");
 
             int tickCount = Convert.ToInt32(Math.Ceiling(totalTime));
@@ -105,7 +107,7 @@ namespace Thesis_LIPX05.Util
                     };
 
                     label.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity));
-                    var measured = label.DesiredSize;
+                    Size measured = label.DesiredSize;
 
                     double
                         left = Math.Round(x - (measured.Width / 2.0) + 5),
@@ -118,7 +120,7 @@ namespace Thesis_LIPX05.Util
                 }
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"Ruler drawn: {ticksDrawn} ticks and {labelsDrawn} labels.");
 
             double cvW = totalTime * scale + 100;
@@ -136,7 +138,7 @@ namespace Thesis_LIPX05.Util
 
             for (int i = 0; i < items.Count; i++)
             {
-                var item = items[i];
+                GanttItem item = items[i];
 
                 double
                     x = item.Start * scale,
@@ -156,7 +158,7 @@ namespace Thesis_LIPX05.Util
                 Canvas.SetTop(rectangle, y);
                 cv.Children.Add(rectangle);
 
-                var label = new TextBlock
+                TextBlock label = new()
                 {
                     Text = $"{item.ID}",
                     ToolTip = new ToolTip
@@ -178,7 +180,7 @@ namespace Thesis_LIPX05.Util
                 itemsDrawn++;
             }
 
-            MainWindow.GetLogger().Log(LogManager.LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"Gantt chart rendering complete: {itemsDrawn} items was drawn.");
 
             double maxTime = items.Count != 0 ? items.Max(i => i.Start + i.Duration) : 0;

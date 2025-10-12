@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:Thesis_LIPX05"
         mc:Ignorable="d"
         Title="Y0KAI Task Scheduler"
-        Width="1366"
-        Height="768"
+        Width="1366" Height="768"
         Closing="MainWindow_Closing"
 >
     <Window.Resources>
@@ -31,7 +30,7 @@
             </MenuItem>
             <MenuItem Header="_Solver" Name="SolverMenu">
             </MenuItem>
-            <MenuItem Header="_Graph">
+            <MenuItem Header="_S-Graph">
                 <MenuItem Header="_Draw S-Graph" Click="DrawGraph_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">

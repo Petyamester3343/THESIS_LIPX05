@@ -1,0 +1,22 @@
+2025. 34. 10. 03:34:07 // INFO // Heuristic solver added!
+2025. 34. 10. 03:34:07 // INFO // Branch and Bound solver added!
+2025. 34. 10. 03:34:07 // INFO // Genetic solver added!
+2025. 34. 10. 03:34:07 // INFO // Solver menu successfully built!
+2025. 34. 10. 03:34:07 // INFO // Initialization complete!
+2025. 34. 10. 03:34:11 // INFO // Open file dialog initiated...
+2025. 34. 10. 03:34:13 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 34. 10. 03:34:13 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 34. 10. 03:34:13 // INFO // Steps Table datatable displayed in new tab!
+2025. 34. 10. 03:34:13 // INFO // Links Table datatable displayed in new tab!
+2025. 34. 10. 03:34:13 // INFO // BatchML file loaded and data tables populated!
+2025. 34. 10. 03:34:13 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 40. 10. 03:40:07 // INFO // No existing XML element found for table "RecipeElements" matching the DataRow keys.
+2025. 40. 10. 03:40:07 // INFO // Synchronized DataRow to XML for table "RecipeElements".
+2025. 40. 10. 03:40:17 // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+2025. 40. 10. 03:40:17 // INFO // Synchronized DataRow to XML for table "Steps".
+2025. 41. 10. 03:41:09 // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+2025. 41. 10. 03:41:09 // INFO // Synchronized DataRow to XML for table "Steps".
+2025. 41. 10. 03:41:12 // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+2025. 41. 10. 03:41:12 // INFO // Synchronized DataRow to XML for table "Steps".
+2025. 41. 10. 03:41:15 // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+2025. 41. 10. 03:41:15 // INFO // Synchronized DataRow to XML for table "Steps".

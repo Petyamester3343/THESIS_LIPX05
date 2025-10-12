@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Y0KAI_Dijkstra
+﻿namespace Y0KAI_Dijkstra
 {
     internal class SolverData
     {

@@ -1,0 +1,103 @@
+2025. 58. 10. 09:58:34 // INFO // Heuristic solver added!
+2025. 58. 10. 09:58:34 // INFO // Branch and Bound solver added!
+2025. 58. 10. 09:58:34 // INFO // Genetic solver added!
+2025. 58. 10. 09:58:34 // INFO // Solver menu successfully built!
+2025. 58. 10. 09:58:34 // INFO // Initialization complete!
+2025. 58. 10. 09:58:37 // INFO // Open file dialog initiated...
+2025. 58. 10. 09:58:39 // INFO // Master Recipe Table datatable displayed in new tab!
+2025. 58. 10. 09:58:39 // INFO // Recipe Element Table datatable displayed in new tab!
+2025. 58. 10. 09:58:39 // INFO // Steps Table datatable displayed in new tab!
+2025. 58. 10. 09:58:39 // INFO // Links Table datatable displayed in new tab!
+2025. 58. 10. 09:58:39 // INFO // BatchML file loaded and data tables populated!
+2025. 58. 10. 09:58:39 // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+2025. 58. 10. 09:58:42 // INFO // SGraphCanvas has been cleared!
+2025. 58. 10. 09:58:42 // INFO // GanttCanvas has been cleared!
+2025. 58. 10. 09:58:42 // INFO // RulerCanvas has been cleared!
+2025. 58. 10. 09:58:42 // INFO // S-Graph nodes cleared!
+2025. 58. 10. 09:58:42 // INFO // S-Graph edges cleared!
+2025. 58. 10. 09:58:42 // INFO // Node step1 at 35;35
+2025. 58. 10. 09:58:42 // INFO // Label step1 at 35,5;61,256564141035255
+2025. 58. 10. 09:58:42 // INFO // Node step2 at 185;35
+2025. 58. 10. 09:58:42 // INFO // Label step2 at 185,5;61,256564141035255
+2025. 58. 10. 09:58:42 // INFO // Node step3 at 335;35
+2025. 58. 10. 09:58:42 // INFO // Label step3 at 335,5;61,256564141035255
+2025. 58. 10. 09:58:42 // INFO // Node step4 at 35;185
+2025. 58. 10. 09:58:42 // INFO // Label step4 at 35,5;211,25656414103526
+2025. 58. 10. 09:58:42 // INFO // Node step5 at 185;185
+2025. 58. 10. 09:58:42 // INFO // Label step5 at 185,5;211,25656414103526
+2025. 58. 10. 09:58:42 // INFO // Node step6 at 335;185
+2025. 58. 10. 09:58:42 // INFO // Label step6 at 335,5;211,25656414103526
+2025. 58. 10. 09:58:42 // INFO // Node step7 at 35;335
+2025. 58. 10. 09:58:42 // INFO // Label step7 at 35,5;361,25656414103526
+2025. 58. 10. 09:58:42 // INFO // Node step8 at 185;335
+2025. 58. 10. 09:58:42 // INFO // Label step8 at 185,5;361,25656414103526
+2025. 58. 10. 09:58:42 // INFO // Node step9 at 335;335
+2025. 58. 10. 09:58:42 // INFO // Label step9 at 335,5;361,25656414103526
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (105,0;70,0) to (185,0;70,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 10 drawn at (145;70)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step1 to step2 with cost 10
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (255,0;70,0) to (335,0;70,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 15 drawn at (295;70)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step2 to step3 with cost 15
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (195,3;94,7) to (94,7;195,3)!
+2025. 58. 10. 09:58:42 // INFO // Weight 55 drawn at (137,92893218813452;137,92893218813452)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step2 to step4 with cost 55
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (338,7;85,7) to (101,3;204,3)!
+2025. 58. 10. 09:58:42 // INFO // Weight 60 drawn at (220;145)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step3 to step4 with cost 60
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (105,0;220,0) to (185,0;220,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 75 drawn at (145;220)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step4 to step5 with cost 75
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (105,0;220,0) to (335,0;220,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 45 drawn at (220;230)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step4 to step6 with cost 45
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (255,0;220,0) to (335,0;220,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 90 drawn at (295;220)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step5 to step6 with cost 90
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (338,7;235,7) to (101,3;354,3)!
+2025. 58. 10. 09:58:42 // INFO // Weight 15 drawn at (220;295)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step6 to step7 with cost 15
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (345,3;244,7) to (244,7;345,3)!
+2025. 58. 10. 09:58:42 // INFO // Weight 30 drawn at (287,9289321881345;287,9289321881345)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step6 to step8 with cost 30
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (105,0;370,0) to (185,0;370,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 25 drawn at (145;370)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step7 to step8 with cost 25
+2025. 58. 10. 09:58:42 // INFO // Edge drawn from (255,0;370,0) to (335,0;370,0)!
+2025. 58. 10. 09:58:42 // INFO // Weight 20 drawn at (295;370)!
+2025. 58. 10. 09:58:42 // INFO // Edge from step8 to step9 with cost 20
+2025. 58. 10. 09:58:42 // INFO // Canvas size set to 435x435
+2025. 58. 10. 09:58:42 // INFO // S-Graph built from BatchML file!
+2025. 58. 10. 09:58:42 // INFO // Heuristic solver enabled!
+2025. 58. 10. 09:58:42 // INFO // Branch and Bound solver enabled!
+2025. 58. 10. 09:58:42 // INFO // Genetic solver enabled!
+2025. 58. 10. 09:58:42 // INFO //  solver enabled!
+2025. 59. 10. 09:59:11 // INFO // Custom deterministic solver "Dijkstra" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_Dijkstra\Y0KAI_Dijkstra\bin\Debug\net9.0\Y0KAI_Dijkstra.exe
+2025. 59. 10. 09:59:12 // INFO // Custom solvers saved to JSON file!
+2025. 59. 10. 09:59:12 // INFO // Custom solvers saved to JSON file!
+2025. 59. 10. 09:59:12 // INFO // Custom solver menu item "Dijkstra (deterministic)" addedto the menu!
+2025. 59. 10. 09:59:12 // INFO // Heuristic solver added!
+2025. 59. 10. 09:59:12 // INFO // Branch and Bound solver added!
+2025. 59. 10. 09:59:12 // INFO // Genetic solver added!
+2025. 59. 10. 09:59:12 // INFO // Custom solver menu item "Dijkstra (deterministic)" addedto the menu!
+2025. 59. 10. 09:59:12 // INFO // Dijkstra (deterministic type) solver added!
+2025. 59. 10. 09:59:12 // INFO // Solver menu successfully built!
+2025. 59. 10. 09:59:33 // INFO // Custom metaheuristic solver "Simulated Annealing" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.exe
+2025. 59. 10. 09:59:33 // INFO // Custom solvers saved to JSON file!
+2025. 59. 10. 09:59:33 // INFO // Custom solvers saved to JSON file!
+2025. 59. 10. 09:59:33 // INFO // Custom solver menu item "Simulated Annealing (metaheuristic)" addedto the menu!
+2025. 59. 10. 09:59:33 // INFO // Heuristic solver added!
+2025. 59. 10. 09:59:33 // INFO // Branch and Bound solver added!
+2025. 59. 10. 09:59:33 // INFO // Genetic solver added!
+2025. 59. 10. 09:59:33 // INFO // Custom solver menu item "Dijkstra (deterministic)" addedto the menu!
+2025. 59. 10. 09:59:33 // INFO // Dijkstra (deterministic type) solver added!
+2025. 59. 10. 09:59:33 // INFO // Custom solver menu item "Simulated Annealing (metaheuristic)" addedto the menu!
+2025. 59. 10. 09:59:33 // INFO // Simulated Annealing (metaheuristic type) solver added!
+2025. 59. 10. 09:59:33 // INFO // Solver menu successfully built!
+2025. 00. 10. 10:00:00 // INFO // Dijkstra custom solver selected!
+2025. 00. 10. 10:00:13 // INFO // Deterministic solver selected; skipping numeric parameter gathering...
+2025. 01. 10. 10:01:22 // INFO // Gantt chart built with 0 items.
+2025. 01. 10. 10:01:22 // INFO // Gantt data built with 0 items!
+2025. 01. 10. 10:01:34 // ERROR // Error executing custom solver: Sequence contains no elements
+2025. 02. 10. 10:02:51 // INFO // Dijkstra custom solver selected!
+2025. 02. 10. 10:02:51 // INFO // Deterministic solver selected; skipping numeric parameter gathering...

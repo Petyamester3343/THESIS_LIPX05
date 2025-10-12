@@ -1,15 +1,14 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 
-using FilePath = System.IO.Path;
-using ShapePath = System.Windows.Shapes.Path;
-
-using static System.Environment;
 using static Thesis_LIPX05.Util.LogManager;
+
+using ShapePath = System.Windows.Shapes.Path;
+using FilePath = System.IO.Path;
+using System.IO;
 
 namespace Thesis_LIPX05.Util
 {
@@ -41,10 +40,57 @@ namespace Thesis_LIPX05.Util
         public static Dictionary<string, Node> GetNodes() => nodes;
         public static List<Edge> GetEdges() => edges;
 
+        public static void WriteSGraph2XML()
+        {
+            XDocument graph = new();
+            XElement root = new("SGraph");
+            graph.Add(root);
+            XElement nodes = new("Nodes");
+            root.Add(nodes);
+            foreach (var node in GetNodes().Values)
+            {
+                XElement nodeElement = new("Node",
+                    new XAttribute("ID", node.ID),
+                    new XAttribute("Desc", node.Desc));
+                nodes.Add(nodeElement);
+            }
+            XElement edges = new("Edges");
+            root.Add(edges);
+            foreach (var edge in GetEdges())
+            {
+                XElement edgeElement = new("Edge",
+                    new XAttribute("From", edge.From.ID),
+                    new XAttribute("To", edge.To.ID),
+                    new XAttribute("Cost", edge.Cost));
+                edges.Add(edgeElement);
+            }
+            string baseDir = FilePath.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "test");
+
+            if (!Directory.Exists(baseDir)) Directory.CreateDirectory(baseDir);
+
+            MainWindow.SetSGraphFilePath(FilePath.Combine(baseDir, "SGraph.xml"));
+
+            try
+            {
+                graph.Save(MainWindow.GetSGraphFilePath());
+                Log(LogSeverity.INFO, $"SGraph saved to {MainWindow.GetSGraphFilePath()}");
+            }
+            catch (Exception ex)
+            {
+                Log(LogSeverity.ERROR, $"Failed to save SGraph to XML: {ex.Message}");
+            }
+        }
+
         // Adds a node to the graph
         public static void AddNode(string id, string desc, Point position)
         {
-            if (!nodes.ContainsKey(id)) nodes.Add(id, new() { ID = id, Desc = desc, Position = position });
+            if (!nodes.ContainsKey(id))
+                nodes.Add(id, new()
+                {
+                    ID = id,
+                    Desc = desc,
+                    Position = position
+                });
         }
 
         // Adds an edge to the graph
@@ -54,7 +100,12 @@ namespace Thesis_LIPX05.Util
                 && nodes.TryGetValue(toID, out var to)
                 && from != null
                 && to != null
-                && !double.IsNaN(cost)) edges.Add(new() { From = from, To = to, Cost = cost });
+                && !double.IsNaN(cost)) edges.Add(new()
+                {
+                    From = from,
+                    To = to,
+                    Cost = cost
+                });
         }
 
         // Renders the graph on the given canvas
@@ -69,7 +120,7 @@ namespace Thesis_LIPX05.Util
                 startY = 0;
 
             // nodes
-            var sortedNodes = nodes.Values.ToList();
+            List<Node> sortedNodes = [.. nodes.Values];
             for (int i = 0; i < sortedNodes.Count; i++)
             {
                 Node node = sortedNodes[i];
@@ -116,19 +167,19 @@ namespace Thesis_LIPX05.Util
                 Canvas.SetLeft(graphNode, node.Position.X);
                 Canvas.SetTop(graphNode, node.Position.Y);
                 cv.Children.Add(graphNode);
-                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Node {node.ID} at {node.Position.X};{node.Position.Y}");
+                Log(LogSeverity.INFO, $"Node {node.ID} at {node.Position.X};{node.Position.Y}");
 
                 Canvas.SetLeft(txt, node.Position.X - (Node.Radius / 2) + 18);
                 Canvas.SetTop(txt, node.Position.Y + (Node.Radius / 1.333));
                 cv.Children.Add(txt);
-                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Label {node.ID} at {node.Position.X - (Node.Radius / 2) + 18};{node.Position.Y + (Node.Radius / 1.333)}");
+                Log(LogSeverity.INFO, $"Label {node.ID} at {node.Position.X - (Node.Radius / 2) + 18};{node.Position.Y + (Node.Radius / 1.333)}");
             }
 
             // edges
-            foreach (var edge in edges)
+            foreach (Edge edge in edges)
             {
                 DrawEdge(cv, edge.From.Position, edge.To.Position, Brushes.DarkBlue, edge.Cost);
-                MainWindow.GetLogger().Log(LogSeverity.INFO, $"Edge from {edge.From.ID} to {edge.To.ID} with cost {edge.Cost}");
+                Log(LogSeverity.INFO, $"Edge from {edge.From.ID} to {edge.To.ID} with cost {edge.Cost}");
             }
 
             double
@@ -139,7 +190,7 @@ namespace Thesis_LIPX05.Util
             cv.Width = maxHorSize + 100;
             cv.Height = maxVertSize + 100;
 
-            MainWindow.GetLogger().Log(LogSeverity.INFO, $"Canvas size set to {cv.Width}x{cv.Height}");
+            Log(LogSeverity.INFO, $"Canvas size set to {cv.Width}x{cv.Height}");
         }
 
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
@@ -156,7 +207,7 @@ namespace Thesis_LIPX05.Util
             // If nodes are too close, skip drawing edges
             if (dist <= Node.Radius * 2 + 1)
             {
-                MainWindow.GetLogger().Log(LogSeverity.WARNING,
+                Log(LogSeverity.WARNING,
                     "Nodes are too close or overlapping; skipping edge line!");
                 return;
             }
@@ -189,7 +240,7 @@ namespace Thesis_LIPX05.Util
             geo.Figures.Add(figure);
             ShapePath shapePath = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
             cv.Children.Add(shapePath);
-            MainWindow.GetLogger().Log(LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"Edge drawn from ({start.X:F1};{start.Y:F1}) to ({end.X:F1};{end.Y:F1})!");
 
             // Drawing the arrowhead
@@ -215,6 +266,7 @@ namespace Thesis_LIPX05.Util
             cv.Children.Add(arrowHead);
 
             // Drawing the weight label
+            // Midpoint of a quadratic Bezier curve at t=0.5 -> 0,25*P_0 + 0,5*P_1 + 0,25*P_2
             double t = 0.5;
             Point midCurve = new()
             {
@@ -237,7 +289,7 @@ namespace Thesis_LIPX05.Util
             Canvas.SetLeft(weightTXT, midCurve.X - weightTXT.Width / 2);
             Canvas.SetTop(weightTXT, midCurve.Y - weightTXT.Height / 2);
             cv.Children.Add(weightTXT);
-            MainWindow.GetLogger().Log(LogSeverity.INFO,
+            Log(LogSeverity.INFO,
                 $"Weight {weight} drawn at ({midCurve.X};{midCurve.Y})!");
         }
     }
