@@ -17,36 +17,57 @@ namespace Thesis_LIPX05.Util
             public string Desc { get; set; } = string.Empty; // description of the task
             public double Start { get; set; } // start time of the task in minutes
             public double Duration { get; set; } // duration of the task in minutes
+            public required string ResourceID { get; set; } // ID of the resource (e.g., machine) assigned to the task
         }
 
         // Builds a Gantt chart from an S-Graph
         public static List<GanttItem> BuildChartFromPath(List<Node> path, List<Edge> edges)
         {
+            Dictionary<string, double> earliestFinishTime = [];
             List<GanttItem> ganttItems = [];
-            double currT = 0;
 
-            for (int i = 0; i < path.Count - 1; i++)
+            foreach (Node n in path) earliestFinishTime[n.ID] = 0.0;
+
+            foreach (Node curr in path)
             {
-                Node
-                    from = path[i],
-                    to = path[i + 1];
+                double dur = curr.TimeM1 > 0 ? curr.TimeM1 : curr.TimeM2;
+                if (dur <= 0)
+                {
+                    LogGeneralActivity(LogSeverity.WARNING,
+                        $"Node {curr.ID} has non-positive duration ({dur}), skipping...", GeneralLogContext.GANTT);
+                    continue;
+                }
 
-                var edge = edges.FirstOrDefault(e => e.From == from && e.To == to);
-                if (edge == null) continue;
+                string resID = curr.ID.EndsWith("M1") ? "M1" : "M2";
+
+                double est = 0.0; // earliest start time
+
+                List<Edge> pred = [.. edges.Where(e => e.To.ID == curr.ID)];
+
+                foreach (Edge e in pred)
+                {
+                    if (earliestFinishTime.TryGetValue(e.From.ID, out double predEFT))
+                    {
+                        est = Math.Max(est, predEFT + e.Cost);
+                    }
+                }
+
+                double eft = est + dur;
+                earliestFinishTime[curr.ID] = eft;
 
                 ganttItems.Add(new()
                 {
-                    ID = to.ID,
-                    Desc = to.Desc,
-                    Start = currT,
-                    Duration = edge.Cost
+                    ID = curr.ID.Replace("_M1", "").Replace("_M2", ""),
+                    Desc = curr.Desc,
+                    Start = est,
+                    Duration = dur,
+                    ResourceID = resID
                 });
-
-                currT += edge.Cost;
             }
 
-            Log(LogSeverity.INFO, $"Gantt chart built with {ganttItems.Count} items.");
-            return ganttItems;
+            LogGeneralActivity(LogSeverity.INFO,
+                $"Gantt chart built with {ganttItems.Count} items from path with {path.Count} nodes.", GeneralLogContext.GANTT);
+            return [.. ganttItems.OrderBy(i => i.ResourceID).ThenBy(i => i.Start)];
         }
 
         // Draws the ruler on the Gantt chart canvas and the scroll view
@@ -60,10 +81,10 @@ namespace Thesis_LIPX05.Util
                 cv.UseLayoutRounding = true;
             }
 
-            Log(LogSeverity.INFO,
-                $"Canvases are ready to be used!");
+            LogGeneralActivity(LogSeverity.INFO,
+                $"Canvases are ready to be used!", GeneralLogContext.GANTT);
 
-            int tickCount = Convert.ToInt32(Math.Ceiling(totalTime));
+            int tickCount = (int)Math.Ceiling(totalTime);
 
             double lblCentY = 15;
 
@@ -81,7 +102,7 @@ namespace Thesis_LIPX05.Util
                     X1 = x,
                     Y1 = 0,
                     X2 = x,
-                    Y2 = cv1.ActualHeight + cv2.ActualHeight, // extended below the ruler to the end of GanttCanvas
+                    Y2 = cv1.ActualHeight, // extended below the ruler to the end of GanttCanvas
                     Stroke = Brushes.LightGray,
                     StrokeThickness = 1,
                     SnapsToDevicePixels = true,
@@ -92,7 +113,7 @@ namespace Thesis_LIPX05.Util
 
                 int lblInterval = (scale < 15) ? 2 : 1;
 
-                if (i % lblInterval == 0)
+                if (i % lblInterval is 0)
                 {
                     TextBlock label = new()
                     {
@@ -120,8 +141,8 @@ namespace Thesis_LIPX05.Util
                 }
             }
 
-            Log(LogSeverity.INFO,
-                $"Ruler drawn: {ticksDrawn} ticks and {labelsDrawn} labels.");
+            LogGeneralActivity(LogSeverity.INFO,
+                $"Ruler drawn: {ticksDrawn} ticks and {labelsDrawn} labels.", GeneralLogContext.GANTT);
 
             double cvW = totalTime * scale + 100;
             cv1.Width = cvW;
@@ -134,33 +155,39 @@ namespace Thesis_LIPX05.Util
             cv.Children.Clear();
             double rowH = 30;
 
+            List<IGrouping<string, GanttItem>> groupedItems = [.. items.GroupBy(i => i.ResourceID).OrderBy(g => g.Key)];
+
+            Dictionary<string, int> resourceRow = groupedItems
+                .Select((g, idx) => new { g.Key, Index = idx })
+                .ToDictionary(x => x.Key, x => x.Index);
+
             int itemsDrawn = 0;
 
-            for (int i = 0; i < items.Count; i++)
+            foreach (GanttItem item in items)
             {
-                GanttItem item = items[i];
+                int rIdx = resourceRow[item.ResourceID];
 
                 double
                     x = item.Start * scale,
                     w = item.Duration * scale,
-                    y = i * rowH;
+                    y = rIdx * rowH; // vertical position based on row index
 
-                Rectangle rectangle = new()
+                Rectangle ganttRect = new()
                 {
                     Width = Math.Round(w),
                     Height = Math.Round(rowH - 5),
-                    Fill = Brushes.LightGreen,
+                    Fill = item.ResourceID == "M1" ? Brushes.LightCoral : Brushes.LightSteelBlue, // color differentiation for the two machines
                     Stroke = Brushes.Black,
-                    StrokeThickness = 1,
+                    StrokeThickness = 1
                 };
 
-                Canvas.SetLeft(rectangle, x);
-                Canvas.SetTop(rectangle, y);
-                cv.Children.Add(rectangle);
+                Canvas.SetLeft(ganttRect, x);
+                Canvas.SetTop(ganttRect, y);
+                cv.Children.Add(ganttRect);
 
-                TextBlock label = new()
+                TextBlock txtBlock = new()
                 {
-                    Text = $"{item.ID}",
+                    Text = $"{item.ID} ({item.ResourceID})",
                     ToolTip = new ToolTip
                     {
                         Content = new TextBlock
@@ -171,21 +198,38 @@ namespace Thesis_LIPX05.Util
                         }
                     },
                     FontSize = 12,
-                    FontWeight = FontWeights.Bold,
+                    FontWeight = FontWeights.Bold
                 };
 
-                Canvas.SetLeft(label, x + 4);
-                Canvas.SetTop(label, y + 5);
-                cv.Children.Add(label);
+                Canvas.SetLeft(txtBlock, x + 4);
+                Canvas.SetTop(txtBlock, y + 5);
+                cv.Children.Add(txtBlock);
                 itemsDrawn++;
             }
 
-            Log(LogSeverity.INFO,
-                $"Gantt chart rendering complete: {itemsDrawn} items was drawn.");
+            LogGeneralActivity(LogSeverity.INFO,
+                $"Gantt chart rendered with {itemsDrawn} items on canvas.", GeneralLogContext.GANTT);
 
-            double maxTime = items.Count != 0 ? items.Max(i => i.Start + i.Duration) : 0;
-            cv.Width = maxTime * scale + 100; // adjust width based on max time
-            cv.Height = items.Count * rowH + 50; // adjust height based on number of items
+            double maxTime = items.Count is not 0 ? items.Max(i => i.Start + i.Duration) : 0;
+            cv.Width = maxTime * scale + 100;
+            cv.Height = groupedItems.Count * rowH + 50; // +50 for padding
+
+            for (int r = 0; r < groupedItems.Count; r++)
+            {
+                TextBlock rscLbl = new()
+                {
+                    Text = groupedItems[r].Key,
+                    FontSize = 14,
+                    FontWeight = FontWeights.ExtraBold,
+                    Foreground = Brushes.DarkBlue
+                };
+                Canvas.SetLeft(rscLbl, -60);
+                Canvas.SetTop(rscLbl, r * rowH + 5);
+                cv.Children.Add(rscLbl);
+            }
+
+            LogGeneralActivity(LogSeverity.INFO,
+                $"Canvas resized to {cv.Width}x{cv.Height} to fit all Gantt items.", GeneralLogContext.GANTT);
         }
     }
 }

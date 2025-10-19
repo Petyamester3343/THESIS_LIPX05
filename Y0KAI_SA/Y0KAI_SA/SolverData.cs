@@ -1,9 +1,12 @@
 ﻿namespace Y0KAI_SA
 {
+    // Classes needed for flow shop optimizations
     public class Node
     {
         public required string ID {  get; set; }
         public required string Desc { get; set; }
+        public required double TimeM1 { get; set; }
+        public required double TimeM2 { get; set; }
     }
 
     public class Edge

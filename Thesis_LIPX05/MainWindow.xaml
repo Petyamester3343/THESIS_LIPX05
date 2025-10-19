@@ -17,14 +17,17 @@
             <Setter Property="Background" Value="LightYellow"/>
         </Style>
     </Window.Resources>
+    
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open BatchML File" Name="OpenFileMenuItem" Tag="Open file" Click="OpenFile_Click" />
-                <MenuItem Header="_Save BatchML File" Name="SaveFileMenuItem" Tag="Save file" Click="SaveFile_Click"/>
-                <MenuItem Header="_Close BatchML File" Name="CloseFileMenuItem" Tag="Close file" Click="CloseFile_Click"/>
+                <MenuItem Header="_Open BatchML file" Name="OpenFileMenuItem" Tag="Open file" Click="OpenFile_Click" />
+                <MenuItem Header="_Save BatchML file" Name="SaveFileMenuItem" Tag="Save file" Click="SaveFile_Click"/>
+                <MenuItem Header="_Close BatchML file" Name="CloseFileMenuItem" Tag="Close file" Click="CloseFile_Click"/>
                 <Separator/>
                 <MenuItem Header="_Export current canvas" Name="ExportCanvasMenuItem" Click="ExportCanvas_Click"/>
+                <Separator/>
+                <MenuItem Header="_Load solution file" Name="LoadSolutionMenuItem" Click="LoadSolutionItem_Click"/>
                 <Separator/>
                 <MenuItem Header="_Exit" Click="Exit_Click" Tag="Exit"/>
             </MenuItem>
@@ -32,6 +35,9 @@
             </MenuItem>
             <MenuItem Header="_S-Graph">
                 <MenuItem Header="_Draw S-Graph" Click="DrawGraph_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Gantt">
+                <MenuItem Header="_Create datatable" Name="CreateSolutionTableMenuItem" Click="CreateSolutionTableMenuItem_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Click="About_Click"/>
@@ -53,9 +59,9 @@
                             </StackPanel>
                         </ScrollViewer>
                     </DockPanel>
-                    <Button Name="ShowSolutionTableBtn" Content="Create Solution Table" Width="160" Height="40" Margin="1154,615,0,0" Click="CreateSolutionTableBtn_Click" FontWeight="Bold"/>
                 </Grid>
             </TabItem>
+            
             <TabItem Header="_S-Graph" Name="SGraphTabItem" Tag="SGraph" GotFocus="Focus4Export_Click" LostFocus="Focus4Export_Click">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <Canvas Name="SGraphCanvas" Background="White"/>

@@ -1,0 +1,62 @@
+﻿10/18/2025 12:48 AM // INFO // Beginning initialization...
+10/18/2025 12:48 AM // INFO // Custom solvers loaded from JSON file!
+10/18/2025 12:48 AM // INFO // Johnson's Rule solver added!
+10/18/2025 12:48 AM // INFO // List Scheduling solver added!
+10/18/2025 12:48 AM // INFO // Simulated Annealing (metaheuristic type) solver added!
+10/18/2025 12:48 AM // INFO // Solver menu successfully built!
+10/18/2025 12:48 AM // INFO // Saving and closing are disabled for as long as there are no files opened.
+10/18/2025 12:48 AM // INFO // Initialization complete!
+10/18/2025 12:48 AM // INFO // Open file dialog initiated...
+10/18/2025 12:48 AM // INFO // Master Recipe Table datatable displayed in new tab!
+10/18/2025 12:48 AM // INFO // Recipe Elements Table datatable displayed in new tab!
+10/18/2025 12:48 AM // INFO // Steps Table datatable displayed in new tab!
+10/18/2025 12:48 AM // INFO // BatchML file loaded and data tables populated!
+10/18/2025 12:48 AM // INFO // Saving and closing are disabled for as long as there are no files opened.
+10/18/2025 12:48 AM // INFO // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test_mod.xml!
+10/18/2025 12:48 AM // WARNING // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+10/18/2025 12:48 AM // INFO // InternalKey column successfully hidden in 'Recipe Elements Table.'
+10/18/2025 12:49 AM // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 12:49 AM // INFO // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 12:49 AM // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 12:49 AM // INFO // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 12:49 AM // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+10/18/2025 12:49 AM // INFO // Synchronized DataRow to XML for table "Steps".
+10/18/2025 12:49 AM // INFO // InternalKey column successfully hidden in 'Recipe Elements Table.'
+10/18/2025 12:50 AM // WARNING // Attempting to close file with unsaved changes; prompting user!
+10/18/2025 12:50 AM // INFO // Changes made to Master Recipe table synced to XML!
+10/18/2025 12:50 AM // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 12:50 AM // INFO // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 12:50 AM // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 12:50 AM // INFO // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 12:50 AM // INFO // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 12:50 AM // INFO // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 12:50 AM // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+10/18/2025 12:50 AM // INFO // Synchronized DataRow to XML for table "Steps".
+10/18/2025 12:50 AM // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+10/18/2025 12:50 AM // INFO // Synchronized DataRow to XML for table "Steps".
+10/18/2025 12:50 AM // INFO // Found existing XML element for table "Steps" matching the DataRow keys.
+10/18/2025 12:50 AM // INFO // Synchronized DataRow to XML for table "Steps".
+10/18/2025 12:50 AM // INFO // SGraphCanvas has been cleared!
+10/18/2025 12:50 AM // INFO // GanttCanvas has been cleared!
+10/18/2025 12:50 AM // INFO // RulerCanvas has been cleared!
+10/18/2025 12:50 AM // INFO // S-Graph nodes cleared!
+10/18/2025 12:50 AM // INFO // S-Graph edges cleared!
+10/18/2025 12:51 AM // INFO // Master Recipe Table datatable purged!
+10/18/2025 12:51 AM // ERROR // Error closing BatchML: Cannot remove this column, because it's part of the primary key.
+10/18/2025 12:52 AM // INFO // InternalKey column successfully hidden in 'Recipe Elements Table.'
+10/18/2025 12:52 AM // INFO // SGraphCanvas has been cleared!
+10/18/2025 12:52 AM // INFO // GanttCanvas has been cleared!
+10/18/2025 12:52 AM // INFO // RulerCanvas has been cleared!
+10/18/2025 12:52 AM // INFO // S-Graph nodes cleared!
+10/18/2025 12:52 AM // INFO // S-Graph edges cleared!
+10/18/2025 12:52 AM // INFO // Master Recipe Table datatable purged!
+10/18/2025 12:52 AM // ERROR // Error closing BatchML: Cannot remove this column, because it's part of the primary key.
+10/18/2025 12:52 AM // INFO // InternalKey column successfully hidden in 'Recipe Elements Table.'
+10/18/2025 12:54 AM // INFO // SGraphCanvas has been cleared!
+10/18/2025 12:54 AM // INFO // GanttCanvas has been cleared!
+10/18/2025 12:54 AM // INFO // RulerCanvas has been cleared!
+10/18/2025 12:54 AM // INFO // S-Graph nodes cleared!
+10/18/2025 12:54 AM // INFO // S-Graph edges cleared!
+10/18/2025 12:54 AM // INFO // Master Recipe Table datatable purged!
+10/18/2025 1:03 AM // ERROR // Error closing BatchML: Cannot remove this column, because it's part of the primary key.
+10/18/2025 1:03 AM // INFO // No changes were made, exiting app...

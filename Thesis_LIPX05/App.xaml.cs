@@ -35,8 +35,7 @@ namespace Thesis_LIPX05
                 {
                     int currID = Environment.ProcessId;
 
-                    Process runningProc = GetProcessesByName(GetCurrentProcess().ProcessName)
-                        .FirstOrDefault(p => p.Id != currID)!;
+                    Process runningProc = GetProcessesByName(GetCurrentProcess().ProcessName).FirstOrDefault(p => p.Id != currID)!;
 
                     if (runningProc is not null && runningProc.MainWindowHandle != IntPtr.Zero)
                     {
@@ -100,20 +99,20 @@ namespace Thesis_LIPX05
             }
 
             // Show the main window and close the loading window
-            LaunchMainWindowAsync();
-            loading.Close();
+            LaunchMainWindowAsync(loading);
 
             e.Equals(null);
         }
 
         // Launches the main application window asynchronously
-        private async void LaunchMainWindowAsync() => await Dispatcher.InvokeAsync(() =>
+        private async void LaunchMainWindowAsync(LoadingWindow shouldBeClosedByNow) => await Dispatcher.InvokeAsync(() =>
             {
                 MainWindow ts_app = new();
                 MainWindow = ts_app;
                 ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 ts_app.Show();
                 ts_app.Activate();
+                shouldBeClosedByNow.Close();
             });
 
 

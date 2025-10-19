@@ -1,0 +1,23 @@
+﻿10/18/2025 4:10 AM // INFO // [INITIALIZATION] // Beginning initialization...
+10/18/2025 4:10 AM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+10/18/2025 4:10 AM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+10/18/2025 4:10 AM // INFO // [INITIALIZATION] // List Scheduling solver added!
+10/18/2025 4:10 AM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/18/2025 4:10 AM // INFO // [INITIALIZATION] // Solver menu successfully built!
+10/18/2025 4:10 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/18/2025 4:10 AM // INFO // [INITIALIZATION] // Initialization complete!
+10/18/2025 4:10 AM // INFO // [LOAD] // Open file dialog initiated...
+10/18/2025 4:10 AM // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+10/18/2025 4:10 AM // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+10/18/2025 4:10 AM // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+10/18/2025 4:10 AM // INFO // [LOAD] // BatchML file loaded and data tables populated!
+10/18/2025 4:10 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/18/2025 4:10 AM // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+10/18/2025 4:10 AM // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+10/18/2025 4:10 AM // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+10/18/2025 4:11 AM // INFO // [SYNC] // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 4:11 AM // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 4:11 AM // INFO // [SYNC] // Found existing XML element for table "RecipeElements" matching the DataRow keys.
+10/18/2025 4:11 AM // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+10/18/2025 4:11 AM // INFO // [SAVE] // BatchML file successfully saved as C:\Users\Phant0m\Desktop\THESIS_LIPX05\test_isFaulty.xml
+10/18/2025 4:12 AM // INFO // [EXITUS] // No changes were made, exiting app...

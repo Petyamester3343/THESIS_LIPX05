@@ -1,0 +1,47 @@
+﻿10/18/2025 12:47 PM // INFO // [INITIALIZATION] // Beginning initialization...
+10/18/2025 12:47 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+10/18/2025 12:47 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // Initialization complete!
+10/18/2025 12:47 PM // WARNING // [S_GRAPH] // No BatchML file loaded, drawing example S-Graph!
+10/18/2025 12:47 PM // INFO // [CLEAR] // SGraphCanvas has been cleared!
+10/18/2025 12:47 PM // INFO // [CLEAR] // GanttCanvas has been cleared!
+10/18/2025 12:47 PM // INFO // [CLEAR] // RulerCanvas has been cleared!
+10/18/2025 12:47 PM // INFO // [CLEAR] // S-Graph nodes cleared!
+10/18/2025 12:47 PM // INFO // [CLEAR] // S-Graph edges cleared!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Node J1_M1 at 0;0
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Node J1_M2 at 0;0
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Node J2_M1 at 100;70
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Node J2_M2 at 400;70
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Node J3_M1 at 100;250
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Node J3_M2 at 400;250
+10/18/2025 12:47 PM // WARNING // [S_GRAPH] // Nodes are too close or overlapping; skipping edge line!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (400,0;105,0)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Weight 0 drawn at (285;105)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;285,0) to (400,0;285,0)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Weight 0 drawn at (285;285)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge drawn from (135,0;140,0) to (135,0;250,0)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Weight 2 drawn at (125;195)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J2_M1 to J3_M1 with cost 2 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge drawn from (435,0;140,0) to (435,0;250,0)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Weight 3 drawn at (435;195)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J2_M2 to J3_M2 with cost 3 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge drawn from (122,0;252,5) to (48,0;67,5)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Weight 4 drawn at (94,28476690885259;156,28609323645898)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J3_M1 to J1_M1 with cost 4 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge drawn from (405,3;266,5) to (64,7;53,5)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Weight 2 drawn at (235;160)!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Edge from J3_M2 to J1_M2 with cost 2 drawn.
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Canvas resized to 520x370!
+10/18/2025 12:47 PM // INFO // [S_GRAPH] // Example Flow Shop S-Graph drawn!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+10/18/2025 12:47 PM // INFO // [INITIALIZATION] //  solver enabled!
+10/18/2025 12:47 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
