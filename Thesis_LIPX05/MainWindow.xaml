@@ -55,7 +55,7 @@
                         <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                             <StackPanel Orientation="Vertical">
                                 <Canvas Name="RulerCanvas" Height="30" Background="White"/>
-                                <Canvas Name="GanttCanvas" Height="Auto" Background="Transparent" Tag=""/>
+                                <Canvas Name="GanttCanvas" Height="Auto" Background="White" Tag=""/>
                             </StackPanel>
                         </ScrollViewer>
                     </DockPanel>

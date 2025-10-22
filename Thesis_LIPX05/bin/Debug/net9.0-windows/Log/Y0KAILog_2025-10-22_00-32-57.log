@@ -1,0 +1,93 @@
+﻿10/22/2025 12:32 AM // INFO // [INITIALIZATION] // Beginning initialization...
+10/22/2025 12:32 AM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+10/22/2025 12:32 AM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+10/22/2025 12:32 AM // INFO // [INITIALIZATION] // List Scheduling solver added!
+10/22/2025 12:32 AM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/22/2025 12:32 AM // INFO // [INITIALIZATION] // Solver menu successfully built!
+10/22/2025 12:32 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/22/2025 12:32 AM // INFO // [INITIALIZATION] // Initialization complete!
+10/22/2025 12:33 AM // WARNING // [S_GRAPH] // No BatchML file loaded, drawing example S-Graph!
+10/22/2025 12:33 AM // INFO // [CLEAR] // SGraphCanvas has been cleared!
+10/22/2025 12:33 AM // INFO // [CLEAR] // GanttCanvas has been cleared!
+10/22/2025 12:33 AM // INFO // [CLEAR] // RulerCanvas has been cleared!
+10/22/2025 12:33 AM // INFO // [CLEAR] // S-Graph nodes cleared!
+10/22/2025 12:33 AM // INFO // [CLEAR] // S-Graph edges cleared!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node J2_M1 at 100;70
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node J2_M2 at 400;70
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node J1_M1 at 100;220
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node J1_M2 at 400;220
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node J3_M2 at 400;370
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node Prod_M1 at 100;520
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Node Prod_M2 at 400;520
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Technological edge J2_M1 to J2_M2 set to fixed curve 50.
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (400,0;105,0)!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Technological edge J1_M1 to J1_M2 set to fixed curve 50.
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (400,0;255,0)!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Technological edge J3_M1 to J3_M2 set to fixed curve 50.
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (400,0;405,0)!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Canvas resized to 520x640!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // Example Flow Shop S-Graph drawn!
+10/22/2025 12:33 AM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+10/22/2025 12:33 AM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+10/22/2025 12:33 AM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+10/22/2025 12:33 AM // INFO // [INITIALIZATION] //  solver enabled!
+10/22/2025 12:33 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/22/2025 12:33 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:33 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_fadd49b7-7ffa-4d4e-9c08-b51f8d0b7025.xml!
+10/22/2025 12:33 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:33 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:36 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 12:36 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:36 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:36 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_efe8e474-1eef-42ee-97ea-7715fb8d381c.xml!
+10/22/2025 12:36 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:36 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:40 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 12:40 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:40 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:40 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_e466dfed-ce94-4568-85b2-3b2203167ef7.xml!
+10/22/2025 12:40 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:40 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:41 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 12:41 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:41 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:41 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_f721d3e3-2722-4de8-9d94-ce9ab203e13b.xml!
+10/22/2025 12:41 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:41 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:44 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 12:44 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:44 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:44 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_159b8373-4cf3-4a10-a6f7-c9b9bfbea1b1.xml!
+10/22/2025 12:44 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:44 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:52 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 12:52 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:52 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:52 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_4b7064d7-8b15-416b-88e7-25273f9d4485.xml!
+10/22/2025 12:52 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:52 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:53 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 1:09 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 1:09 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 1:09 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_89d0a021-42e4-4f72-b2d5-bc0142dc4eb6.xml!
+10/22/2025 1:09 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 1:09 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 1:13 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 1:13 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 1:13 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 1:13 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_be672890-ec61-47ac-afdb-6de2446f69c7.xml!
+10/22/2025 1:13 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 1:13 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 1:19 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 1:19 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 1:19 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 1:19 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_26182fde-5219-479a-96c9-6b8bee0cf352.xml!
+10/22/2025 1:19 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 1:19 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 1:19 AM // ERROR // [Simulated Annealing] // An error occurred with the external solver (exit code: -1073741510)!
+10/22/2025 9:34 AM // INFO // [EXITUS] // No changes were made, exiting app...

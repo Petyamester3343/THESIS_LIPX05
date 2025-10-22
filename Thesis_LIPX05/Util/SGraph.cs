@@ -26,6 +26,7 @@ namespace Thesis_LIPX05.Util
             public static double Radius { get; set; } = 35; // radius of the node, default is 35 (for visual representation)
             public required double TimeM1 { get; set; } // time in minutes for machine 1
             public required double TimeM2 { get; set; } // time in minutes for machine 2
+            public bool IsProduct { get; set; } = false; // product/completion node identifier
         }
 
         // The nested class representing a unidirectional (directed) edge between two nodes
@@ -39,7 +40,6 @@ namespace Thesis_LIPX05.Util
         // Private read-only static collections to store necessary data
         private readonly static List<Edge> edges = [];
         private readonly static Dictionary<string, Node> nodes = new(StringComparer.OrdinalIgnoreCase);
-        private readonly static Dictionary<string, int> edgeCountFromNode = [];
 
         // Getters for nodes and edges
         public static Dictionary<string, Node> GetNodes() => nodes;
@@ -61,10 +61,8 @@ namespace Thesis_LIPX05.Util
            </Edges>
          </SGraph>
          */
-        public static string WriteSGraph2XML(string path)
+        public static void WriteSGraph2XML(string path, out string s)
         {
-            bool succ;
-
             XDocument graph = new();
             XElement root = new("SGraph");
             graph.Add(root);
@@ -83,7 +81,26 @@ namespace Thesis_LIPX05.Util
 
             XElement edges = new("Edges");
             root.Add(edges);
-            foreach (Edge edge in GetEdges())
+
+            IEnumerable<Edge> edges2Out = GetEdges().Where(edge =>
+            {
+                string
+                    from = edge.From.ID,
+                    to = edge.To.ID,
+                    baseJobFrom = from.EndsWith("_M1") || from.EndsWith("_M2") ? from[..^3] : string.Empty,
+                    baseJobTo = to.EndsWith("_M1") || to.EndsWith("_M2") ? to[..^3] : string.Empty;
+
+                bool
+                    isTech = from.EndsWith("_M1") && from.EndsWith("_M2") &&
+                             baseJobFrom.Equals(baseJobTo, StringComparison.OrdinalIgnoreCase),
+                    isSeq = (from.EndsWith("_M1") && to.EndsWith("_M1")) ||
+                            (from.EndsWith("_M2") && to.EndsWith("_M2")),
+                    isProdLink = from.StartsWith("Prod") || to.StartsWith("Prod");
+
+                return isTech;
+            });
+
+            foreach (Edge edge in edges2Out)
             {
                 XElement edgeElement = new("Edge",
                     new XAttribute("From", edge.From.ID),
@@ -92,30 +109,39 @@ namespace Thesis_LIPX05.Util
                 edges.Add(edgeElement);
             }
 
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            string fullPath = FilePath.Combine(path, $"SGraph_{Guid.NewGuid()}.xml");
-
             try
             {
-                graph.Save(fullPath);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                    LogGeneralActivity(LogSeverity.INFO,
+                        $"{path} is currently non-existent; (re-)creating...", GeneralLogContext.S_GRAPH);
+                }
+                else LogGeneralActivity(LogSeverity.INFO,
+                    $"{path} successfully discovered!", GeneralLogContext.S_GRAPH);
+
+                string sGraphPath = $"SGraph_{Guid.NewGuid()}.xml";
+
+                // giving value to out variable based on the existence of the path
+                s = FilePath.Combine(path, sGraphPath);
+
+                // the crucial point
+                graph.Save(s);
                 LogGeneralActivity(LogSeverity.INFO,
-                    $"SGraph saved to {fullPath}!", GeneralLogContext.S_GRAPH);
-                succ = true;
+                    $"SGraph saved to {s}!", GeneralLogContext.S_GRAPH);
             }
             catch (Exception ex)
             {
                 LogGeneralActivity(LogSeverity.ERROR,
                     $"Failed to save S-Graph to XML: {ex.Message}", GeneralLogContext.S_GRAPH);
                 MessageBox.Show($"Failed to save S-Graph to XML: {ex.Message}",
-                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                succ = false;
+                   "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                s = string.Empty;
             }
-
-            return succ ? fullPath : string.Empty;
         }
 
         // Adds a node to the graph
-        public static void AddNode(string id, string desc, WindowPoint position, double t1, double t2)
+        public static void AddNode(string id, string desc, WindowPoint position, double t1, double t2, bool isProduct)
         {
             if (!nodes.ContainsKey(id))
                 nodes.Add(id, new()
@@ -124,30 +150,44 @@ namespace Thesis_LIPX05.Util
                     Desc = desc,
                     Position = position,
                     TimeM1 = t1,
-                    TimeM2 = t2
+                    TimeM2 = t2,
+                    IsProduct = isProduct
                 });
         }
 
         // Adds an edge to the graph
-        public static void AddEdge(string fromID, string toID, double cost)
+        public static void AddEdge(string fromID, string toID, double cost = 0.0)
         {
             if (nodes.TryGetValue(fromID, out Node? from)
                 && nodes.TryGetValue(toID, out Node? to)
                 && from is not null
                 && to is not null
-                && !double.IsNaN(cost)) edges.Add(new()
+                && !double.IsNaN(cost))
+            {
+                Edge? extEdge = edges.FirstOrDefault(e =>
+                                e.From.ID.Equals(fromID, StringComparison.OrdinalIgnoreCase) &&
+                                e.To.ID.Equals(toID, StringComparison.OrdinalIgnoreCase));
+
+                if (extEdge is not null)
+                {
+                    extEdge.Cost = cost;
+                    LogGeneralActivity(LogSeverity.WARNING,
+                        $"Duplicate edge attempted: {fromID} -> {toID}. Skipping addition.", GeneralLogContext.S_GRAPH);
+                    return;
+                }
+                else edges.Add(new()
                 {
                     From = from,
                     To = to,
                     Cost = cost
                 });
+            }
         }
 
         // Renders the graph on the given canvas
-        public static void Render(Canvas cv, int rowLimit)
+        public static void RenderSGraph(Canvas cv)
         {
             cv.Children.Clear();
-            edgeCountFromNode.Clear();
 
             List<Node> sorted = [.. nodes.Values];
 
@@ -159,7 +199,7 @@ namespace Thesis_LIPX05.Util
 
             foreach (Edge e in edges)
             {
-                DrawArrow(cv, e.From.ID, e.From.Position, e.To.Position, Brushes.DarkBlue, e.Cost);
+                DrawArrow(cv, e, Brushes.DarkBlue);
                 LogGeneralActivity(LogSeverity.INFO,
                     $"Edge from {e.From.ID} to {e.To.ID} with cost {e.Cost} drawn.", GeneralLogContext.S_GRAPH);
             }
@@ -187,7 +227,7 @@ namespace Thesis_LIPX05.Util
             {
                 Width = Node.Radius * 2,
                 Height = Node.Radius * 2,
-                Fill = Brushes.LightBlue,
+                Fill = node.IsProduct ? Brushes.Gold : Brushes.LightBlue,
                 Stroke = Brushes.Black,
                 StrokeThickness = 1,
                 ToolTip = new ToolTip
@@ -226,13 +266,23 @@ namespace Thesis_LIPX05.Util
             };
 
             Canvas.SetLeft(txt, node.Position.X);
-            Canvas.SetTop(txt, node.Position.Y + Node.Radius * 2 + 5);
+            Canvas.SetTop(txt, node.Position.Y + Node.Radius - 5);
             cv.Children.Add(txt);
         }
 
+        private static bool IsTechnologicalPrecEdge(Edge edge) =>
+            edge.From.ID.EndsWith("_M1", StringComparison.OrdinalIgnoreCase) &&
+            edge.To.ID.EndsWith("_M2", StringComparison.OrdinalIgnoreCase) &&
+            edge.From.ID[..^3].Equals(edge.To.ID[..^3], StringComparison.OrdinalIgnoreCase);
+
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
-        private static void DrawArrow(Canvas cv, string fromID, WindowPoint from, WindowPoint to, Brush color, double weight, double thickness = 2)
+        private static void DrawArrow(Canvas cv, Edge edge, Brush color, double thickness = 2)
         {
+            WindowPoint
+                from = edge.From.Position,
+                to = edge.To.Position;
+            double weight = edge.Cost;
+
             // Calculating node centers
             WindowPoint centerFrom = new(from.X + Node.Radius, from.Y + Node.Radius);
             WindowPoint centerTo = new(to.X + Node.Radius, to.Y + Node.Radius);
@@ -257,11 +307,15 @@ namespace Thesis_LIPX05.Util
                 start = centerFrom + dirTo * Node.Radius,
                 end = centerTo - dirTo * Node.Radius; // subtract to move backward from centerTo
 
-            // Handling multiple edges
-            edgeCountFromNode[fromID] = edgeCountFromNode.TryGetValue(fromID, out int edgeCount) ? ++edgeCount : 1;
-
-            // If there are multiple edges, curve the nth (where n > 1), otherwise do nothing
-            double dCurve = (edgeCount > 1) ? 20 * (edgeCount - 1) : 0;
+            // separating internal flows by checking if it is a technological precedence
+            double dCurve;
+            if (IsTechnologicalPrecEdge(edge))
+            {
+                dCurve = 50;
+                LogGeneralActivity(LogSeverity.INFO,
+                    $"Technological edge {edge.From.ID} to {edge.To.ID} set to fixed curve {dCurve}.", GeneralLogContext.S_GRAPH);
+            }
+            else dCurve = 0;
 
             // Calculating the Bezier curve's control point
             Vector normal = new(-dirTo.Y, dirTo.X); // 90 degree rotation
@@ -276,9 +330,9 @@ namespace Thesis_LIPX05.Util
             // It relies on the geometrically correct 'end' point
             DrawArrowHead(control, end, color, cv);
 
-            // Drawing the weight label
+            // Drawing the weight label (if weight gt 0 is true)
             // Midpoint of a quadratic Bezier curve at t = 0.5 is (0,25 * P_0 + 0,5 * P_1 + 0,25 * P_2)
-            DrawWeightOnEdge(start, control, end, weight, cv);
+            if (weight > 0) DrawWeightOnEdge(start, control, end, weight, cv);
         }
 
         // Helper method for drawing a Bezier curve

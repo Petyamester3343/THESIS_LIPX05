@@ -20,7 +20,7 @@
         {
             List<string>
                 baseJobIDs = [.. g.Nodes.Keys.Where(id => id.EndsWith("_M1")).Select(id => id[..^3]).Distinct()],
-                currPath = [.. baseJobIDs.OrderBy(_ => rnd.Next())],
+                currPath = [.. baseJobIDs.OrderBy(id => id)],
                 bestPath = [.. currPath];
 
             double
@@ -54,7 +54,7 @@
             }
 
             if (!isSilent) Console.WriteLine($"Optimization complete. Best makespan: {bestCost:F2}");
-            return TranslateSeq2Path(bestPath);
+            return [.. bestPath.Where(id => id is not "Prod" or "Prod_M1" or "Prod_M2")];
         }
 
         // Generate a neighboring solution by swapping two random nodes in the path
@@ -74,21 +74,27 @@
             return neighbor;
         }
 
-        // Translate the sequence into a path
-        private static List<string> TranslateSeq2Path(List<string> jobSeq)
-        {
-            List<string> full = [];
-            foreach (string id in jobSeq)
-            {
-                full.Add($"{id}_M1");
-                full.Add($"{id}_M2");
-            }
-            return full;
-        }
-
+        // Generates the makespan's graph
         private double EvaluateMakespan(List<string> jobSeq, bool isSilent)
         {
-            ClearSeqEdges();
+            const double ZeroDelay = 0.0;
+
+            g.Edges.Clear();
+
+            foreach (KeyValuePair<string, Node> kvp in g.Nodes.Where(n => n.Value.TimeM1 > 0 && n.Key.EndsWith("_M1")))
+            {
+                string
+                    fromID = kvp.Key,
+                    baseID = fromID[..^3];
+                Node node = kvp.Value;
+
+                g.Edges.Add(new()
+                {
+                    FromID = fromID,
+                    ToID = $"{baseID}_M2",
+                    Cost = node.TimeM1
+                });
+            }
 
             for (int i = 0; i < jobSeq.Count - 1; i++)
             {
@@ -96,57 +102,99 @@
                     jobA = jobSeq[i],
                     jobB = jobSeq[i + 1];
 
-                Node
-                    nodeA_M1 = g.Nodes[$"{jobA}_M1"],
-                    nodeA_M2 = g.Nodes[$"{jobA}_M2"];
+                g.Edges.Add(new()
+                {
+                    FromID = $"{jobA}_M1",
+                    ToID = $"{jobB}_M1",
+                    Cost = ZeroDelay
+                });
 
-                AddSeqEdge($"{jobA}_M1", $"{jobB}_M1", nodeA_M1.TimeM1);
-                AddSeqEdge($"{jobA}_M2", $"{jobB}_M2", nodeA_M2.TimeM2);
+                g.Edges.Add(new()
+                {
+                    FromID = $"{jobA}_M2",
+                    ToID = $"{jobB}_M2",
+                    Cost = ZeroDelay
+                });
+            }
+
+            if (jobSeq.Count > 0)
+            {
+                string last = jobSeq.Last();
+
+                g.Edges.Add(new()
+                {
+                    FromID = $"{last}_M1",
+                    ToID = $"Prod_M1",
+                    Cost = ZeroDelay
+                });
+
+                g.Edges.Add(new()
+                {
+                    FromID = $"{last}_M2",
+                    ToID = $"Prod_M2",
+                    Cost = ZeroDelay
+                });
             }
 
             Dictionary<string, double> eftTimes = GetLongestPathEFTs(isSilent);
-
             double makespan = eftTimes.Where(kvp => kvp.Key.EndsWith("_M2")).Max(kvp => kvp.Value);
 
             return (makespan <= 0) ? double.MaxValue : makespan;
         }
 
-        // Helper method to clear sequential edges
-        private void ClearSeqEdges() =>
-            g.Edges.RemoveAll(e =>
-            (e.FromID.EndsWith("_M1") && e.ToID.EndsWith("_M1")) ||
-            (e.FromID.EndsWith("_M2") && e.ToID.EndsWith("_M2")));
-
-        // Helper method to add sequential edges
-        private void AddSeqEdge(string from, string to, double cost) =>
-            g.Edges.Add(new() { FromID = from, ToID = to, Cost = cost });
-
         // Fetches the path's EFT (earliest finish time)
         private Dictionary<string, double> GetLongestPathEFTs(bool isSilent)
         {
             List<string> topo = TopoSort(g.Nodes, g.Edges, isSilent);
-            Dictionary<string, double> dist = g.Nodes.Keys.ToDictionary(k => k, v => double.NegativeInfinity);
+            if (topo.Count is 0)
+                return g.Nodes.Keys.ToDictionary(k => k, v => double.MaxValue);
+            
+            // sentinel value for unreached nodes
+            const double MinDist = -1.0;
+
+            Dictionary<string, double> dist = g.Nodes.Keys.ToDictionary(k => k, v => MinDist);
             Dictionary<string, int> inDeg = g.Nodes.Keys.ToDictionary(k => k, v => 0);
 
             foreach (Edge e in g.Edges) inDeg[e.ToID]++;
-            foreach (KeyValuePair<string, int> kvp in inDeg.Where(kvp => kvp.Value is 0)) dist[kvp.Key] = 0.0;
+
+            // initialize starting nodes (in-deg 0) to EST = 0.0
+            foreach (KeyValuePair<string, int> kvp in inDeg.Where(kvp => kvp.Value is 0))
+                dist[kvp.Key] = 0.0;
 
             foreach (string u in topo)
             {
+                if (dist[u] <= MinDist) continue;
+                
+                Node nodeU = g.Nodes[u];
+                double durU = (nodeU.TimeM1 > 0) ? nodeU.TimeM1 : nodeU.TimeM2;
+
+                double eftU = dist[u] + durU; // EFT(u)
+
                 foreach (Edge e in g.Edges.Where(e => e.FromID == u))
                 {
                     string v = e.ToID;
                     double cost = e.Cost;
 
-                    if (dist[u] is not double.NegativeInfinity && dist[v] < (dist[u] + cost))
-                        dist[v] = dist[u] + cost;
+                    double reqStartV = eftU + cost; // EST(u) = EFT(u) + Cost
+
+                    if (dist[v] < reqStartV)
+                        dist[v] = reqStartV;
                 }
             }
 
             foreach (KeyValuePair<string, Node> kvp in g.Nodes)
                 if (dist.ContainsKey(kvp.Key))
-                    dist[kvp.Key] += (kvp.Value.TimeM1 > 0) ? kvp.Value.TimeM1 : kvp.Value.TimeM2;
+                {
+                    if (dist[kvp.Key] <= MinDist)
+                    {
+                        dist[kvp.Key] = double.MaxValue;
+                        continue;
+                    }
 
+                    double finalDur = (kvp.Value.TimeM1 > 0) ? kvp.Value.TimeM1 : kvp.Value.TimeM2;
+                    dist[kvp.Key] += finalDur;
+                }
+                
             return dist;
         }
 
@@ -169,14 +217,14 @@
                 {
                     string m = e.ToID;
                     inDegree[m]--;
-                    if (inDegree[m] == 0) zeroInDegree.Enqueue(m);
+                    if (inDegree[m] is 0) zeroInDegree.Enqueue(m);
                     if (!isSilent) Console.WriteLine($"Decreased in-degree of {m} to {inDegree[m]}.");
                 }
             }
             if (topoOrder.Count != nodes.Count)
             {
                 if (!isSilent) Console.Error.WriteLine("Graph has at least one cycle; topological sort not possible.");
-                throw new InvalidOperationException("Graph is not a DAG; topological sort failed.");
+                return [];
             }
 
             if (!isSilent) Console.WriteLine("Topological sort completed successfully.");

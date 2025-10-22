@@ -5,9 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -22,6 +20,7 @@ using static Thesis_LIPX05.Util.Gantt;
 using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
 
+using FlowShopKVP = System.Collections.Generic.KeyValuePair<string, (int, int, string)>;
 using FilePath = System.IO.Path;
 
 namespace Thesis_LIPX05
@@ -91,6 +90,7 @@ namespace Thesis_LIPX05
             BuildSolverMenu(SolverMenu);
 
             ManageFileHandlers();
+            ManageSolutionDataTableCreator();
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Initialization complete!", GeneralLogContext.INITIALIZATION);
@@ -253,8 +253,8 @@ namespace Thesis_LIPX05
                     double totalTime = GanttData.Max(x => x.Start + x.Duration);
                     int rowC = GanttData.Count;
                     double timeScale = BaseTimeScale * zoom;
-                    Render(GanttCanvas, GanttData, timeScale);
-                    DrawRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
+                    RenderGanttChart(GanttCanvas, GanttData, timeScale);
+                    DrawGanttRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
                     LogGeneralActivity(LogSeverity.INFO,
                         "Loaded solution rendered successfully!", GeneralLogContext.GANTT);
                     GanttExists = true;
@@ -369,18 +369,24 @@ namespace Thesis_LIPX05
             }
             // reserved for external solvers reading from XML and writing to TXT files
             if (customSolvers.Any(cs => cs.Name == solverTag)) InitExtSolver(menuItem);
-
-
         }
 
         private void RenderSchedule(List<Node> optPath, string method)
         {
+            GanttData.Clear();
+            GanttCanvas.Children.Clear();
+            RulerCanvas.Children.Clear();
+
             if (optPath.Count is 0)
             {
                 LogGeneralActivity(LogSeverity.ERROR, "Optimized path is empty, cannot render schedule!", GeneralLogContext.GANTT);
                 MessageBox.Show("Optimized path is empty, cannot render schedule!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            RenderSGraph(SGraphCanvas);
+            LogGeneralActivity(LogSeverity.INFO,
+                $"S-graph re-rendered with {method} sequence.", GeneralLogContext.S_GRAPH);
 
             GanttData = BuildChartFromPath(optPath, GetEdges());
             LogGeneralActivity(LogSeverity.INFO,
@@ -389,11 +395,12 @@ namespace Thesis_LIPX05
             double totalTime = GanttData.Max(x => x.Start + x.Duration);
             double timeScale = BaseTimeScale * zoom;
 
-            Render(GanttCanvas, GanttData, timeScale);
-            DrawRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
+            DrawGanttRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
+            RenderGanttChart(GanttCanvas, GanttData, timeScale);
             LogGeneralActivity(LogSeverity.INFO, $"{method} schedule rendered successfully!", GeneralLogContext.GANTT);
 
             GanttExists = true;
+            ManageSolutionDataTableCreator();
         }
 
         private void SolveWithJohnson()
@@ -437,7 +444,8 @@ namespace Thesis_LIPX05
             // commencing inquiries and initializating the solver's logger
             string
                 tempDir = FilePath.Combine(Environment.CurrentDirectory, "SolverTemp"),
-                tempTxtPath = FilePath.Combine(tempDir, $"SimulatedAnnealing_Solution.txt");
+                tempTxtPath = FilePath.Combine(tempDir, $"SimulatedAnnealing_Solution.txt"),
+                tempXmlPath = string.Empty; // initializing out variable beyond the try-catch-finally scope
 
             CustomSolver? customSolver = customSolvers.FirstOrDefault(cs => cs.Name == menuItem?.Tag.ToString());
             if (customSolver is null)
@@ -453,7 +461,7 @@ namespace Thesis_LIPX05
 
             try
             {
-                string tempXmlPath = WriteSGraph2XML(tempDir);
+                WriteSGraph2XML(tempDir, out tempXmlPath);
                 List<string> launchArgs = [];
 
                 if (customSolver.TypeID.Equals("Metaheuristic", StringComparison.OrdinalIgnoreCase))
@@ -480,18 +488,20 @@ namespace Thesis_LIPX05
                 customSolver.Arguments.Clear();
                 customSolver.Arguments.AddRange(launchArgs);
 
-                ProcessStartInfo psi = new()
+                Process p = new()
                 {
-                    FileName = customSolver.Path,
-                    Arguments = string.Join(' ', customSolver.Arguments),
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = customSolver.Arguments.Contains("-s")
+                    StartInfo = new()
+                    {
+                        FileName = customSolver.Path,
+                        Arguments = string.Join(' ', customSolver.Arguments),
+                        RedirectStandardInput = false,
+                        RedirectStandardOutput = false,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = customSolver.Arguments.Contains("-s")
+                    }
                 };
-
-                Process p = new() { StartInfo = psi };
                 p.Start();
-                p.WaitForExit();
                 if (p.ExitCode is not 0)
                 {
                     LogSolverActivity(LogSeverity.ERROR,
@@ -503,6 +513,7 @@ namespace Thesis_LIPX05
                 {
                     GanttCanvas.Tag = customSolver.Name;
                     List<Node> path = LoadSolFromTxt(tempTxtPath);
+                    RenderSGraph(SGraphCanvas);
                     RenderSchedule(path, customSolver.Name);
                 }
             }
@@ -513,6 +524,7 @@ namespace Thesis_LIPX05
                 MessageBox.Show($"Error running custom solver: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            // Commented for debugging
             /*finally
             {
                 if (File.Exists(tempXmlPath)) File.Delete(tempXmlPath);
@@ -549,7 +561,11 @@ namespace Thesis_LIPX05
                         if (parts.Length is 2)
                         {
                             string
-                                baseJobId = parts[1][..5],
+                                baseJobId = parts[1];
+
+                            if (baseJobId.StartsWith("Prod", StringComparison.OrdinalIgnoreCase)) continue;
+
+                            string
                                 idM1 = $"{baseJobId}_M1",
                                 idM2 = $"{baseJobId}_M2";
 
@@ -574,6 +590,20 @@ namespace Thesis_LIPX05
                     }
                 }
 
+                if (GetNodes().TryGetValue("Prod_M1", out Node? prodM1Node))
+                {
+                    path.Add(prodM1Node);
+                    LogGeneralActivity(LogSeverity.INFO,
+                        "Node Prod_M1 appended to solution path.", GeneralLogContext.LOAD);
+                }
+
+                if (GetNodes().TryGetValue("Prod_M2", out Node? prodM2Node))
+                {
+                    path.Add(prodM2Node);
+                    LogGeneralActivity(LogSeverity.INFO,
+                        "Node Prod_M2 appended to solution path.", GeneralLogContext.LOAD);
+                }
+
                 LogGeneralActivity(LogSeverity.INFO,
                     $"Total of {path.Count} nodes loaded from solution file.", GeneralLogContext.LOAD);
 
@@ -588,10 +618,6 @@ namespace Thesis_LIPX05
                 return [];
             }
         }
-
-        // Helper expression-body method to remove all whitespace characters from a string
-        public static string RemoveWhiteSpace(string name)
-            => new([.. name.Where(c => !char.IsWhiteSpace(c))]);
 
         // Gathers arguments for metaheuristic solvers via input boxes
         private static void GatherArgs4Metaheur(List<string> launchArgs)
@@ -685,8 +711,8 @@ namespace Thesis_LIPX05
             GanttCanvas.Width = totalTime * scale + 100; // +100 for padding
             RulerCanvas.Width = GanttCanvas.Width;
 
-            Render(GanttCanvas, GanttData, scale);
-            DrawRuler(RulerCanvas, GanttCanvas, totalTime, scale);
+            RenderGanttChart(GanttCanvas, GanttData, scale);
+            DrawGanttRuler(RulerCanvas, GanttCanvas, totalTime, scale);
 
             LogGeneralActivity(LogSeverity.INFO,
                 $"Zoom level changed to {e.NewValue}, scale set to {scale}!", GeneralLogContext.MODIFY);
@@ -824,7 +850,7 @@ namespace Thesis_LIPX05
                     "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 LogGeneralActivity(LogSeverity.WARNING,
                     "No BatchML file loaded, drawing example S-Graph!", GeneralLogContext.S_GRAPH);
-                DrawExampleGraph();
+                BuildExampleGraph();
                 ManageFileHandlers();
             }
         }
@@ -914,64 +940,53 @@ namespace Thesis_LIPX05
         }
 
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no BatchML file is loaded)
-        private void DrawExampleGraph()
+        private void BuildExampleGraph()
         {
             Purge();
 
-            Dictionary<string, (double T1, double T2, string Desc)> jobs = new()
+            // demo graph's nodes
+            Dictionary<string, (int T1, int T2, string Desc)> jobs = new()
             {
-                {"J1", (3.0, 2.0, "Product 1")}, // M1 > M2 -> S2
-                {"J2", (2.0, 4.0, "Product 2")}, // M1 <= M2 -> S1
-                {"J3", (4.0, 3.0, "Product 3")}  // M1 > M2 -> S2
+                {"J1", (3, 2, "Job 1")}, // M1 > M2 -> S2
+                {"J2", (2, 4, "Job 2")}, // M1 <= M2 -> S1
+                {"J3", (3, 2, "Job 3")}  // M1 > M2 -> S2
             };
 
             string[] optSeq = SortExampleJobs(jobs);
 
-            // nodes and internal precedence edges
-            int i = 0;
-            foreach (var jobE in jobs)
-            {
-                string jobID = jobE.Key;
-                var (t1, t2, desc) = jobE.Value;
-
-                AddNode($"{jobID}_M1", $"M1: {desc}", new(0, 0), t1, 0.0);
-                AddNode($"{jobID}_M2", $"M2: {desc}", new(0, 0), 0.0, t2);
-                AddEdge($"{jobID}_M1", $"{jobID}_M2", 0.0);
-                i++;
-            }
-
-            // Layout params
             double
                 x_m1 = 100,
                 x_m2 = x_m1 + 300,
                 y = 70,
-                sp = 180;
+                vsp = 150;
 
-            for (i = 0; i < optSeq.Length; i++)
+            for (int i = 0; i < optSeq.Length; i++)
             {
                 string jobID = optSeq[i];
+                (int T1, int T2, string desc) = jobs[jobID];
 
-                double currJobY = y + (i * sp);
+                // M1 node
+                AddNode($"{jobID}_M1", $"M1: {desc}", new(0, 0), T1, 0.0, false);
+
+                // M2 node
+                AddNode($"{jobID}_M2", $"M2: {desc}", new(0, 0), 0.0, T2, false);
+
+                // technological precedence (J_i_M1 -> J_i_M2)
+                AddEdge($"{jobID}_M1", $"{jobID}_M2");
+
+                double currJobY = y + (i * vsp);
 
                 if (GetNodes().TryGetValue($"{jobID}_M1", out Node? nodeM1)) nodeM1.Position = new(x_m1, currJobY);
                 if (GetNodes().TryGetValue($"{jobID}_M2", out Node? nodeM2)) nodeM2.Position = new(x_m2, currJobY);
             }
 
-            for (i = 0; i < optSeq.Length - 1; i++)
-            {
-                string
-                    jobA_ID = optSeq[i],
-                    jobB_ID = optSeq[i + 1];
+            for (int i = 1; i <= 2; i++)
+                AddNode($"Prod_M{i}", $"M{i}'s product", new(0, 0), 0.0, 0.0, true);
 
-                double
-                    costA_M1 = jobs[jobA_ID].T1,
-                    costA_M2 = jobs[jobB_ID].T2;
+            if (GetNodes().TryGetValue("Prod_M1", out Node? pNodeM1)) pNodeM1.Position = new(x_m1, y + (optSeq.Length * vsp));
+            if (GetNodes().TryGetValue("Prod_M2", out Node? pNodeM2)) pNodeM2.Position = new(x_m2, y + (optSeq.Length * vsp));
 
-                AddEdge($"{jobA_ID}_M1", $"{jobB_ID}_M1", costA_M1); // M1 seq
-                AddEdge($"{jobA_ID}_M2", $"{jobB_ID}_M2", costA_M2); // M2 seq
-            }
-
-            Render(SGraphCanvas, 2);
+            RenderSGraph(SGraphCanvas);
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Example Flow Shop S-Graph drawn!", GeneralLogContext.S_GRAPH);
@@ -979,7 +994,7 @@ namespace Thesis_LIPX05
         }
 
         // Helper method for creating the demo S-graph
-        private static string[] SortExampleJobs(Dictionary<string, (double T1, double T2, string Desc)> jobs)
+        private static string[] SortExampleJobs(Dictionary<string, (int T1, int T2, string Desc)> jobs)
         {
             List<string>
                 s1 = [],
@@ -1020,8 +1035,8 @@ namespace Thesis_LIPX05
                         timeM2Str = x.Element(batchML + "Extension")?.Element(customNS + "TimeM2")?.Value;
 
                     double
-                        timeM1 = double.TryParse(timeM1Str, NumberStyles.Any, CultureInfo.InvariantCulture, out double t1) ? t1 : 0,
-                        timeM2 = double.TryParse(timeM2Str, NumberStyles.Any, CultureInfo.InvariantCulture, out double t2) ? t2 : 0;
+                        timeM1 = int.TryParse(timeM1Str, NumberStyles.Any, CultureInfo.InvariantCulture, out int t1) ? t1 : 0,
+                        timeM2 = int.TryParse(timeM2Str, NumberStyles.Any, CultureInfo.InvariantCulture, out int t2) ? t2 : 0;
 
                     return new { id, desc, timeM1, timeM2 };
                 })
@@ -1033,51 +1048,46 @@ namespace Thesis_LIPX05
             {
                 LogGeneralActivity(LogSeverity.ERROR,
                     "No valid steps found in BatchML file to build S-Graph!", GeneralLogContext.S_GRAPH);
-                Render(SGraphCanvas, 1);
-                EnableSolvers();
                 return;
             }
 
-            double
-                j = 0,
-                sp = 150;
+            const double
+                x_m1 = 100,
+                x_m2 = 400,
+                y = 70,
+                vsp = 150;
 
-            List<string> natSeq = [];
+            int jobI = 0;
 
-            for (int i = 0; i < jobData.Count; i++)
+            foreach (var job in jobData)
             {
-                // storing the job IDs in their loaded order
-                natSeq.Add(jobData[i].id!);
-
+                double currJobY = y + (jobI * vsp);
+                
                 // M1 Node
-                AddNode($"{jobData[i].id}_M1", $"M1: {jobData[i].desc}", new(j + 50, i * sp + 50), jobData[i].timeM1, 0.0);
+                AddNode($"{job.id}_M1", $"M1: {job.desc}", new(x_m1, currJobY), job.timeM1, 0, false);
 
                 // M2 Node
-                AddNode($"{jobData[i].id}_M2", $"M2: {jobData[i].desc}", new(j + 50 + sp, i * sp + 50), 0.0, jobData[i].timeM2);
-
-                // Internal predecende edge (M1 -> M2)  with a cost of 0
-                AddEdge($"{jobData[i].id}_M1", $"{jobData[i].id}_M2", 0.0);
+                AddNode($"{job.id}_M2", $"M2: {job.desc}", new(x_m2, currJobY), 0, job.timeM2, false);
 
                 LogGeneralActivity(LogSeverity.INFO,
-                    $"Created nodes for {jobData[i].id} with times M1: {jobData[i].timeM1} and M2: {jobData[i].timeM2}", GeneralLogContext.S_GRAPH);
+                    $"Created nodes for {job.id} with times M1: {job.timeM1} and M2: {job.timeM2}", GeneralLogContext.S_GRAPH);
+
+                // technological precedence edge (M1 -> M2 for the same job)
+                // cost is M1's duration (ensuring M2 may not start J1 until M1 finishes with J1)
+                AddEdge($"{job.id}_M1", $"{job.id}_M2", job.timeM1);
+                LogGeneralActivity(LogSeverity.INFO,
+                    $"Added technological edge {job.id}_M1 to {job.id}_M2 with cost {job.timeM1}.", GeneralLogContext.S_GRAPH);
+
+                jobI++;
             }
 
-            for (int i = 0; i < natSeq.Count - 1; i++)
-            {
-                string
-                    jobA_ID = natSeq[i],
-                    jobB_ID = natSeq[i + 1];
+            // Product nodes
+            double finalY = y + (jobData.Count * vsp);
+            AddNode($"Prod_M1", $"M1's product", new(x_m1, finalY), 0, 0, true);
+            AddNode($"Prod_M2", $"M2's product", new(x_m2, finalY), 0, 0, true);
 
-                Node
-                    nodeA_M1 = GetNodes().First(n => n.Key == $"{jobA_ID}_M1").Value,
-                    nodeA_M2 = GetNodes().First(n => n.Key == $"{jobA_ID}_M2").Value;
-
-                AddEdge($"{jobA_ID}_M1", $"{jobB_ID}_M1", nodeA_M1.TimeM1);
-                AddEdge($"{jobA_ID}_M2", $"{jobB_ID}_M2", nodeA_M2.TimeM2);
-            }
-
-            // Render
-            Render(SGraphCanvas, 2);
+            // Render and enablement
+            RenderSGraph(SGraphCanvas);
             LogGeneralActivity(LogSeverity.INFO,
                 "Flow Shop S-Graph built from BatchML file!", GeneralLogContext.S_GRAPH);
             EnableSolvers();
@@ -1088,12 +1098,19 @@ namespace Thesis_LIPX05
         {
             try
             {
-                var doc = XDocument.Load(path);
+                XDocument doc = XDocument.Load(path)
+                    ?? throw new Exception("Error while loading file!");
+
+                LogGeneralActivity(LogSeverity.INFO,
+                    $"XML document loaded from {path}!", GeneralLogContext.LOAD);
 
                 masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
                     ?? throw new Exception("Master element not found in BatchML file.");
 
-                // Master Recipe + Header datatable
+                LogGeneralActivity(LogSeverity.INFO,
+                    "XML element established!", GeneralLogContext.LOAD);
+
+                // Datatable of the master recipe's Header element
                 DisplayMasterTable(masterTable, batchML);
 
                 // Recipe Element datatable
@@ -1117,14 +1134,6 @@ namespace Thesis_LIPX05
         // Handler event for closing an opened BatchML file
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            if (!isFileLoaded)
-            {
-                LogGeneralActivity(LogSeverity.WARNING,
-                    "No BatchML file loaded to close!", GeneralLogContext.CLOSE);
-                MessageBox.Show("No BatchML file loaded to close!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
             if (isFileModified && HasUnsavedChanges())
             {
                 LogGeneralActivity(LogSeverity.WARNING,
@@ -1576,8 +1585,6 @@ namespace Thesis_LIPX05
         {
             bool mapExists = mappings.TryGetValue(tableName, out TableMapper? map);
 
-            string currID = dRow["ID", dVer]?.ToString()?.Trim() ?? string.Empty;
-
             // if the master recipe doesn't exist
             if (masterRecipe is null || !mapExists)
             {
@@ -1586,32 +1593,45 @@ namespace Thesis_LIPX05
                 return null;
             }
 
-            // if the user is at the recipe element table, which has an internal key
-            if (tableName is "RecipeElements" && mapExists)
-            {
-                XElement? tgtEl = masterRecipe
-                    .Elements(batchML + map!.ParentElement)
-                    .FirstOrDefault(el =>
-                    el.Element(batchML + "ID")?.Value?.Trim().Equals(currID, StringComparison.OrdinalIgnoreCase) ?? false);
-
-                if (tgtEl is not null)
-                {
-                    LogGeneralActivity(LogSeverity.INFO,
-                        $"Found ecipeElement by BatchML ID: {currID}", GeneralLogContext.SYNC);
-                    return tgtEl;
-                }
-            }
-
             XElement? container = tableName is "Steps"
                 ? masterRecipe.Element(batchML + "ProcedureLogic")
                 : masterRecipe;
+
+            if (container is null)
+            {
+                LogGeneralActivity(LogSeverity.WARNING,
+                    $"Sync Warning: Could not find XML container for table \"{tableName}\".", GeneralLogContext.SYNC);
+                return null;
+            }
+
+            string tgtID = dRow["ID", dVer]?.ToString()?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(tgtID))
+            {
+                LogGeneralActivity(LogSeverity.WARNING,
+                    $"Sync Warning: DataRow is missing a valid ID for table \"{tableName}\".", GeneralLogContext.SYNC);
+                return null;
+            }
+
+            XElement? tgtEl = masterRecipe
+                .Elements(batchML + map!.ParentElement)
+                .FirstOrDefault(el =>
+                el.Element(batchML + "ID")?.Value?.Trim().Equals(tgtID, StringComparison.OrdinalIgnoreCase) ?? false);
+
+            if (tgtEl is not null)
+            {
+                LogGeneralActivity(LogSeverity.INFO,
+                    $"Found ecipeElement by BatchML ID: {tgtID}", GeneralLogContext.SYNC);
+                return tgtEl;
+            }
 
             foreach (XElement el in container!.Elements(batchML + map!.ParentElement))
             {
                 bool allMatch = true;
                 foreach (string col in map.KeyCols)
                 {
-                    if (col is "InternalKey") continue;
+                    if (col is "InternalKey")
+                        continue;
 
                     string
                         expected = dRow[col, dVer]?.ToString()?.Trim() ?? string.Empty,
@@ -1647,7 +1667,7 @@ namespace Thesis_LIPX05
             }
 
             // Determine which version of the row's data to use for the lookup
-            // If the row was modified or deleted, we MUST use the original values to find it
+            // If the row was modified or deleted, it MUST use the original values to find it
             DataRowVersion ver2Use = (dRow.RowState is DataRowState.Modified or DataRowState.Deleted)
                 ? DataRowVersion.Original
                 : DataRowVersion.Current;
@@ -1680,6 +1700,7 @@ namespace Thesis_LIPX05
             // This handles both 'Added' and 'Modified' rows where the key was changed
             if (targetElement is null)
             {
+                // modification
                 if (dRow.RowState is DataRowState.Modified)
                 {
                     LogGeneralActivity(LogSeverity.ERROR,

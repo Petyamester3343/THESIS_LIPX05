@@ -9,24 +9,24 @@
 		<batchML:RecipeElement>
 			<batchML:ID>Mixing-Module</batchML:ID>
 			<batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-			<batchML:Description>Job A: Mixing and Flavoring (M1/M2)</batchML:Description>
+			<batchML:Description>Job 1.: Mixing and Flavoring (M1/M2)</batchML:Description>
 		</batchML:RecipeElement>
 	
 		<batchML:RecipeElement>
 			<batchML:ID>Forming-Module</batchML:ID>
 			<batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-			<batchML:Description>Job B: Dehydration and Chopping (M1/M2)</batchML:Description>
+			<batchML:Description>Job 2.: Dehydration and Chopping (M1/M2)</batchML:Description>
 		</batchML:RecipeElement>
 	
 		<batchML:RecipeElement>
 			<batchML:ID>Final-Module</batchML:ID>
 			<batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-			<batchML:Description>Job C: Packaging and Deployment (M1/M2)</batchML:Description>
+			<batchML:Description>Job 3.: Packaging and Deployment (M1/M2)</batchML:Description>
 		</batchML:RecipeElement>
 	
 		<batchML:ProcedureLogic>	  
 			<batchML:Step>
-				<batchML:ID>Job_A</batchML:ID>
+				<batchML:ID>J1</batchML:ID>
 				<batchML:RecipeElementID>Mixing-Module</batchML:RecipeElementID>
 				<batchML:Extension>
 					<custom:TimeM1>25</custom:TimeM1>
@@ -35,7 +35,7 @@
 			</batchML:Step>
 
 			<batchML:Step>
-				<batchML:ID>Job_B</batchML:ID>
+				<batchML:ID>J2</batchML:ID>
 				<batchML:RecipeElementID>Forming-Module</batchML:RecipeElementID>
 				<batchML:Extension>
 					<custom:TimeM1>75</custom:TimeM1>
@@ -44,7 +44,7 @@
 			</batchML:Step>
   
 			<batchML:Step>
-				<batchML:ID>Job_C</batchML:ID>
+				<batchML:ID>J3</batchML:ID>
 				<batchML:RecipeElementID>Final-Module</batchML:RecipeElementID>
 				<batchML:Extension>
 					<custom:TimeM1>55</custom:TimeM1>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 
 using System.IO;
+using System.Transactions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -13,8 +14,9 @@ namespace Thesis_LIPX05.Util
 {
     internal class JPEGExporter
     {
-        // DPI value for high-resolution export
-        private const int DPI_VALUE = 384;
+        private const int
+            DPI_VALUE = 384,
+            DPI_STD = 96;
 
         // Exports a single Canvas as a JPEG image (solely used on S-Graphs)
         public static void ExportOneCanvas(Canvas cv, string ctx)
@@ -28,9 +30,22 @@ namespace Thesis_LIPX05.Util
                 AddExtension = true
             };
 
-            RenderTargetBitmap rtb = RenderedTargetBitmap(cv, (int)cv.ActualWidth, (int)cv.ActualHeight, DPI_VALUE, PixelFormats.Pbgra32);
+            Grid wrapper = new() { Background = Brushes.White };
+            Canvas clone = CloneVisual(cv);
+            wrapper.Children.Add(clone);
+
+            wrapper.Measure(availableSize: new(cv.ActualWidth, cv.ActualHeight));
+            wrapper.Arrange(finalRect: new(0, 0, cv.ActualWidth, cv.ActualHeight));
+
+            int
+                renderW = (int)Math.Ceiling(cv.Width * ((double)DPI_VALUE / DPI_STD)),
+                renderH = (int)Math.Ceiling(cv.Height * ((double)DPI_VALUE / DPI_STD));
+
+            RenderTargetBitmap rtb = RenderedTargetBitmap(
+                wrapper, renderW, renderH, DPI_VALUE, PixelFormats.Pbgra32
+                );
             LogGeneralActivity(LogSeverity.INFO,
-                $"{ctx} RenderTargetBitmap created with size {cv.Width}x{cv.Height} at {DPI_VALUE} DPI.", GeneralLogContext.EXPORT);
+                $"{ctx} RenderTargetBitmap created with size {cv.Width}x{cv.Height} at 384 DPI.", GeneralLogContext.EXPORT);
 
             JpegBitmapEncoder enc = EncodedBitmap(rtb);
             LogGeneralActivity(LogSeverity.INFO,
@@ -56,9 +71,13 @@ namespace Thesis_LIPX05.Util
                 AddExtension = true
             };
 
-            RenderTargetBitmap rtb = RenderedTargetBitmap(panel, (int)panel.DesiredSize.Width, (int)panel.DesiredSize.Height, DPI_VALUE, PixelFormats.Pbgra32);
+            int
+                renderW = (int)Math.Ceiling(panel.DesiredSize.Width * ((double)DPI_VALUE / DPI_STD)),
+                renderH = (int)Math.Ceiling(panel.DesiredSize.Height * ((double)DPI_VALUE / DPI_STD));
+
+            RenderTargetBitmap rtb = RenderedTargetBitmap(panel, renderW, renderH, DPI_VALUE, PixelFormats.Pbgra32);
             LogGeneralActivity(LogSeverity.INFO,
-                $"{ctx} combined RenderTargetBitmap created with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height} at {DPI_VALUE} DPI.", GeneralLogContext.EXPORT);
+                $"{ctx} combined RenderTargetBitmap created with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height} at 96 DPI.", GeneralLogContext.EXPORT);
 
             JpegBitmapEncoder enc = EncodedBitmap(rtb);
             LogGeneralActivity(LogSeverity.INFO,
@@ -70,9 +89,16 @@ namespace Thesis_LIPX05.Util
         // Helper method to create a stack panel
         private static StackPanel CreateStackPanel(Canvas rcv, Canvas gcv)
         {
+            // measuring and arranging the two canvases comprising the Gantt diagram
+            foreach (Canvas cv in new[] { rcv, gcv })
+            {
+                cv.Measure(availableSize: new(cv.Width, cv.Height));
+                cv.Arrange(finalRect: new(0, 0, cv.Width, cv.Height));
+            }
+            
             StackPanel panel = new() { Orientation = Orientation.Vertical };
 
-            foreach (var cv in new[] { rcv, gcv })
+            foreach (Canvas cv in new[] { rcv, gcv })
                 panel.Children.Add(CloneVisual(cv));
 
             panel.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size

@@ -41,6 +41,7 @@ namespace Thesis_LIPX05.Util
                 string resID = curr.ID.EndsWith("M1") ? "M1" : "M2";
 
                 double est = 0.0; // earliest start time
+                string decidingPredID = "None";
 
                 List<Edge> pred = [.. edges.Where(e => e.To.ID == curr.ID)];
 
@@ -48,12 +49,23 @@ namespace Thesis_LIPX05.Util
                 {
                     if (earliestFinishTime.TryGetValue(e.From.ID, out double predEFT))
                     {
-                        est = Math.Max(est, predEFT + e.Cost);
+                        double reqStart = predEFT + e.Cost;
+                        if (reqStart > est)
+                        {
+                            est = reqStart;
+                            decidingPredID = e.From.ID;
+                        }
                     }
                 }
 
-                double eft = est + dur;
-                earliestFinishTime[curr.ID] = eft;
+                if (decidingPredID is not "None")
+                    LogGeneralActivity(LogSeverity.INFO,
+                        $"Node {curr.ID} EST is determined by {decidingPredID} (EST: {est:F2}).", GeneralLogContext.GANTT);
+                else
+                    LogGeneralActivity(LogSeverity.INFO,
+                        $"Node {curr.ID} EST is 0 (no predecessors.)", GeneralLogContext.GANTT);
+
+                earliestFinishTime[curr.ID] = est + dur;
 
                 ganttItems.Add(new()
                 {
@@ -71,7 +83,7 @@ namespace Thesis_LIPX05.Util
         }
 
         // Draws the ruler on the Gantt chart canvas and the scroll view
-        public static void DrawRuler(Canvas cv1, Canvas cv2, double totalTime, double scale)
+        public static void DrawGanttRuler(Canvas cv1, Canvas cv2, double totalTime, double scale)
         {
             cv1.Children.Clear();
 
@@ -84,34 +96,22 @@ namespace Thesis_LIPX05.Util
             LogGeneralActivity(LogSeverity.INFO,
                 $"Canvases are ready to be used!", GeneralLogContext.GANTT);
 
-            int tickCount = (int)Math.Ceiling(totalTime);
+            const double rowH = 30;
+            const int numResources = 2;
+            double expGanttHeight = numResources * rowH + 50;
+
+            if (double.IsNaN(cv2.Height) || cv2.Height < expGanttHeight) cv2.Height = expGanttHeight;
 
             double lblCentY = 15;
-
             int
+                tickCount = (int)Math.Ceiling(totalTime),
                 ticksDrawn = 0,
-                labelsDrawn = 0;
+                labelsDrawn = 0,
+                lblInterval = (scale < 15) ? 2 : 1;
 
             for (int i = 0; i <= tickCount; i++)
             {
                 double x = Math.Round(i * scale) + 0.5;
-
-                // vertical tick line across both canvases
-                Line tick = new()
-                {
-                    X1 = x,
-                    Y1 = 0,
-                    X2 = x,
-                    Y2 = cv1.ActualHeight, // extended below the ruler to the end of GanttCanvas
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1,
-                    SnapsToDevicePixels = true,
-                };
-                RenderOptions.SetEdgeMode(tick, EdgeMode.Aliased);
-                cv1.Children.Add(tick);
-                ticksDrawn++;
-
-                int lblInterval = (scale < 15) ? 2 : 1;
 
                 if (i % lblInterval is 0)
                 {
@@ -139,6 +139,35 @@ namespace Thesis_LIPX05.Util
                     cv1.Children.Add(label);
                     labelsDrawn++;
                 }
+
+                // grid line on Gantt chart
+                Line grid = new()
+                {
+                    X1 = x,
+                    X2 = x,
+                    Y1 = 0,
+                    Y2 = cv2.Height,
+                    Stroke = Brushes.LightGray,
+                    StrokeThickness = 1,
+                    SnapsToDevicePixels = true,
+                };
+                RenderOptions.SetEdgeMode(grid, EdgeMode.Aliased);
+                cv2.Children.Add(grid);
+
+                // vertical tick line across both canvases
+                Line tick = new()
+                {
+                    X1 = x,
+                    X2 = x,
+                    Y1 = cv1.ActualHeight - 8,
+                    Y2 = cv1.ActualHeight, // extended below the ruler to the end of GanttCanvas
+                    Stroke = Brushes.LightGray,
+                    StrokeThickness = 1,
+                    SnapsToDevicePixels = true,
+                };
+                RenderOptions.SetEdgeMode(tick, EdgeMode.Aliased);
+                cv1.Children.Add(tick);
+                ticksDrawn++;
             }
 
             LogGeneralActivity(LogSeverity.INFO,
@@ -150,7 +179,7 @@ namespace Thesis_LIPX05.Util
         }
 
         // Draws the Gantt chart on the provided canvas
-        public static void Render(Canvas cv, List<GanttItem> items, double scale)
+        public static void RenderGanttChart(Canvas cv, List<GanttItem> items, double scale)
         {
             cv.Children.Clear();
             double rowH = 30;

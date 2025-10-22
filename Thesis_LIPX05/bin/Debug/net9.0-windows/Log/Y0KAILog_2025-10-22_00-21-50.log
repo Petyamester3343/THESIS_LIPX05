@@ -1,0 +1,367 @@
+﻿10/22/2025 12:21 AM // INFO // [INITIALIZATION] // Beginning initialization...
+10/22/2025 12:21 AM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+10/22/2025 12:21 AM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+10/22/2025 12:21 AM // INFO // [INITIALIZATION] // List Scheduling solver added!
+10/22/2025 12:21 AM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/22/2025 12:21 AM // INFO // [INITIALIZATION] // Solver menu successfully built!
+10/22/2025 12:21 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/22/2025 12:21 AM // INFO // [INITIALIZATION] // Initialization complete!
+10/22/2025 12:22 AM // WARNING // [S_GRAPH] // No BatchML file loaded, drawing example S-Graph!
+10/22/2025 12:22 AM // INFO // [CLEAR] // SGraphCanvas has been cleared!
+10/22/2025 12:22 AM // INFO // [CLEAR] // GanttCanvas has been cleared!
+10/22/2025 12:22 AM // INFO // [CLEAR] // RulerCanvas has been cleared!
+10/22/2025 12:22 AM // INFO // [CLEAR] // S-Graph nodes cleared!
+10/22/2025 12:22 AM // INFO // [CLEAR] // S-Graph edges cleared!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node J2_M1 at 100;70
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node J2_M2 at 400;70
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node J1_M1 at 100;220
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node J1_M2 at 400;220
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node J3_M2 at 400;370
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node Prod_M1 at 100;520
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Node Prod_M2 at 400;520
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Technological edge J2_M1 to J2_M2 set to fixed curve 50.
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (400,0;105,0)!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Technological edge J1_M1 to J1_M2 set to fixed curve 50.
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (400,0;255,0)!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Technological edge J3_M1 to J3_M2 set to fixed curve 50.
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (400,0;405,0)!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Canvas resized to 520x640!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // Example Flow Shop S-Graph drawn!
+10/22/2025 12:22 AM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+10/22/2025 12:22 AM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+10/22/2025 12:22 AM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+10/22/2025 12:22 AM // INFO // [INITIALIZATION] //  solver enabled!
+10/22/2025 12:22 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/22/2025 12:22 AM // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp successfully discovered!
+10/22/2025 12:22 AM // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_3c443f2a-b0e6-4c94-a512-f521b9f806c3.xml!
+10/22/2025 12:22 AM // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+10/22/2025 12:22 AM // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+10/22/2025 12:23 AM // INFO // [LOAD] // Loading solution from C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SimulatedAnnealing_Solution.txt...
+10/22/2025 12:23 AM // INFO // [LOAD] // Node J2_M1 added to solution path from file.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node J2_M2 added to solution path from file.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node J3_M1 added to solution path from file.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node J3_M2 added to solution path from file.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node J1_M1 added to solution path from file.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node J1_M2 added to solution path from file.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node Prod_M1 appended to solution path.
+10/22/2025 12:23 AM // INFO // [LOAD] // Node Prod_M2 appended to solution path.
+10/22/2025 12:23 AM // INFO // [LOAD] // Total of 8 nodes loaded from solution file.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node J2_M1 at 100;70
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node J2_M2 at 400;70
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node J1_M1 at 100;220
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node J1_M2 at 400;220
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node J3_M2 at 400;370
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node Prod_M1 at 100;520
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Node Prod_M2 at 400;520
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Technological edge J2_M1 to J2_M2 set to fixed curve 50.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (400,0;105,0)!
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Technological edge J1_M1 to J1_M2 set to fixed curve 50.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (400,0;255,0)!
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Technological edge J3_M1 to J3_M2 set to fixed curve 50.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (400,0;405,0)!
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // Canvas resized to 520x640!
+10/22/2025 12:23 AM // INFO // [S_GRAPH] // S-graph re-rendered with Simulated Annealing sequence.
+10/22/2025 12:23 AM // INFO // [GANTT] // Node J2_M1 EST is 0 (no predecessors.)
+10/22/2025 12:23 AM // INFO // [GANTT] // Node J2_M2 EST is determined by J2_M1 (EST: 2,00).
+10/22/2025 12:23 AM // INFO // [GANTT] // Node J3_M1 EST is 0 (no predecessors.)
+10/22/2025 12:23 AM // INFO // [GANTT] // Node J3_M2 EST is determined by J3_M1 (EST: 3,00).
+10/22/2025 12:23 AM // INFO // [GANTT] // Node J1_M1 EST is 0 (no predecessors.)
+10/22/2025 12:23 AM // INFO // [GANTT] // Node J1_M2 EST is determined by J1_M1 (EST: 3,00).
+10/22/2025 12:23 AM // WARNING // [GANTT] // Node Prod_M1 has non-positive duration (0), skipping...
+10/22/2025 12:23 AM // WARNING // [GANTT] // Node Prod_M2 has non-positive duration (0), skipping...
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart built with 6 items from path with 8 nodes.
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt data built with 6 items from optimized path using Simulated Annealing!
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 160x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Simulated Annealing schedule rendered successfully!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 160,16844158123774x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,004044489383215369, scale set to 10,028073596872959!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 160,33735603858037x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,008088978766430738, scale set to 10,056226006430059!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 160,67660889544015x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,016177957532861477, scale set to 10,112768149240026!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 160,84694996121505x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,020222446916076844, scale set to 10,141158326869173!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 161,01776923563108x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,024266936299292212, scale set to 10,169628205938512!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 161,36084778417012x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,032355915065722954, scale set to 10,226807964028353!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 161,5331097546177x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,03640040444893832, scale set to 10,255518292436284!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 161,70585532637676x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,04044489383215369, scale set to 10,284309221062795!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 161,87908585709016x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,044489383215369056, scale set to 10,313180976181695!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 162,22700724501885x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,0525783619817998, scale set to 10,371167874169808!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 162,57688485596702x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,06066734074823053, scale set to 10,42948080932784!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 162,9287296889955x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,06875631951466127, scale set to 10,488121614832584!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 163,46020969266237x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,08088978766430738, scale set to 10,576701615443726!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 163,6383653271009x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,08493427704752275, scale set to 10,606394221183482!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 164,53667384452717x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,1051567239635996, scale set to 10,756112307421192!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 167,4973590250926x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,1698685540950455, scale set to 11,249559837515434!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 169,61124790400908x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,21435793731041458, scale set to 11,60187465066818!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 170,99078976371524x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,24266936299292216, scale set to 11,83179829395254!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 173,41962452179976x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,29120323559150657, scale set to 12,236604086966626!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 176,57285649781662x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,3518705763397371, scale set to 12,762142749636102!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 177,87174812494777x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,37613751263902934, scale set to 12,978624687491296!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 181,44419332430334x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,44084934277047527, scale set to 13,574032220717227!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 184,94206513070083x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,5015166835187058, scale set to 14,157010855116807!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 188,83886827312708x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 4 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,5662285136501517, scale set to 14,806478045521178!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 192,91444120067047x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,6309403437815976, scale set to 15,485740200111746!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 197,17698515801874x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,6956521739130435, scale set to 16,19616419300312!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 201,63507763025376x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,7603640040444893, scale set to 16,93917960504229!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 206,89535906117362x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,833164812942366, scale set to 17,81589317686227!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 212,4278945344739x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 0,9059656218402427, scale set to 18,737982422412315!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 221,2681963842599x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,0151668351870575, scale set to 20,211366064043318!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 227,9026840209176x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,0920121334681496, scale set to 21,317114003486267!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 234,14589048748877x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,1607684529828108, scale set to 22,357648414581462!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 241,08881957475404x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,2335692618806875, scale set to 23,514803262459004!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 247,56141186026224x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,2982810920121335, scale set to 24,59356864337704!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 253,0384174152292x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,3508594539939334, scale set to 25,5064029025382!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 259,61112375220364x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,411526794742164, scale set to 26,6018539587006!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 266,000093243028x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,468149646107179, scale set to 27,66668220717133!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 271,67951725924047x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,5166835187057635, scale set to 28,613252876540074!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 278,05170940520156x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,5692618806875633, scale set to 29,67528490086693!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 284,1434599263481x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,6177957532861478, scale set to 30,69057665439135!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 299,18042393289323x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,7310414560161782, scale set to 33,19673732214887!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 304,8433070508251x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,771486349848332, scale set to 34,14055117513752!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 308,9028509502095x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,7997977755308396, scale set to 34,817141825034916!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 312,4464325324219x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,8240647118301319, scale set to 35,407738755403656!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 316,65665365972967x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,8523761375126395, scale set to 36,109442276621614!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 319,0998506451042x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,868554095045501, scale set to 36,51664177418403!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 322,19262747853907x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,8887765419615778, scale set to 37,032104579756506!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 325,32906143229263x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9089989888776546, scale set to 37,554843572048775!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 327,23213322459077x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9211324570273007, scale set to 37,872022204098464!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 330,4397039982804x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9413549039433775, scale set to 38,40661733304673!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 331,7353744261552x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9494438827098082, scale set to 38,6225624043592!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 335,00651219919496x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,969666329625885, scale set to 39,16775203319916!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 336,3278599657967x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9777553083923156, scale set to 39,38797666096611!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 338,3238248057348x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9898887765419617, scale set to 39,72063746762246!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 339,6638244963311x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 1,9979777553083924, scale set to 39,94397074938851!
+10/22/2025 12:23 AM // INFO // [GANTT] // Gantt chart rendered with 6 items on canvas.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvas resized to 340x110 to fit all Gantt items.
+10/22/2025 12:23 AM // INFO // [GANTT] // Canvases are ready to be used!
+10/22/2025 12:23 AM // INFO // [GANTT] // Ruler drawn: 7 ticks and 7 labels.
+10/22/2025 12:23 AM // INFO // [MODIFY] // Zoom level changed to 2, scale set to 40!
