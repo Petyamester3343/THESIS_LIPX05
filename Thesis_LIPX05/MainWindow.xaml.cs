@@ -136,6 +136,8 @@ namespace Thesis_LIPX05
                         {
                             { "ID", "ID" },
                             { "RecipeElementID", "RecipeElementID" },
+                            { "TimeM1", "TimeM1" },
+                            { "TimeM2", "TimeM2" }
                         }
                     }
                 },
@@ -944,80 +946,73 @@ namespace Thesis_LIPX05
         {
             Purge();
 
-            // demo graph's nodes
-            Dictionary<string, (int T1, int T2, string Desc)> jobs = new()
+            // 0.: preparations
+            // an examplary situation I was granted
+            Dictionary<string, (double T1, double T2, string Desc)> jobs = new()
             {
-                {"J1", (3, 2, "Job 1")}, // M1 > M2 -> S2
-                {"J2", (2, 4, "Job 2")}, // M1 <= M2 -> S1
-                {"J3", (3, 2, "Job 3")}  // M1 > M2 -> S2
+                {"J1", (10d, 30d, "Job 1 (M1 <= M2)")}, // S1: T1 lowest
+                {"J2", (20d, 40d, "Job 2 (M1 <= M2)")}, // S1: T1 next
+                {"J3",  (50d, 10d, "Job 3 (M1 > M2)")}  // S2: T2 lowest
             };
 
-            string[] optSeq = SortExampleJobs(jobs);
+            // the correct sequence, as per Johnson's Rule
+            string[] optSeq = ["J1", "J2", "J3"];
 
-            double
-                x_m1 = 100,
-                x_m2 = x_m1 + 300,
-                y = 70,
-                vsp = 150;
+            // 1.: nodes and tech. edges
+            for (int i = 0; i < optSeq.Length; i++)
+            {
+                string jobID = optSeq[i];
+                (double t1, double t2, string desc) = jobs[jobID];
+
+                // M1 Node
+                AddNode($"{jobID}_M1", $"M1: {desc}", new(0, 0), t1, 0.0, false);
+                // M2 Node
+                AddNode($"{jobID}_M2", $"M2: {desc}", new(0, 0), 0.0, t2, false);
+
+                // Technological Precedence: M1 -> M2 (Cost = T1)
+                AddEdge($"{jobID}_M1", $"{jobID}_M2", t1);
+            }
+
+            // 2.: sequential edges (M_X -> M_X)
+            // for scheduler logic
+            for (int i = 0; i < optSeq.Length - 1; i++)
+            {
+                string jobA = optSeq[i], jobB = optSeq[i + 1];
+
+                // M1 Sequential Link (Cost = 0)
+                AddEdge($"{jobA}_M1", $"{jobB}_M1", jobs[optSeq[i]].T1);
+
+                // M2 Sequential Link (Cost = 0)
+                AddEdge($"{jobA}_M2", $"{jobB}_M2", jobs[optSeq[i]].T2);
+            }
+
+            // 3. layout and products from each job
+            double x_m1 = 100, x_m2 = x_m1 + 300, x_prod = x_m2 + 150, y = 70, vsp = 150;
 
             for (int i = 0; i < optSeq.Length; i++)
             {
                 string jobID = optSeq[i];
-                (int T1, int T2, string desc) = jobs[jobID];
-
-                // M1 node
-                AddNode($"{jobID}_M1", $"M1: {desc}", new(0, 0), T1, 0.0, false);
-
-                // M2 node
-                AddNode($"{jobID}_M2", $"M2: {desc}", new(0, 0), 0.0, T2, false);
-
-                // technological precedence (J_i_M1 -> J_i_M2)
-                AddEdge($"{jobID}_M1", $"{jobID}_M2");
-
                 double currJobY = y + (i * vsp);
 
+                // position of Jx_Mx nodes
                 if (GetNodes().TryGetValue($"{jobID}_M1", out Node? nodeM1)) nodeM1.Position = new(x_m1, currJobY);
                 if (GetNodes().TryGetValue($"{jobID}_M2", out Node? nodeM2)) nodeM2.Position = new(x_m2, currJobY);
+
+                // corrected product placement
+                int jNum = int.Parse(jobID.Replace("J", ""));
+                string productID = $"P{jNum}";
+
+                // product nodes
+                AddNode(productID, $"Product {productID}", new(0, 0), 0, 0, true);
+
+                // position node P_x next to J_x_M2
+                if (GetNodes().TryGetValue(productID, out Node? pNode)) pNode.Position = new(x_prod, currJobY);
+
+                AddEdge($"{jobID}_M2", productID, jobs[optSeq[i]].T2);
             }
-
-            for (int i = 1; i <= 2; i++)
-                AddNode($"Prod_M{i}", $"M{i}'s product", new(0, 0), 0.0, 0.0, true);
-
-            if (GetNodes().TryGetValue("Prod_M1", out Node? pNodeM1)) pNodeM1.Position = new(x_m1, y + (optSeq.Length * vsp));
-            if (GetNodes().TryGetValue("Prod_M2", out Node? pNodeM2)) pNodeM2.Position = new(x_m2, y + (optSeq.Length * vsp));
 
             RenderSGraph(SGraphCanvas);
-
-            LogGeneralActivity(LogSeverity.INFO,
-                "Example Flow Shop S-Graph drawn!", GeneralLogContext.S_GRAPH);
             EnableSolvers();
-        }
-
-        // Helper method for creating the demo S-graph
-        private static string[] SortExampleJobs(Dictionary<string, (int T1, int T2, string Desc)> jobs)
-        {
-            List<string>
-                s1 = [],
-                s2 = [];
-
-            var categJobs = jobs.Select(kvp => new
-            {
-                ID = kvp.Key,
-                kvp.Value.T1,
-                kvp.Value.T2,
-                kvp.Value.Desc
-            }).ToList();
-
-            foreach (var job in categJobs)
-            {
-                if (job.T1 <= job.T2) s1.Add(job.ID);
-                else s2.Add(job.ID);
-            }
-
-            s1.Sort((a, b) => jobs[a].T1.CompareTo(jobs[b].T1));
-            s2.Sort((a, b) => jobs[b].T2.CompareTo(jobs[a].T2));
-
-            return [.. s1, .. s2];
         }
 
         // Builds the S-Graph from the loaded BatchML file
@@ -1062,7 +1057,7 @@ namespace Thesis_LIPX05
             foreach (var job in jobData)
             {
                 double currJobY = y + (jobI * vsp);
-                
+
                 // M1 Node
                 AddNode($"{job.id}_M1", $"M1: {job.desc}", new(x_m1, currJobY), job.timeM1, 0, false);
 

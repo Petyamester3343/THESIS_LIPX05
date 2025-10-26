@@ -1,0 +1,59 @@
+﻿10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Beginning initialization...
+10/26/2025 1:57 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+10/26/2025 1:57 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Initialization complete!
+10/26/2025 1:57 PM // WARNING // [S_GRAPH] // No BatchML file loaded, drawing example S-Graph!
+10/26/2025 1:57 PM // INFO // [CLEAR] // SGraphCanvas has been cleared!
+10/26/2025 1:57 PM // INFO // [CLEAR] // GanttCanvas has been cleared!
+10/26/2025 1:57 PM // INFO // [CLEAR] // RulerCanvas has been cleared!
+10/26/2025 1:57 PM // INFO // [CLEAR] // S-Graph nodes cleared!
+10/26/2025 1:57 PM // INFO // [CLEAR] // S-Graph edges cleared!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node J2_M1 at 100;70
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node J2_M2 at 400;70
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node J1_M1 at 100;220
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node J1_M2 at 400;220
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node J3_M2 at 400;370
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node Prod_M1 at 0;0
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node Prod_M2 at 0;0
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node P1 at 550;70
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node P2 at 550;220
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Node P3 at 550;370
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Technological edge J2_M1 to J2_M2 set to fixed curve 50.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (400,0;105,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Weight 30 drawn at (285;130)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 30 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Technological edge J1_M1 to J1_M2 set to fixed curve 50.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (400,0;255,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Weight 25 drawn at (285;280)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 25 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Technological edge J3_M1 to J3_M2 set to fixed curve 50.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (400,0;405,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Weight 12 drawn at (285;430)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 12 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (135,0;140,0) to (135,0;220,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J2_M1 to J1_M1 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (435,0;140,0) to (435,0;220,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J2_M2 to J1_M2 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (135,0;290,0) to (135,0;370,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J1_M1 to J3_M1 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (435,0;290,0) to (435,0;370,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J1_M2 to J3_M2 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (470,0;105,0) to (550,0;105,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J2_M2 to P1 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (470,0;255,0) to (550,0;255,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J1_M2 to P2 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge drawn from (470,0;405,0) to (550,0;405,0)!
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+10/26/2025 1:57 PM // INFO // [S_GRAPH] // Canvas resized to 670x490!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Dijkstra solver enabled!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+10/26/2025 1:57 PM // INFO // [INITIALIZATION] //  solver enabled!
+10/26/2025 1:57 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.

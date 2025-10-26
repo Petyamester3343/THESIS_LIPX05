@@ -1,0 +1,15 @@
+﻿10/26/2025 1:42 PM // INFO // [INITIALIZATION] // Beginning initialization...
+10/26/2025 1:42 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+10/26/2025 1:42 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+10/26/2025 1:42 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+10/26/2025 1:42 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/26/2025 1:42 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+10/26/2025 1:42 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+10/26/2025 1:42 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+10/26/2025 1:42 PM // INFO // [INITIALIZATION] // Initialization complete!
+10/26/2025 1:42 PM // WARNING // [S_GRAPH] // No BatchML file loaded, drawing example S-Graph!
+10/26/2025 1:42 PM // INFO // [CLEAR] // SGraphCanvas has been cleared!
+10/26/2025 1:42 PM // INFO // [CLEAR] // GanttCanvas has been cleared!
+10/26/2025 1:42 PM // INFO // [CLEAR] // RulerCanvas has been cleared!
+10/26/2025 1:42 PM // INFO // [CLEAR] // S-Graph nodes cleared!
+10/26/2025 1:42 PM // INFO // [CLEAR] // S-Graph edges cleared!
