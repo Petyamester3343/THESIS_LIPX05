@@ -6,6 +6,10 @@ using System.Windows.Shapes;
 using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
 
+using NodeList = System.Collections.Generic.List<Thesis_LIPX05.Util.SGraph.Node>;
+using EdgeList = System.Collections.Generic.List<Thesis_LIPX05.Util.SGraph.Edge>;
+using GanttList = System.Collections.Generic.List<Thesis_LIPX05.Util.Gantt.GanttItem>;
+
 namespace Thesis_LIPX05.Util
 {
     internal class Gantt
@@ -21,35 +25,33 @@ namespace Thesis_LIPX05.Util
         }
 
         // Builds a Gantt chart from an S-Graph
-        public static List<GanttItem> BuildChartFromPath(List<Node> path, List<Edge> edges)
+        public static GanttList BuildChartFromPath(NodeList path, EdgeList edges)
         {
-            Dictionary<string, double> earliestFinishTime = [];
-            List<GanttItem> ganttItems = [];
+            Dictionary<string, double> EFT = [];
+            GanttList ganttItems = [];
 
-            foreach (Node n in path) earliestFinishTime[n.ID] = 0.0;
+            foreach (Node n in path) EFT[n.ID] = 0.0;
 
             foreach (Node curr in path)
             {
-                double dur = curr.TimeM1 > 0 ? curr.TimeM1 : curr.TimeM2;
-                if (dur <= 0)
-                {
-                    LogGeneralActivity(LogSeverity.WARNING,
-                        $"Node {curr.ID} has non-positive duration ({dur}), skipping...", GeneralLogContext.GANTT);
-                    continue;
-                }
+                if (curr.ID.StartsWith('P')) continue;
 
-                string resID = curr.ID.EndsWith("M1") ? "M1" : "M2";
+                double dur = curr.TimeM1 > 0 ? curr.TimeM1 : curr.TimeM2;
+
+                bool isTask = !(curr.ID.StartsWith('P') || dur <= 0);
+                if (!isTask) dur = 0.0;
 
                 double est = 0.0; // earliest start time
                 string decidingPredID = "None";
 
-                List<Edge> pred = [.. edges.Where(e => e.To.ID == curr.ID)];
+                EdgeList pred = [.. edges.Where(e => e.To.ID == curr.ID)];
 
                 foreach (Edge e in pred)
                 {
-                    if (earliestFinishTime.TryGetValue(e.From.ID, out double predEFT))
-                    {
-                        double reqStart = predEFT + e.Cost;
+                    if (EFT.TryGetValue(e.From.ID, out double predEFT))
+                    {                        
+                        double reqStart = predEFT;
+
                         if (reqStart > est)
                         {
                             est = reqStart;
@@ -63,23 +65,29 @@ namespace Thesis_LIPX05.Util
                         $"Node {curr.ID} EST is determined by {decidingPredID} (EST: {est:F2}).", GeneralLogContext.GANTT);
                 else
                     LogGeneralActivity(LogSeverity.INFO,
-                        $"Node {curr.ID} EST is 0 (no predecessors.)", GeneralLogContext.GANTT);
-
-                earliestFinishTime[curr.ID] = est + dur;
-
-                ganttItems.Add(new()
+                        $"Node {curr.ID} EST is 0 (no predecessors).", GeneralLogContext.GANTT);
+                
+                EFT[curr.ID] = est + dur;
+                
+                if (isTask)
                 {
-                    ID = curr.ID.Replace("_M1", "").Replace("_M2", ""),
-                    Desc = curr.Desc,
-                    Start = est,
-                    Duration = dur,
-                    ResourceID = resID
-                });
+                    ganttItems.Add(new()
+                    {
+                        ID = curr.ID.Replace("_M1", "").Replace("_M2", ""),
+                        Desc = curr.Desc,
+                        Start = est,
+                        Duration = dur,
+                        ResourceID = curr.ID.EndsWith("M1") ? "M1" : "M2"
+                    });
+                }
             }
 
             LogGeneralActivity(LogSeverity.INFO,
                 $"Gantt chart built with {ganttItems.Count} items from path with {path.Count} nodes.", GeneralLogContext.GANTT);
-            return [.. ganttItems.OrderBy(i => i.ResourceID).ThenBy(i => i.Start)];
+            return [.. from ganttItem in ganttItems orderby ganttItem.ResourceID, ganttItem.Start select ganttItem];
+            
+            // analogous with the following:
+            // return [.. ganttItems.OrderBy(i => i.ResourceID).ThenBy(i => i.Start)];
         }
 
         // Draws the ruler on the Gantt chart canvas and the scroll view
@@ -140,20 +148,6 @@ namespace Thesis_LIPX05.Util
                     labelsDrawn++;
                 }
 
-                // grid line on Gantt chart
-                Line grid = new()
-                {
-                    X1 = x,
-                    X2 = x,
-                    Y1 = 0,
-                    Y2 = cv2.Height,
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1,
-                    SnapsToDevicePixels = true,
-                };
-                RenderOptions.SetEdgeMode(grid, EdgeMode.Aliased);
-                cv2.Children.Add(grid);
-
                 // vertical tick line across both canvases
                 Line tick = new()
                 {
@@ -178,17 +172,47 @@ namespace Thesis_LIPX05.Util
             cv2.Width = cvW;
         }
 
+        private static void DrawGanttGridLines(Canvas cv, double totalT, double scale)
+        {
+            int tick = (int)Math.Ceiling(totalT);
+
+            for (int t = 0; t <= tick; t++)
+            {
+                double x = Math.Round(t * scale) + 0.5;
+
+                // grid line on Gantt chart
+                Line grid = new()
+                {
+                    X1 = x,
+                    X2 = x,
+                    Y1 = 0,
+                    Y2 = cv.Height,
+                    Stroke = Brushes.LightGray,
+                    StrokeThickness = 1,
+                    SnapsToDevicePixels = true,
+                };
+                RenderOptions.SetEdgeMode(grid, EdgeMode.Aliased);
+                cv.Children.Add(grid);
+            }
+        }
+
         // Draws the Gantt chart on the provided canvas
-        public static void RenderGanttChart(Canvas cv, List<GanttItem> items, double scale)
+        public static void RenderGanttChart(Canvas cv, GanttList items, double scale)
         {
             cv.Children.Clear();
             double rowH = 30;
 
-            List<IGrouping<string, GanttItem>> groupedItems = [.. items.GroupBy(i => i.ResourceID).OrderBy(g => g.Key)];
+            List<IGrouping<string, GanttItem>> groupedItems = [.. 
+                items.GroupBy(i => i.ResourceID)
+                .OrderBy(g => g.Key)];
 
             Dictionary<string, int> resourceRow = groupedItems
                 .Select((g, idx) => new { g.Key, Index = idx })
                 .ToDictionary(x => x.Key, x => x.Index);
+
+            double totalTime = items.Count is not 0 ? items.Max(i => i.Start + i.Duration) : 0;
+            
+            DrawGanttGridLines(cv, totalTime, scale);
 
             int itemsDrawn = 0;
 
@@ -242,20 +266,6 @@ namespace Thesis_LIPX05.Util
             double maxTime = items.Count is not 0 ? items.Max(i => i.Start + i.Duration) : 0;
             cv.Width = maxTime * scale + 100;
             cv.Height = groupedItems.Count * rowH + 50; // +50 for padding
-
-            for (int r = 0; r < groupedItems.Count; r++)
-            {
-                TextBlock rscLbl = new()
-                {
-                    Text = groupedItems[r].Key,
-                    FontSize = 14,
-                    FontWeight = FontWeights.ExtraBold,
-                    Foreground = Brushes.DarkBlue
-                };
-                Canvas.SetLeft(rscLbl, -60);
-                Canvas.SetTop(rscLbl, r * rowH + 5);
-                cv.Children.Add(rscLbl);
-            }
 
             LogGeneralActivity(LogSeverity.INFO,
                 $"Canvas resized to {cv.Width}x{cv.Height} to fit all Gantt items.", GeneralLogContext.GANTT);

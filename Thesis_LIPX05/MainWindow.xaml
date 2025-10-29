@@ -17,7 +17,7 @@
             <Setter Property="Background" Value="LightYellow"/>
         </Style>
     </Window.Resources>
-    
+
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -26,8 +26,6 @@
                 <MenuItem Header="_Close BatchML file" Name="CloseFileMenuItem" Tag="Close file" Click="CloseFile_Click"/>
                 <Separator/>
                 <MenuItem Header="_Export current canvas" Name="ExportCanvasMenuItem" Click="ExportCanvas_Click"/>
-                <Separator/>
-                <MenuItem Header="_Load solution file" Name="LoadSolutionMenuItem" Click="LoadSolutionItem_Click"/>
                 <Separator/>
                 <MenuItem Header="_Exit" Click="Exit_Click" Tag="Exit"/>
             </MenuItem>
@@ -53,15 +51,27 @@
                             DockPanel.Dock="Top" PreviewMouseDown="ZoomSlider_PreviewMouseDown"
                             ValueChanged="ZoomSlider_ValueChanged"/>
                         <ScrollViewer Name ="GanttScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <StackPanel Orientation="Vertical">
-                                <Canvas Name="RulerCanvas" Height="30" Background="White"/>
-                                <Canvas Name="GanttCanvas" Height="Auto" Background="White" Tag=""/>
-                            </StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Top" x:Name="ResourceLabelsPanel">
+                                    <Canvas Name="FixedLabelCanvas" Height="Auto" Background="White" Margin="20 0 0 0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <Canvas Name="RulerCanvas" Height="30" Background="White"/>
+                                    <Canvas Name="GanttCanvas" Height="Auto" Background="White" Tag=""/>
+                                </StackPanel>
+                            </Grid>
+
                         </ScrollViewer>
                     </DockPanel>
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="_S-Graph" Name="SGraphTabItem" Tag="SGraph" GotFocus="Focus4Export_Click" LostFocus="Focus4Export_Click">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <Canvas Name="SGraphCanvas" Background="White"/>

@@ -7,7 +7,7 @@ namespace Thesis_LIPX05.Util.Optimizers
     {
         private const string LogCtx = "Johnson's Rule Optimizer";
 
-        private class JobData
+        private class FSJobData
         {
             public required string ID { get; set; }
             public required double TimeM1 { get; set; }
@@ -17,12 +17,12 @@ namespace Thesis_LIPX05.Util.Optimizers
         //Johnson's Rule implementation
         public List<Node> Optimize()
         {
-            List<JobData> jobs = [.. nodes.Values
+            List<FSJobData> jobs = [.. nodes.Values
                 .Where(n => n.ID.EndsWith("_M1") && n.TimeM1 > 0)
                 .Select(n => {
                     string baseID = n.ID[..^3];
                     double timeM2 = nodes.TryGetValue($"{baseID}_M2", out Node? m2Node) ? m2Node.TimeM2 : double.MaxValue;
-                    return new JobData { ID = baseID, TimeM1 = n.TimeM1, TimeM2 = timeM2 };
+                    return new FSJobData { ID = baseID, TimeM1 = n.TimeM1, TimeM2 = timeM2 };
                 })
                 .Where(j => j.TimeM1 > 0 && j.TimeM2 > 0)];
 
@@ -41,13 +41,13 @@ namespace Thesis_LIPX05.Util.Optimizers
         }
 
         // Applies Johnson's Rule to determine the optimal job sequence
-        private static List<string> RunJohnsonRule(List<JobData> jobs)
+        private static List<string> RunJohnsonRule(List<FSJobData> jobs)
         {
-            List<JobData>
+            List<FSJobData>
                 s1 = [], // M1 <= M2
                 s2 = []; // M1 > M2
 
-            foreach (var job in jobs)
+            foreach (FSJobData job in jobs)
                 if (job.TimeM1 <= job.TimeM2) s1.Add(job);
                 else s2.Add(job);
 
@@ -65,44 +65,26 @@ namespace Thesis_LIPX05.Util.Optimizers
             LogSolverActivity(LogSeverity.INFO, "Cleared all existing S-Graph edges for sequence rebuild.", LogCtx);
 
             // 2.: re-adding tech. edges
-            foreach (var node in nodes.Values.Where(n => n.ID.EndsWith("_M1")))
+            foreach (Node node in nodes.Values.Where(n => n.ID.EndsWith("_M1")))
             {
-                string baseID = node.ID[..^3];
+                string jobID = node.ID[..^3];
                 // Cost = duration of the M1 task (technological precedence)
-                AddEdge(node.ID, $"{baseID}_M2", node.TimeM1);
+                AddEdge(node.ID, $"{jobID}_M2");
             }
 
-            // 3.: seq. constraints
-            const double ZeroDelay = 0.0;
-
-            // 3a. M1 Sequence (Job_k_M1 -> Job_k+1_M1)
+            // 3. M1 and M2 sequences (Job_k_Mx -> Job_k+1_Mx)
             for (int i = 0; i < optSeq.Count - 1; i++)
             {
                 string
                     idA_M1 = $"{optSeq[i]}_M1",
-                    idB_M1 = $"{optSeq[i + 1]}_M1";
-
-                // The cost must be 0, as EST/EFT calculation handles the duration.
-                AddEdge(idA_M1, idB_M1, ZeroDelay);
-            }
-
-            // 3b. M2 Sequence (Job_k_M2 -> Job_k+1_M2)
-            for (int i = 0; i < optSeq.Count - 1; i++)
-            {
-                string
+                    idB_M1 = $"{optSeq[i + 1]}_M1",
                     idA_M2 = $"{optSeq[i]}_M2",
                     idB_M2 = $"{optSeq[i + 1]}_M2";
 
-                // The cost must be 0.
-                AddEdge(idA_M2, idB_M2, ZeroDelay);
+                // The cost must be 0, as EST/EFT calculation handles the duration.
+                AddEdge(idA_M1, idB_M1);
+                AddEdge(idA_M2, idB_M2);
             }
-
-            // 4.: connecting the last Job to the product nodes (Cost = 0.0)
-            string lastJobID = optSeq.Last();
-
-            // product nodes must have 0 cost incoming edges for EST/EFT calculation to work correctly
-            AddEdge($"{lastJobID}_M1", "Prod_M1", ZeroDelay);
-            AddEdge($"{lastJobID}_M2", "Prod_M2", ZeroDelay);
 
             LogSolverActivity(LogSeverity.INFO,
                 "Graph rebuilt with necessary technological constraints (cost=duration) and zero-cost sequential constraints.", LogCtx);

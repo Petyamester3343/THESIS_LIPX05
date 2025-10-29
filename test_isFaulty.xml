@@ -7,43 +7,43 @@
       <batchML:Description>2-MACHINE FLOW SHOP MODEL (Optimized)</batchML:Description>
     </batchML:Header>
     <batchML:RecipeElement>
-      <batchML:ID>Mixing-Module</batchML:ID>
+      <batchML:ID>J1_Module</batchML:ID>
       <batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-      <batchML:Description>Job 1.: Mixing and Flavoring (M1/M2)</batchML:Description>
+      <batchML:Description>Job #1</batchML:Description>
     </batchML:RecipeElement>
     <batchML:RecipeElement>
-      <batchML:ID>Forming-Module</batchML:ID>
+      <batchML:ID>J2_Module</batchML:ID>
       <batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-      <batchML:Description>Job 2.: Dehydration and Chopping (M1/M2)</batchML:Description>
+      <batchML:Description>Job #2</batchML:Description>
     </batchML:RecipeElement>
     <batchML:RecipeElement>
-      <batchML:ID>Final-Module</batchML:ID>
+      <batchML:ID>J3_Module</batchML:ID>
       <batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-      <batchML:Description>Job 3.: Packaging and Deployment (M1/M2)</batchML:Description>
+      <batchML:Description>Job #3</batchML:Description>
     </batchML:RecipeElement>
     <batchML:ProcedureLogic>
       <batchML:Step>
         <batchML:ID>J1</batchML:ID>
-        <batchML:RecipeElementID>Mixing-Module</batchML:RecipeElementID>
+        <batchML:RecipeElementID>J1-Module</batchML:RecipeElementID>
         <batchML:Extension>
-          <custom:TimeM1>25</custom:TimeM1>
-          <custom:TimeM2>115</custom:TimeM2>
+          <custom:TimeM1>15</custom:TimeM1>
+          <custom:TimeM2>30</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
       <batchML:Step>
         <batchML:ID>J2</batchML:ID>
-        <batchML:RecipeElementID>Forming-Module</batchML:RecipeElementID>
+        <batchML:RecipeElementID>J2-Module</batchML:RecipeElementID>
         <batchML:Extension>
-          <custom:TimeM1>75</custom:TimeM1>
-          <custom:TimeM2>175</custom:TimeM2>
+          <custom:TimeM1>16</custom:TimeM1>
+          <custom:TimeM2>32</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
       <batchML:Step>
         <batchML:ID>J3</batchML:ID>
-        <batchML:RecipeElementID>Final-Module</batchML:RecipeElementID>
+        <batchML:RecipeElementID>J3-Module</batchML:RecipeElementID>
         <batchML:Extension>
-          <custom:TimeM1>55</custom:TimeM1>
-          <custom:TimeM2>20</custom:TimeM2>
+          <custom:TimeM1>17</custom:TimeM1>
+          <custom:TimeM2>34</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
     </batchML:ProcedureLogic>

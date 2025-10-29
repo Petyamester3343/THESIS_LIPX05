@@ -10,7 +10,7 @@ namespace Y0KAI_SA
         // static fields for ease
         public static bool isSilent = false;
         public static string
-            inPath = @"C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\Debug\net9.0-windows\SolverTemp\SGraph_26182fde-5219-479a-96c9-6b8bee0cf352.xml",
+            inPath = string.Empty,
             outPath = string.Empty;
 
         static int Main(string[] args)
@@ -157,7 +157,8 @@ namespace Y0KAI_SA
                     }
                 }
 
-                if (g.Nodes.Count is 0) if (!isSilent) Error.WriteLine("Warning: The graph contains no nodes.");
+                if (g.Nodes.Count is 0 && !isSilent)
+                    Error.WriteLine("Warning: The graph contains no nodes.");
 
                 return g;
             }

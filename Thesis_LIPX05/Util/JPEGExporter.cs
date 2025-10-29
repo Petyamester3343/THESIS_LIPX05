@@ -90,16 +90,14 @@ namespace Thesis_LIPX05.Util
         private static StackPanel CreateStackPanel(Canvas rcv, Canvas gcv)
         {
             // measuring and arranging the two canvases comprising the Gantt diagram
+            StackPanel panel = new() { Orientation = Orientation.Vertical };
+            
             foreach (Canvas cv in new[] { rcv, gcv })
             {
                 cv.Measure(availableSize: new(cv.Width, cv.Height));
                 cv.Arrange(finalRect: new(0, 0, cv.Width, cv.Height));
-            }
-            
-            StackPanel panel = new() { Orientation = Orientation.Vertical };
-
-            foreach (Canvas cv in new[] { rcv, gcv })
                 panel.Children.Add(CloneVisual(cv));
+            }
 
             panel.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
             panel.Arrange(finalRect: new(panel.DesiredSize)); // arrange the panel to apply the measurements
@@ -155,7 +153,7 @@ namespace Thesis_LIPX05.Util
                 Background = og.Background
             };
 
-            foreach (var child in og.Children)
+            foreach (object child in og.Children)
             {
                 if (child is UIElement uie)
                 {

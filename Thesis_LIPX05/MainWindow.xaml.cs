@@ -22,6 +22,10 @@ using static Thesis_LIPX05.Util.SGraph;
 
 using FlowShopKVP = System.Collections.Generic.KeyValuePair<string, (int, int, string)>;
 using FilePath = System.IO.Path;
+using System.Reflection.Metadata;
+using System.Text;
+using System.Text.Unicode;
+using System.Text.Encodings.Web;
 
 namespace Thesis_LIPX05
 {
@@ -40,7 +44,7 @@ namespace Thesis_LIPX05
         // Private read-only collections
         private readonly List<CustomSolver> customSolvers;
         private readonly List<DataTable> solutionsList;
-        private readonly List<string> solvers = ["Johnson's Rule", "List Scheduling"];
+        private readonly List<string> integratedSolvers = ["Johnson's Rule", "List Scheduling"];
         private readonly Dictionary<string, TableMapper> mappings;
 
         // Private overwritable fields
@@ -48,8 +52,9 @@ namespace Thesis_LIPX05
         private double zoom;
         private bool isFileLoaded = false, SGraphExists, GanttExists = false, isFileModified = false;
         private string currentFilePath = string.Empty;
+        private int initCustomSolverCount = 0;
 
-        // Private overwritable collections
+        // Private mutable collections
         private List<GanttItem> GanttData;
 
         // Private constants
@@ -59,8 +64,12 @@ namespace Thesis_LIPX05
             RecipeElementsTableName = "Recipe Elements Table",
             StepsTableName = "Steps Table";
 
-        // Private static fields
-        private static readonly JsonSerializerOptions CachedOptions = new() { WriteIndented = true };
+        // JSON serializer flags
+        private static readonly JsonSerializerOptions CachedOptions = new()
+        {
+            Encoder = JavaScriptEncoder.Default,
+            WriteIndented = true,
+        };
 
         // Constructor of the main window
         public MainWindow()
@@ -99,10 +108,10 @@ namespace Thesis_LIPX05
         // Enables or disables the saving and closing by checking if a file is loaded
         private void ManageFileHandlers()
         {
-            foreach (var mi in new[] { SaveFileMenuItem, CloseFileMenuItem }) mi.IsEnabled = isFileLoaded;
+            foreach (MenuItem menuItem in new[] { SaveFileMenuItem, CloseFileMenuItem })
+                menuItem.IsEnabled = isFileLoaded;
 
             ExportCanvasMenuItem.IsEnabled = GanttCanvas.Children.Count is not 0 || SGraphCanvas.Children.Count is not 0;
-            LoadSolutionMenuItem.IsEnabled = SGraphExists;
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Saving and closing are disabled for as long as there are no files opened.", GeneralLogContext.CONSTRAINT);
@@ -111,7 +120,7 @@ namespace Thesis_LIPX05
         private void ManageSolutionDataTableCreator() => CreateSolutionTableMenuItem.IsEnabled = GanttExists;
 
         // Initializes the mappings for XML elements to DataTable columns
-        private static Dictionary<string, TableMapper> InitMappings() => new()
+        private static Dictionary<string, TableMapper> InitMappings() => new(StringComparer.OrdinalIgnoreCase)
             {
                 {
                     "Links", new()
@@ -165,7 +174,7 @@ namespace Thesis_LIPX05
             try
             {
                 SolverMenu.Items.Clear();
-                foreach (var solver in solvers)
+                foreach (string solver in integratedSolvers)
                 {
                     MenuItem item = new()
                     {
@@ -180,7 +189,7 @@ namespace Thesis_LIPX05
                 }
                 AddSeparator(solverMenu);
 
-                foreach (var cs in customSolvers)
+                foreach (CustomSolver cs in customSolvers)
                 {
                     AddCustomSolverMenuItem(cs);
                     LogGeneralActivity(LogSeverity.INFO,
@@ -209,73 +218,16 @@ namespace Thesis_LIPX05
             }
         }
 
-        // Event handler for loading a solution from a text file and drawing it as a Gantt chart on GanttCanvas
-        private void LoadSolutionItem_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dlg = new()
-            {
-                DefaultExt = ".txt",
-                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
-                Title = "Load Solution from Text File"
-            };
-
-            if (dlg.ShowDialog() is true)
-            {
-                try
-                {
-                    string[] lines = File.ReadAllLines(dlg.FileName);
-                    List<Node> path = [];
-                    foreach (string line in lines)
-                    {
-                        string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length is 2 && parts[0].Contains("NODE")) // expecting lines like "NODE <nodeId>"
-                        {
-                            string nodeId = parts[1];
-                            if (GetNodes().TryGetValue(nodeId, out Node? node))
-                            {
-                                path.Add(node);
-                                LogGeneralActivity(LogSeverity.INFO,
-                                    $"Node {nodeId} added to solution path from file.", GeneralLogContext.EXTERN_SOLVER);
-                            }
-                            else LogGeneralActivity(LogSeverity.WARNING,
-                                $"Node {nodeId} not found in current S-Graph, skipping...", GeneralLogContext.EXTERN_SOLVER);
-                        }
-                    }
-                    if (path.Count is 0)
-                    {
-                        LogGeneralActivity(LogSeverity.ERROR,
-                            "Loaded solution file contains no valid nodes!", GeneralLogContext.EXTERN_SOLVER);
-                        MessageBox.Show("Loaded solution file contains no valid nodes!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
-                    GanttData = BuildChartFromPath(path, GetEdges());
-                    LogGeneralActivity(LogSeverity.INFO,
-                        $"Gantt data built with {GanttData.Count} items from loaded solution!", GeneralLogContext.GANTT);
-                    double totalTime = GanttData.Max(x => x.Start + x.Duration);
-                    int rowC = GanttData.Count;
-                    double timeScale = BaseTimeScale * zoom;
-                    RenderGanttChart(GanttCanvas, GanttData, timeScale);
-                    DrawGanttRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
-                    LogGeneralActivity(LogSeverity.INFO,
-                        "Loaded solution rendered successfully!", GeneralLogContext.GANTT);
-                    GanttExists = true;
-                }
-                catch (Exception ex)
-                {
-                    LogGeneralActivity(LogSeverity.ERROR,
-                        $"Error loading solution from file: {ex.Message}", GeneralLogContext.EXTERN_SOLVER);
-                    MessageBox.Show($"Error loading solution from file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
-
         // Event handler for the MainWindow closing event, which checks for unsaved modifications in the data tables
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (isFileModified && (masterTable.GetChanges() is not null ||
-                recipeElementTable.GetChanges() is not null ||
-                stepTable.GetChanges() is not null))
+            bool
+                isDataModified = isFileModified && (masterTable.GetChanges() is not null ||
+                recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null),
+                isSolverModified = customSolvers.Count != initCustomSolverCount,
+                shouldClose = true;
+
+            if (isDataModified)
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "App is about to be shut down with unsaved changes! Prompting user to save before exiting!", GeneralLogContext.EXITUS);
@@ -321,11 +273,43 @@ namespace Thesis_LIPX05
                         }
                     case MessageBoxResult.Cancel:
                         e.Cancel = true; // Cancel the closing event
+                        shouldClose = false;
                         LogGeneralActivity(LogSeverity.INFO, $"Application exit cancelled by user!", GeneralLogContext.EXITUS);
                         break;
                 }
             }
-            else LogGeneralActivity(LogSeverity.INFO, "No changes were made, exiting app...", GeneralLogContext.EXITUS);
+
+            if (shouldClose && isSolverModified)
+            {
+                MessageBoxResult solversRes = MessageBox.Show("Do you wish to save your custom solvers?",
+                    "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+                switch (solversRes)
+                {
+                    case MessageBoxResult.Yes:
+                        {
+                            SaveCustomSolvers2JSON();
+                            LogGeneralActivity(LogSeverity.INFO,
+                                "Custom solvers saved during exit!", GeneralLogContext.EXITUS);
+                            break;
+                        }
+                    case MessageBoxResult.Cancel:
+                        {
+                            e.Cancel = true;
+                            shouldClose = false;
+                            LogGeneralActivity(LogSeverity.INFO,
+                                "Application exit cancelled by user!", GeneralLogContext.EXITUS);
+                            break;
+                        }
+                }
+            }
+
+            if (shouldClose)
+            {
+                LogGeneralActivity(LogSeverity.INFO,
+                    "Shutting down...", GeneralLogContext.EXITUS);
+                CloseLog();
+            }
         }
 
         // Event handler for the Exit menu item click event
@@ -353,31 +337,36 @@ namespace Thesis_LIPX05
             GanttData.Clear();
 
             if (sender is not MenuItem menuItem) return;
-            string? solverTag = menuItem.Tag.ToString();
 
-            if (solverTag == "Johnson's Rule")
+            switch (menuItem.Tag.ToString())
             {
-                LogGeneralActivity(LogSeverity.INFO, "Johnson's Rule solver selected!", GeneralLogContext.INTEG_SOLVER);
-                SolveWithJohnson();
-                GanttCanvas.Tag = solverTag;
-                return;
+                case "Johnson's Rule":
+                    {
+                        LogGeneralActivity(LogSeverity.INFO, "Johnson's Rule solver selected!", GeneralLogContext.INTEG_SOLVER);
+                        SolveWithJohnson();
+                        GanttCanvas.Tag = menuItem.Tag.ToString();
+                        return;
+                    }
+                case "List Scheduling":
+                    {
+                        LogGeneralActivity(LogSeverity.INFO, "List Scheduling solver selected!", GeneralLogContext.INTEG_SOLVER);
+                        SolveWithLS();
+                        GanttCanvas.Tag = menuItem.Tag.ToString();
+                        return;
+                    }
+                // reserved for external solvers reading from XML and writing to TXT files
+                default:
+                    {
+                        if (customSolvers.Any(cs => cs.Name == menuItem.Tag.ToString()))
+                            InitExtSolver(menuItem);
+                        break;
+                    }
             }
-            if (solverTag == "List Scheduling")
-            {
-                LogGeneralActivity(LogSeverity.INFO, "List Scheduling solver selected!", GeneralLogContext.INTEG_SOLVER);
-                SolveWithLS();
-                GanttCanvas.Tag = solverTag;
-                return;
-            }
-            // reserved for external solvers reading from XML and writing to TXT files
-            if (customSolvers.Any(cs => cs.Name == solverTag)) InitExtSolver(menuItem);
         }
 
         private void RenderSchedule(List<Node> optPath, string method)
         {
             GanttData.Clear();
-            GanttCanvas.Children.Clear();
-            RulerCanvas.Children.Clear();
 
             if (optPath.Count is 0)
             {
@@ -386,19 +375,24 @@ namespace Thesis_LIPX05
                 return;
             }
 
-            RenderSGraph(SGraphCanvas);
-            LogGeneralActivity(LogSeverity.INFO,
-                $"S-graph re-rendered with {method} sequence.", GeneralLogContext.S_GRAPH);
-
             GanttData = BuildChartFromPath(optPath, GetEdges());
             LogGeneralActivity(LogSeverity.INFO,
                 $"Gantt data built with {GanttData.Count} items from optimized path using {method}!", GeneralLogContext.GANTT);
 
-            double totalTime = GanttData.Max(x => x.Start + x.Duration);
-            double timeScale = BaseTimeScale * zoom;
+            double totalT = GanttData.Max(x => x.Start + x.Duration);
+            double scale = BaseTimeScale * zoom;
 
+            CreateGanttChart(totalT, scale, method);
+        }
+
+        private void CreateGanttChart(double totalTime, double timeScale, string method)
+        {
+            GanttCanvas.Children.Clear();
+            
             DrawGanttRuler(RulerCanvas, GanttCanvas, totalTime, timeScale);
             RenderGanttChart(GanttCanvas, GanttData, timeScale);
+            DrawFixedResourceLabels();
+
             LogGeneralActivity(LogSeverity.INFO, $"{method} schedule rendered successfully!", GeneralLogContext.GANTT);
 
             GanttExists = true;
@@ -407,7 +401,8 @@ namespace Thesis_LIPX05
 
         private void SolveWithJohnson()
         {
-            LogGeneralActivity(LogSeverity.INFO, "Starting Johnson's Rule solver...", GeneralLogContext.INTEG_SOLVER);
+            LogGeneralActivity(LogSeverity.INFO,
+                "Starting Johnson's Rule solver...", GeneralLogContext.INTEG_SOLVER);
 
             if (!GetNodes().Any(n => n.Value.TimeM1 > 0 || n.Value.TimeM2 > 0))
             {
@@ -426,6 +421,7 @@ namespace Thesis_LIPX05
         {
             LogGeneralActivity(LogSeverity.INFO,
                 "Starting List Scheduling solver...", GeneralLogContext.INTEG_SOLVER);
+
             if (!GetNodes().Any(n => n.Value.TimeM1 > 0 || n.Value.TimeM2 > 0))
             {
                 LogGeneralActivity(LogSeverity.ERROR,
@@ -435,7 +431,7 @@ namespace Thesis_LIPX05
                 return;
             }
 
-            ListSchedulingOptimizer opt = new(GetNodes(), GetEdges());
+            LSOptimizer opt = new(GetNodes(), GetEdges());
             List<Node> optPath = opt.Optimize();
             RenderSchedule(optPath, "List Scheduling");
         }
@@ -446,7 +442,8 @@ namespace Thesis_LIPX05
             // commencing inquiries and initializating the solver's logger
             string
                 tempDir = FilePath.Combine(Environment.CurrentDirectory, "SolverTemp"),
-                tempTxtPath = FilePath.Combine(tempDir, $"SimulatedAnnealing_Solution.txt"),
+                txtName = $"{menuItem?.Tag?.ToString()?.Replace(" ", "").Replace("-", "")}_Solution.txt",
+                tempTxtPath = FilePath.Combine(tempDir, txtName),
                 tempXmlPath = string.Empty; // initializing out variable beyond the try-catch-finally scope
 
             CustomSolver? customSolver = customSolvers.FirstOrDefault(cs => cs.Name == menuItem?.Tag.ToString());
@@ -503,19 +500,26 @@ namespace Thesis_LIPX05
                         CreateNoWindow = customSolver.Arguments.Contains("-s")
                     }
                 };
+
                 p.Start();
+                string stdErr = p.StandardError.ReadToEnd();
+                p.WaitForExit();
+
                 if (p.ExitCode is not 0)
                 {
+                    string errMsg = string.IsNullOrEmpty(stdErr)
+                        ? $"Solver exited with code {p.ExitCode} (no STDERR output)."
+                        : $"Solver failed with code {p.ExitCode}! Error: {stdErr.Trim()}";
+
                     LogSolverActivity(LogSeverity.ERROR,
-                        $"An error occurred with the external solver (exit code: {p.ExitCode})!", customSolver.Name);
-                    MessageBox.Show($"A problem occurred with the external solver! (Code {p.ExitCode})",
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        errMsg, customSolver.Name);
+                    MessageBox.Show(errMsg,
+                        "External Solver Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
                     GanttCanvas.Tag = customSolver.Name;
                     List<Node> path = LoadSolFromTxt(tempTxtPath);
-                    RenderSGraph(SGraphCanvas);
                     RenderSchedule(path, customSolver.Name);
                 }
             }
@@ -526,11 +530,11 @@ namespace Thesis_LIPX05
                 MessageBox.Show($"Error running custom solver: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            // Commented for debugging
-            /*finally
+            finally // can be commented for debugging
             {
-                if (File.Exists(tempXmlPath)) File.Delete(tempXmlPath);
-            }*/
+                if (File.Exists(tempXmlPath))
+                    File.Delete(tempXmlPath);
+            }
         }
 
         private static List<Node> LoadSolFromTxt(string filePath)
@@ -551,26 +555,23 @@ namespace Thesis_LIPX05
             try
             {
                 string[] lines = File.ReadAllLines(filePath);
-
                 foreach (string line in lines)
                 {
                     string trimmedLine = line.Trim();
-
                     if (trimmedLine.StartsWith("NODE ", StringComparison.OrdinalIgnoreCase))
                     {
                         string[] parts = trimmedLine.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-
                         if (parts.Length is 2)
                         {
-                            string
-                                baseJobId = parts[1];
-
-                            if (baseJobId.StartsWith("Prod", StringComparison.OrdinalIgnoreCase)) continue;
+                            string baseJobId = parts[1];
+                            if (baseJobId.StartsWith("Prod", StringComparison.OrdinalIgnoreCase) ||
+                                baseJobId.StartsWith("P", StringComparison.OrdinalIgnoreCase)) continue;
 
                             string
                                 idM1 = $"{baseJobId}_M1",
                                 idM2 = $"{baseJobId}_M2";
 
+                            // M1 node
                             if (GetNodes().TryGetValue(idM1, out Node? nodeM1))
                             {
                                 path.Add(nodeM1);
@@ -580,6 +581,7 @@ namespace Thesis_LIPX05
                             else LogGeneralActivity(LogSeverity.WARNING,
                                 $"Node {idM1} not found in current S-Graph, skipping...", GeneralLogContext.LOAD);
 
+                            // M2 node
                             if (GetNodes().TryGetValue(idM2, out Node? nodeM2))
                             {
                                 path.Add(nodeM2);
@@ -590,20 +592,6 @@ namespace Thesis_LIPX05
                                 $"Node {idM2} not found in current S-Graph, skipping...", GeneralLogContext.LOAD);
                         }
                     }
-                }
-
-                if (GetNodes().TryGetValue("Prod_M1", out Node? prodM1Node))
-                {
-                    path.Add(prodM1Node);
-                    LogGeneralActivity(LogSeverity.INFO,
-                        "Node Prod_M1 appended to solution path.", GeneralLogContext.LOAD);
-                }
-
-                if (GetNodes().TryGetValue("Prod_M2", out Node? prodM2Node))
-                {
-                    path.Add(prodM2Node);
-                    LogGeneralActivity(LogSeverity.INFO,
-                        "Node Prod_M2 appended to solution path.", GeneralLogContext.LOAD);
                 }
 
                 LogGeneralActivity(LogSeverity.INFO,
@@ -638,12 +626,10 @@ namespace Thesis_LIPX05
                 CheckValParse(DefTempStr, DefCoolStr, DefIterStr, inTemp, inCool, inIter, out double temp, out double cool, out int iter);
 
             if (success)
-                launchArgs.AddRange
-                    (
+                launchArgs.AddRange(
                     temp.ToString(CultureInfo.InvariantCulture),
                     cool.ToString(CultureInfo.InvariantCulture),
-                    iter.ToString(CultureInfo.InvariantCulture)
-                    );
+                    iter.ToString(CultureInfo.InvariantCulture));
             else
             {
                 LogGeneralActivity(LogSeverity.ERROR,
@@ -720,6 +706,34 @@ namespace Thesis_LIPX05
                 $"Zoom level changed to {e.NewValue}, scale set to {scale}!", GeneralLogContext.MODIFY);
         }
 
+        private void DrawFixedResourceLabels()
+        {
+            if (GanttData is null || GanttData.Count is 0) return;
+
+            const double h = 30;
+
+            List<string> rsc = [.. (from i in GanttData
+                                    group i by i.ResourceID into g
+                                    select g.Key)
+                                    .OrderBy(r => r)];
+
+            for (int i = 0; i < rsc.Count; i++)
+            {
+                TextBlock rscLbl = new()
+                {
+                    Text = rsc[i],
+                    FontSize = 14,
+                    FontWeight = FontWeights.ExtraBold,
+                    Foreground = Brushes.DarkBlue,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+
+                Canvas.SetLeft(rscLbl, 0);
+                Canvas.SetTop(rscLbl, (i + 1) * h + 5);
+                FixedLabelCanvas.Children.Add(rscLbl);
+            }
+        }
+
         // Helper expression-body method to check for unsaved changes in any of the data tables (dirty flag)
         private bool HasUnsavedChanges() =>
             isFileLoaded &&
@@ -790,7 +804,8 @@ namespace Thesis_LIPX05
 
             if (isFileModified)
             {
-                if ((sender as MenuItem)?.Tag.ToString()?.Equals("Exit") is true || (sender as MenuItem)?.Tag.ToString()?.Equals("Close File") is true)
+                string? s = (sender as MenuItem)?.Tag.ToString() ?? string.Empty;
+                if (s.Equals("Exit") is true || s.Equals("Close File") is true)
                 {
                     LogGeneralActivity(LogSeverity.WARNING,
                         "Prompting user to save changes before closing either the app or the file!", GeneralLogContext.SAVE);
@@ -798,7 +813,7 @@ namespace Thesis_LIPX05
                         "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
-                var saveDlg = new SaveFileDialog
+                SaveFileDialog saveDlg = new()
                 {
                     DefaultExt = ".xml",
                     Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
@@ -860,7 +875,7 @@ namespace Thesis_LIPX05
         // A helper method to flush the containers and clean the canvases in one go
         private void Purge()
         {
-            foreach (Canvas cv in new[] { SGraphCanvas, GanttCanvas, RulerCanvas })
+            foreach (Canvas cv in new[] { SGraphCanvas, GanttCanvas, RulerCanvas, FixedLabelCanvas })
             {
                 cv.Children.Clear();
                 LogGeneralActivity(LogSeverity.INFO,
@@ -929,7 +944,7 @@ namespace Thesis_LIPX05
         {
             SGraphExists = true;
 
-            foreach (var x in SolverMenu.Items)
+            foreach (object x in SolverMenu.Items)
             {
                 if (x is MenuItem menuItem && !menuItem.Name.Contains("Add new"))
                 {
@@ -944,10 +959,10 @@ namespace Thesis_LIPX05
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no BatchML file is loaded)
         private void BuildExampleGraph()
         {
-            Purge();
+            SGraphCanvas.Children.Clear();
 
             // 0.: preparations
-            // an examplary situation I was granted
+            // an examplary situation I came up with (Johnson's rule)
             Dictionary<string, (double T1, double T2, string Desc)> jobs = new()
             {
                 {"J1", (10d, 30d, "Job 1 (M1 <= M2)")}, // S1: T1 lowest
@@ -1018,7 +1033,7 @@ namespace Thesis_LIPX05
         // Builds the S-Graph from the loaded BatchML file
         private void BuildSGraphFromXml()
         {
-            Purge();
+            SGraphCanvas.Children.Clear();
 
             var jobData = masterRecipe.Descendants(batchML + "Step")
                 .Select(x =>
@@ -1049,37 +1064,44 @@ namespace Thesis_LIPX05
             const double
                 x_m1 = 100,
                 x_m2 = 400,
+                x_prod = 550,
                 y = 70,
                 vsp = 150;
 
-            int jobI = 0;
 
-            foreach (var job in jobData)
+            for (int i = 0; i < jobData.Count; i++)
             {
-                double currJobY = y + (jobI * vsp);
+                var job = jobData[i];
+                double currY = y + (i * vsp);
 
-                // M1 Node
-                AddNode($"{job.id}_M1", $"M1: {job.desc}", new(x_m1, currJobY), job.timeM1, 0, false);
+                // Node M1 and M2
+                AddNode($"{job.id}_M1", $"{job.id}_M1", new(x_m1, currY), job.timeM1, 0, false);
+                AddNode($"{job.id}_M2", $"{job.id}_M2", new(x_m2, currY), 0, job.timeM2, false);
 
-                // M2 Node
-                AddNode($"{job.id}_M2", $"M2: {job.desc}", new(x_m2, currJobY), 0, job.timeM2, false);
-
-                LogGeneralActivity(LogSeverity.INFO,
-                    $"Created nodes for {job.id} with times M1: {job.timeM1} and M2: {job.timeM2}", GeneralLogContext.S_GRAPH);
-
-                // technological precedence edge (M1 -> M2 for the same job)
-                // cost is M1's duration (ensuring M2 may not start J1 until M1 finishes with J1)
+                // Tech. precedence
                 AddEdge($"{job.id}_M1", $"{job.id}_M2", job.timeM1);
-                LogGeneralActivity(LogSeverity.INFO,
-                    $"Added technological edge {job.id}_M1 to {job.id}_M2 with cost {job.timeM1}.", GeneralLogContext.S_GRAPH);
 
-                jobI++;
+                // Product nodes
+                int jNum = int.Parse(job.id!.Replace("J", ""));
+                string prodID = $"P{jNum}";
+                AddNode(prodID, prodID, new(x_prod, currY), 0, 0, true);
+                AddEdge($"{job.id}_M2", prodID, job.timeM2);
             }
 
-            // Product nodes
-            double finalY = y + (jobData.Count * vsp);
-            AddNode($"Prod_M1", $"M1's product", new(x_m1, finalY), 0, 0, true);
-            AddNode($"Prod_M2", $"M2's product", new(x_m2, finalY), 0, 0, true);
+            List<string> orderedJobID = [.. from job in jobData select job.id!];
+
+            for (int i = 0; i < orderedJobID.Count - 1; i++)
+            {
+                string
+                    curr = orderedJobID[i],
+                    next = orderedJobID[i + 1];
+
+                double currJ1T = jobData.First(j => j.id == curr).timeM1;
+                AddEdge($"{curr}_M1", $"{next}_M1", currJ1T);
+
+                double currJ2T = jobData.First(j => j.id == curr).timeM2;
+                AddEdge($"{curr}_M2", $"{next}_M2", currJ2T);
+            }
 
             // Render and enablement
             RenderSGraph(SGraphCanvas);
@@ -1334,15 +1356,13 @@ namespace Thesis_LIPX05
             DisplayDataTable(redt, "RecipeElements");
 
             // Some DataGrid gymnastics to collapse the "InternalKey" column
-            if (MainTab.SelectedItem is TabItem tab &&
-                tab.Tag.ToString() is "RecipeElements" &&
-                tab.Content is Grid Container &&
-                Container.Children.OfType<DataGrid>().FirstOrDefault() is DataGrid dg)
-                dg.Loaded += RecipElementTable_HideInternCol;
+            if (MainTab.SelectedItem is TabItem tab && tab.Tag.ToString() is "RecipeElements" &&
+                tab.Content is Grid Container && Container.Children.OfType<DataGrid>().FirstOrDefault() is DataGrid dg)
+            { dg.Loaded += RecipElementTable_HideInternalKeyColumn; }
         }
 
         // Custom event handler to collapse the "InternalKey" column in the recipe elements datatable
-        private void RecipElementTable_HideInternCol(object sender, RoutedEventArgs e)
+        private void RecipElementTable_HideInternalKeyColumn(object sender, RoutedEventArgs e)
         {
             if (sender is DataGrid final)
             {
@@ -1454,7 +1474,7 @@ namespace Thesis_LIPX05
         // Event handler for adding a custom solver
         private void AddCustomSolver_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new OpenFileDialog
+            OpenFileDialog dlg = new()
             {
                 Filter = "Applications (*.exe)|*.exe|All Files (*.*)|*.*",
                 Title = "Select Custom Solver Executable"
@@ -1531,7 +1551,10 @@ namespace Thesis_LIPX05
                     {
                         customSolvers.Clear();
                         customSolvers.AddRange(loaded);
-                        foreach (var cs in customSolvers) AddCustomSolverMenuItem(cs);
+                        initCustomSolverCount = customSolvers.Count;
+                        customSolvers.Sort((a, b) => string.Compare(a.Name, b.Name));
+                        foreach (CustomSolver cs in customSolvers)
+                            AddCustomSolverMenuItem(cs);
                     }
                     LogGeneralActivity(LogSeverity.INFO,
                         "Custom solvers loaded from JSON file!", GeneralLogContext.SAVE);
@@ -1655,7 +1678,7 @@ namespace Thesis_LIPX05
         // Custom non-delegate event handler for syncing a row from the DataTable to the XML when it's changed or added
         private void SyncRow2XML(DataRow dRow, string tableName)
         {
-            if (masterRecipe is null || !mappings.TryGetValue(tableName, out var map))
+            if (masterRecipe is null || !mappings.TryGetValue(tableName, out TableMapper? map))
             {
                 LogGeneralActivity(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!", GeneralLogContext.SYNC);
                 return;
@@ -1741,7 +1764,7 @@ namespace Thesis_LIPX05
                 else
                 {
                     if (tableName is "RecipeElements" && col is "Type")
-                        val = string.IsNullOrWhiteSpace(val) ? "Phase" : val;
+                        val = string.IsNullOrWhiteSpace(val) ? "UnitProcedure" : val;
 
                     XElement? child = targetElement.Element(batchML + map.Col2El[col]);
 

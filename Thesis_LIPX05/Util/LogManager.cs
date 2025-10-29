@@ -66,7 +66,7 @@ namespace Thesis_LIPX05.Util
             LogWriter.Flush();
         }
 
-        public static void LogSolverActivity(LogSeverity severity, string msg, string? solverName = null)
+        public static void LogSolverActivity(LogSeverity severity, string msg, string solverName)
         {
             if (LogWriter is null) return;
 

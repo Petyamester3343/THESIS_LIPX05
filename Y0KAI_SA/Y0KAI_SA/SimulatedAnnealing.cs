@@ -1,17 +1,11 @@
-﻿namespace Y0KAI_SA
+﻿using static System.Console;
+
+using NodeKVP = System.Collections.Generic.KeyValuePair<string, Y0KAI_SA.Node>;
+
+namespace Y0KAI_SA
 {
     internal class SimulatedAnnealing(Graph g)
     {
-        // Custom equality comparer for tuples of strings to ensure case-insensitive comparison
-        private class TupleStringEqualityComparer(StringComparer oic) : IEqualityComparer<(string, string)>
-        {
-            // Override Equals to ensure that tuples (a, b) and (a, b) are considered equal (in a case-insensitive manner)
-            public bool Equals((string, string) x, (string, string) y) => oic.Equals(x.Item1, y.Item1) && oic.Equals(x.Item2, y.Item2);
-
-            // Override GetHashCode to ensure that (a, b) and (b, a) produce different hash codes (with using XOR)
-            public int GetHashCode((string, string) obj) => oic.GetHashCode(obj.Item1 ?? string.Empty) ^ oic.GetHashCode(obj.Item2 ?? string.Empty);
-        }
-
         private readonly Graph g = g;
         private readonly Random rnd = new();
 
@@ -28,7 +22,7 @@
                 bestCost = currCost;
 
             if (bestCost == double.MaxValue && !isSilent)
-                Console.Error.WriteLine("Initial random sequence caused MaxValue makespan; search span may be challenging.");
+                Error.WriteLine("Initial random sequence caused MaxValue makespan; search span may be challenging.");
 
             for (int i = 0; i < maxIt && initTemp > 0.1; i++)
             {
@@ -47,14 +41,14 @@
                 {
                     bestPath = [.. currPath];
                     bestCost = currCost;
-                    if (!isSilent) Console.WriteLine($"New best makespan found: {bestCost:F2}");
+                    if (!isSilent) WriteLine($"New best makespan found: {bestCost:F2}");
                 }
 
                 initTemp *= coolRate;
             }
 
-            if (!isSilent) Console.WriteLine($"Optimization complete. Best makespan: {bestCost:F2}");
-            return [.. bestPath.Where(id => id is not "Prod" or "Prod_M1" or "Prod_M2")];
+            if (!isSilent) WriteLine($"Optimization complete. Best makespan: {bestCost:F2}");
+            return [.. bestPath];
         }
 
         // Generate a neighboring solution by swapping two random nodes in the path
@@ -67,7 +61,8 @@
             {
                 i = rnd.Next(neighbor.Count);
                 j = rnd.Next(neighbor.Count);
-            } while (i.Equals(j));
+            }
+            while (i.Equals(j));
 
             (neighbor[i], neighbor[j]) = (neighbor[j], neighbor[i]);
 
@@ -77,67 +72,49 @@
         // Generates the makespan's graph
         private double EvaluateMakespan(List<string> jobSeq, bool isSilent)
         {
-            const double ZeroDelay = 0.0;
-
             g.Edges.Clear();
 
-            foreach (KeyValuePair<string, Node> kvp in g.Nodes.Where(n => n.Value.TimeM1 > 0 && n.Key.EndsWith("_M1")))
+            // technological edges
+            foreach (NodeKVP kvp in g.Nodes.Where(n => n.Value.TimeM1 > 0 && n.Key.EndsWith("_M1")))
             {
-                string
-                    fromID = kvp.Key,
-                    baseID = fromID[..^3];
-                Node node = kvp.Value;
-
                 g.Edges.Add(new()
                 {
-                    FromID = fromID,
-                    ToID = $"{baseID}_M2",
-                    Cost = node.TimeM1
+                    FromID = kvp.Key,
+                    ToID = $"{kvp.Key[..^3]}_M2",
+                    Cost = kvp.Value.TimeM1
                 });
             }
 
+            // sequential edges
             for (int i = 0; i < jobSeq.Count - 1; i++)
             {
-                string
-                    jobA = jobSeq[i],
-                    jobB = jobSeq[i + 1];
-
                 g.Edges.Add(new()
                 {
-                    FromID = $"{jobA}_M1",
-                    ToID = $"{jobB}_M1",
-                    Cost = ZeroDelay
+                    FromID = $"{jobSeq[i]}_M1",
+                    ToID = $"{jobSeq[i + 1]}_M1",
+                    Cost = 0d
                 });
-
                 g.Edges.Add(new()
                 {
-                    FromID = $"{jobA}_M2",
-                    ToID = $"{jobB}_M2",
-                    Cost = ZeroDelay
+                    FromID = $"{jobSeq[i]}_M2",
+                    ToID = $"{jobSeq[i + 1]}_M2",
+                    Cost = 0d
                 });
             }
 
+            // products (J_i_M2 -> P_i)
             if (jobSeq.Count > 0)
-            {
-                string last = jobSeq.Last();
-
                 g.Edges.Add(new()
                 {
-                    FromID = $"{last}_M1",
-                    ToID = $"Prod_M1",
-                    Cost = ZeroDelay
+                    FromID = $"{jobSeq.Last()}_M2",
+                    ToID = $"P{int.Parse(jobSeq.Last().Replace("J", ""))}",
+                    Cost = 0d
                 });
 
-                g.Edges.Add(new()
-                {
-                    FromID = $"{last}_M2",
-                    ToID = $"Prod_M2",
-                    Cost = ZeroDelay
-                });
-            }
-
-            Dictionary<string, double> eftTimes = GetLongestPathEFTs(isSilent);
-            double makespan = eftTimes.Where(kvp => kvp.Key.EndsWith("_M2")).Max(kvp => kvp.Value);
+            double makespan =
+                GetLongestPathEFTs(isSilent)
+                .Where(kvp => kvp.Key.StartsWith('P'))
+                .Max(kvp => kvp.Value);
 
             return (makespan <= 0) ? double.MaxValue : makespan;
         }
@@ -148,7 +125,7 @@
             List<string> topo = TopoSort(g.Nodes, g.Edges, isSilent);
             if (topo.Count is 0)
                 return g.Nodes.Keys.ToDictionary(k => k, v => double.MaxValue);
-            
+
             // sentinel value for unreached nodes
             const double MinDist = -1.0;
 
@@ -164,25 +141,24 @@
             foreach (string u in topo)
             {
                 if (dist[u] <= MinDist) continue;
-                
-                Node nodeU = g.Nodes[u];
-                double durU = (nodeU.TimeM1 > 0) ? nodeU.TimeM1 : nodeU.TimeM2;
-
-                double eftU = dist[u] + durU; // EFT(u)
 
                 foreach (Edge e in g.Edges.Where(e => e.FromID == u))
                 {
                     string v = e.ToID;
                     double cost = e.Cost;
 
-                    double reqStartV = eftU + cost; // EST(u) = EFT(u) + Cost
+                    Node nodeU = g.Nodes[u];
+                    double durU = (nodeU.TimeM1 > 0) ? nodeU.TimeM1 : nodeU.TimeM2;
+
+                    double reqStartV = (dist[u] + durU) + cost; // EST(u) = EFT(u) + Cost
 
                     if (dist[v] < reqStartV)
                         dist[v] = reqStartV;
                 }
             }
 
-            foreach (KeyValuePair<string, Node> kvp in g.Nodes)
+            foreach (NodeKVP kvp in g.Nodes)
+            {
                 if (dist.ContainsKey(kvp.Key))
                 {
                     if (dist[kvp.Key] <= MinDist)
@@ -194,7 +170,8 @@
                     double finalDur = (kvp.Value.TimeM1 > 0) ? kvp.Value.TimeM1 : kvp.Value.TimeM2;
                     dist[kvp.Key] += finalDur;
                 }
-                
+            }
+
             return dist;
         }
 
@@ -211,23 +188,28 @@
             {
                 string n = zeroInDegree.Dequeue();
                 topoOrder.Add(n);
-                if (!isSilent) Console.WriteLine($"Node {n} added to topological order.");
+                if (!isSilent)
+                    WriteLine($"Node {n} added to topological order.");
 
                 foreach (Edge e in edges.Where(e => e.FromID == n))
                 {
-                    string m = e.ToID;
-                    inDegree[m]--;
-                    if (inDegree[m] is 0) zeroInDegree.Enqueue(m);
-                    if (!isSilent) Console.WriteLine($"Decreased in-degree of {m} to {inDegree[m]}.");
+                    inDegree[e.ToID]--;
+                    if (inDegree[e.ToID] is 0)
+                        zeroInDegree.Enqueue(e.ToID);
+
+                    if (!isSilent)
+                        WriteLine($"Decreased in-degree of {e.ToID} to {inDegree[e.ToID]}.");
                 }
             }
             if (topoOrder.Count != nodes.Count)
             {
-                if (!isSilent) Console.Error.WriteLine("Graph has at least one cycle; topological sort not possible.");
-                return [];
+                if (!isSilent)
+                    Error.WriteLine("Graph has at least one cycle; topological sort not possible.");
+                throw new FormatException("Graph has at least one cycle; topological sort not possible.");
             }
 
-            if (!isSilent) Console.WriteLine("Topological sort completed successfully.");
+            if (!isSilent)
+                WriteLine("Topological sort completed successfully.");
             return topoOrder;
         }
     }

@@ -86,27 +86,35 @@ namespace Thesis_LIPX05.Util
             {
                 string
                     from = edge.From.ID,
-                    to = edge.To.ID,
-                    baseJobFrom = from.EndsWith("_M1") || from.EndsWith("_M2") ? from[..^3] : string.Empty,
-                    baseJobTo = to.EndsWith("_M1") || to.EndsWith("_M2") ? to[..^3] : string.Empty;
+                    to = edge.To.ID;
 
-                bool
-                    isTech = from.EndsWith("_M1") && from.EndsWith("_M2") &&
-                             baseJobFrom.Equals(baseJobTo, StringComparison.OrdinalIgnoreCase),
-                    isSeq = (from.EndsWith("_M1") && to.EndsWith("_M1")) ||
-                            (from.EndsWith("_M2") && to.EndsWith("_M2")),
-                    isProdLink = from.StartsWith("Prod") || to.StartsWith("Prod");
+                static string GetBaseID(string id)
+                    => (id.Length >= 3 && (id.EndsWith("_M1") || id.EndsWith("_M2"))) ? id[..^3] : id;
 
-                return isTech;
+                string
+                    baseJobFrom = GetBaseID(from),
+                    baseJobTo = GetBaseID(to);
+
+                return
+                    from.EndsWith("_M1") &&
+                    to.EndsWith("_M2")   &&
+                    baseJobFrom.Equals(baseJobTo, StringComparison.OrdinalIgnoreCase);
             });
 
-            foreach (Edge edge in edges2Out)
+            try
             {
-                XElement edgeElement = new("Edge",
-                    new XAttribute("From", edge.From.ID),
-                    new XAttribute("To", edge.To.ID),
-                    new XAttribute("Cost", edge.Cost));
-                edges.Add(edgeElement);
+                foreach (Edge edge in edges2Out)
+                {
+                    XElement edgeElement = new("Edge",
+                        new XAttribute("From", edge.From.ID),
+                        new XAttribute("To", edge.To.ID),
+                        new XAttribute("Cost", edge.Cost));
+                    edges.Add(edgeElement);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             try

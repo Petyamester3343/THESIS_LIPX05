@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "VPLERqDJBfQ=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_BnB\\Y0KAI_BnB.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\9.0.9\\microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.10\\microsoft.net.illink.tasks.9.0.10.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\9.0.9\\runtime.win-x64.microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}

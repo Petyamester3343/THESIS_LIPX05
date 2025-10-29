@@ -29,8 +29,8 @@
 				<batchML:ID>J1</batchML:ID>
 				<batchML:RecipeElementID>J1-Module</batchML:RecipeElementID>
 				<batchML:Extension>
-					<custom:TimeM1>25</custom:TimeM1>
-					<custom:TimeM2>15</custom:TimeM2> 
+					<custom:TimeM1>15</custom:TimeM1>
+					<custom:TimeM2>25</custom:TimeM2> 
 				</batchML:Extension>
 			</batchML:Step>
 
@@ -38,8 +38,8 @@
 				<batchML:ID>J2</batchML:ID>
 				<batchML:RecipeElementID>J2-Module</batchML:RecipeElementID>
 				<batchML:Extension>
-					<custom:TimeM1>30</custom:TimeM1>
-					<custom:TimeM2>2</custom:TimeM2>
+					<custom:TimeM1>16</custom:TimeM1>
+					<custom:TimeM2>26</custom:TimeM2>
 				</batchML:Extension>
 			</batchML:Step>
   
@@ -47,7 +47,7 @@
 				<batchML:ID>J3</batchML:ID>
 				<batchML:RecipeElementID>J3-Module</batchML:RecipeElementID>
 				<batchML:Extension>
-					<custom:TimeM1>12</custom:TimeM1>
+					<custom:TimeM1>17</custom:TimeM1>
 					<custom:TimeM2>27</custom:TimeM2>
 				</batchML:Extension>
 			</batchML:Step>
