@@ -3,7 +3,7 @@
   <batchML:MasterRecipe>
     <batchML:Header>
       <batchML:ID>FlowShop-MR-001</batchML:ID>
-      <batchML:Version>1.0</batchML:Version>
+      <batchML:Version>1.01</batchML:Version>
       <batchML:Description>2-MACHINE FLOW SHOP MODEL (Optimized)</batchML:Description>
     </batchML:Header>
     <batchML:RecipeElement>
@@ -27,7 +27,7 @@
         <batchML:RecipeElementID>J1-Module</batchML:RecipeElementID>
         <batchML:Extension>
           <custom:TimeM1>15</custom:TimeM1>
-          <custom:TimeM2>30</custom:TimeM2>
+          <custom:TimeM2>28</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
       <batchML:Step>
@@ -35,7 +35,7 @@
         <batchML:RecipeElementID>J2-Module</batchML:RecipeElementID>
         <batchML:Extension>
           <custom:TimeM1>16</custom:TimeM1>
-          <custom:TimeM2>32</custom:TimeM2>
+          <custom:TimeM2>30</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
       <batchML:Step>
@@ -43,7 +43,7 @@
         <batchML:RecipeElementID>J3-Module</batchML:RecipeElementID>
         <batchML:Extension>
           <custom:TimeM1>17</custom:TimeM1>
-          <custom:TimeM2>34</custom:TimeM2>
+          <custom:TimeM2>32</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
     </batchML:ProcedureLogic>

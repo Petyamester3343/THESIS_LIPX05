@@ -20,11 +20,7 @@ using static Thesis_LIPX05.Util.Gantt;
 using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
 
-using FlowShopKVP = System.Collections.Generic.KeyValuePair<string, (int, int, string)>;
 using FilePath = System.IO.Path;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Text.Unicode;
 using System.Text.Encodings.Web;
 
 namespace Thesis_LIPX05
@@ -42,10 +38,10 @@ namespace Thesis_LIPX05
                 "Y0KAI_TaskScheduler", "custom_solvers.json");
 
         // Private read-only collections
-        private readonly List<CustomSolver> customSolvers;
-        private readonly List<DataTable> solutionsList;
-        private readonly List<string> integratedSolvers = ["Johnson's Rule", "List Scheduling"];
-        private readonly Dictionary<string, TableMapper> mappings;
+        private readonly List<CustomSolver> CustomSolvers;
+        private readonly List<DataTable> SolutionsList;
+        private readonly List<string> IntegratedSolvers = ["Johnson's Rule", "List Scheduling"];
+        private readonly Dictionary<string, TableMapper> Mappings;
 
         // Private overwritable fields
         private XElement masterRecipe;
@@ -88,10 +84,10 @@ namespace Thesis_LIPX05
             GanttData = [];
             zoom = 1;
 
-            mappings = InitMappings();
+            Mappings = InitMappings();
 
-            customSolvers = [];
-            solutionsList = [];
+            CustomSolvers = [];
+            SolutionsList = [];
 
             InitializeComponent();
 
@@ -140,7 +136,7 @@ namespace Thesis_LIPX05
                     "Steps", new()
                     {
                         ParentElement = "Step",
-                        KeyCols = ["ID"],
+                        KeyCols = ["ID", "RecipeElementID"],
                         Col2El = new()
                         {
                             { "ID", "ID" },
@@ -154,7 +150,7 @@ namespace Thesis_LIPX05
                     "RecipeElements", new()
                     {
                         ParentElement = "RecipeElement",
-                        KeyCols = ["InternalKey"],
+                        KeyCols = ["InternalKey", "ID"],
                         Col2El = new()
                         {
                             { "ID", "ID" },
@@ -174,7 +170,7 @@ namespace Thesis_LIPX05
             try
             {
                 SolverMenu.Items.Clear();
-                foreach (string solver in integratedSolvers)
+                foreach (string solver in IntegratedSolvers)
                 {
                     MenuItem item = new()
                     {
@@ -189,7 +185,7 @@ namespace Thesis_LIPX05
                 }
                 AddSeparator(solverMenu);
 
-                foreach (CustomSolver cs in customSolvers)
+                foreach (CustomSolver cs in CustomSolvers)
                 {
                     AddCustomSolverMenuItem(cs);
                     LogGeneralActivity(LogSeverity.INFO,
@@ -224,7 +220,7 @@ namespace Thesis_LIPX05
             bool
                 isDataModified = isFileModified && (masterTable.GetChanges() is not null ||
                 recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null),
-                isSolverModified = customSolvers.Count != initCustomSolverCount,
+                isSolverModified = CustomSolvers.Count != initCustomSolverCount,
                 shouldClose = true;
 
             if (isDataModified)
@@ -357,7 +353,7 @@ namespace Thesis_LIPX05
                 // reserved for external solvers reading from XML and writing to TXT files
                 default:
                     {
-                        if (customSolvers.Any(cs => cs.Name == menuItem.Tag.ToString()))
+                        if (CustomSolvers.Any(cs => cs.Name == menuItem.Tag.ToString()))
                             InitExtSolver(menuItem);
                         break;
                     }
@@ -446,7 +442,7 @@ namespace Thesis_LIPX05
                 tempTxtPath = FilePath.Combine(tempDir, txtName),
                 tempXmlPath = string.Empty; // initializing out variable beyond the try-catch-finally scope
 
-            CustomSolver? customSolver = customSolvers.FirstOrDefault(cs => cs.Name == menuItem?.Tag.ToString());
+            CustomSolver? customSolver = CustomSolvers.FirstOrDefault(cs => cs.Name == menuItem?.Tag.ToString());
             if (customSolver is null)
             {
                 LogGeneralActivity(LogSeverity.ERROR,
@@ -911,7 +907,7 @@ namespace Thesis_LIPX05
             LogGeneralActivity(LogSeverity.INFO,
                 $"{stepTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
 
-            foreach (DataTable dt in solutionsList)
+            foreach (DataTable dt in SolutionsList)
             {
                 dt.Columns.Clear();
                 dt.Clear();
@@ -1251,7 +1247,7 @@ namespace Thesis_LIPX05
                             MessageBox.Show("No Gantt chart to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                             return;
                         }
-                        else JPEGExporter.ExportMultipleCanvases(RulerCanvas, GanttCanvas, "Gantt Chart");
+                        else JPEGExporter.ExportMultipleCanvases(RulerCanvas, GanttCanvas, FixedLabelCanvas, "Gantt Chart");
                         LogGeneralActivity(LogSeverity.INFO,
                             "Gantt chart exported as JPEG file!", GeneralLogContext.EXPORT);
                         break;
@@ -1465,7 +1461,7 @@ namespace Thesis_LIPX05
                 sdt.Rows.Add(dr);
             }
 
-            solutionsList.Add(sdt);
+            SolutionsList.Add(sdt);
             DisplayDataTable(sdt, sdt.TableName, readOnly: true);
             LogGeneralActivity(LogSeverity.INFO,
                 $"Solution table for \"{GanttCanvas.Tag ?? string.Empty}\" displayed in new tab!", GeneralLogContext.DATATABLE);
@@ -1488,7 +1484,7 @@ namespace Thesis_LIPX05
 
                 if (!string.IsNullOrWhiteSpace(input))
                 {
-                    if (customSolvers.Any(s => s.Name.Equals(input, StringComparison.OrdinalIgnoreCase)))
+                    if (CustomSolvers.Any(s => s.Name.Equals(input, StringComparison.OrdinalIgnoreCase)))
                     {
                         LogGeneralActivity(LogSeverity.WARNING,
                             "A solver with this name already exists! Aborting assignment!", GeneralLogContext.EXTERN_SOLVER);
@@ -1511,7 +1507,7 @@ namespace Thesis_LIPX05
                         Path = solverPath,
                         Arguments = []
                     };
-                    customSolvers.Add(newSolver);
+                    CustomSolvers.Add(newSolver);
                     LogGeneralActivity(LogSeverity.INFO,
                         $"Custom {newSolver.TypeID} solver \"{newSolver.Name}\" added with path: {newSolver.Path}", GeneralLogContext.EXTERN_SOLVER);
 
@@ -1527,7 +1523,7 @@ namespace Thesis_LIPX05
             try
             {
                 Directory.CreateDirectory(FilePath.GetDirectoryName(customSolverPath)!);
-                string json = JsonSerializer.Serialize(customSolvers, CachedOptions);
+                string json = JsonSerializer.Serialize(CustomSolvers, CachedOptions);
                 File.WriteAllText(customSolverPath, json);
                 LogGeneralActivity(LogSeverity.INFO, "Custom solvers saved to JSON file!", GeneralLogContext.SAVE);
             }
@@ -1549,11 +1545,11 @@ namespace Thesis_LIPX05
                     List<CustomSolver> loaded = JsonSerializer.Deserialize<List<CustomSolver>>(json)!;
                     if (loaded is not null)
                     {
-                        customSolvers.Clear();
-                        customSolvers.AddRange(loaded);
-                        initCustomSolverCount = customSolvers.Count;
-                        customSolvers.Sort((a, b) => string.Compare(a.Name, b.Name));
-                        foreach (CustomSolver cs in customSolvers)
+                        CustomSolvers.Clear();
+                        CustomSolvers.AddRange(loaded);
+                        initCustomSolverCount = CustomSolvers.Count;
+                        CustomSolvers.Sort((a, b) => string.Compare(a.Name, b.Name));
+                        foreach (CustomSolver cs in CustomSolvers)
                             AddCustomSolverMenuItem(cs);
                     }
                     LogGeneralActivity(LogSeverity.INFO,
@@ -1601,7 +1597,7 @@ namespace Thesis_LIPX05
         // A helper method to find an existing XML element based on key columns in the DataRow
         private XElement? FindExistingElement(string tableName, DataRow dRow, DataRowVersion dVer)
         {
-            bool mapExists = mappings.TryGetValue(tableName, out TableMapper? map);
+            bool mapExists = Mappings.TryGetValue(tableName, out TableMapper? map);
 
             // if the master recipe doesn't exist
             if (masterRecipe is null || !mapExists)
@@ -1678,7 +1674,7 @@ namespace Thesis_LIPX05
         // Custom non-delegate event handler for syncing a row from the DataTable to the XML when it's changed or added
         private void SyncRow2XML(DataRow dRow, string tableName)
         {
-            if (masterRecipe is null || !mappings.TryGetValue(tableName, out TableMapper? map))
+            if (masterRecipe is null || !Mappings.TryGetValue(tableName, out TableMapper? map))
             {
                 LogGeneralActivity(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!", GeneralLogContext.SYNC);
                 return;

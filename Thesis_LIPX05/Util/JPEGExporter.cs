@@ -55,9 +55,9 @@ namespace Thesis_LIPX05.Util
         }
 
         // Exports two Canvases as a single JPEG image (used for Gantt charts with time ruler)
-        public static void ExportMultipleCanvases(Canvas rcv, Canvas gcv, string ctx)
+        public static void ExportMultipleCanvases(Canvas rcv, Canvas gcv, Canvas lcv, string ctx)
         {
-            StackPanel panel = CreateStackPanel(rcv, gcv);
+            StackPanel panel = CreateStackPanel(rcv, gcv, lcv);
 
             LogGeneralActivity(LogSeverity.INFO,
                 $"{ctx} combined panel measured and arranged with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height}.", GeneralLogContext.EXPORT);
@@ -87,12 +87,12 @@ namespace Thesis_LIPX05.Util
         }
 
         // Helper method to create a stack panel
-        private static StackPanel CreateStackPanel(Canvas rcv, Canvas gcv)
+        private static StackPanel CreateStackPanel(Canvas rcv, Canvas gcv, Canvas lcv)
         {
             // measuring and arranging the two canvases comprising the Gantt diagram
             StackPanel panel = new() { Orientation = Orientation.Vertical };
             
-            foreach (Canvas cv in new[] { rcv, gcv })
+            foreach (Canvas cv in new[] { rcv, gcv, lcv })
             {
                 cv.Measure(availableSize: new(cv.Width, cv.Height));
                 cv.Arrange(finalRect: new(0, 0, cv.Width, cv.Height));
