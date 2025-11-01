@@ -93,6 +93,9 @@ namespace Thesis_LIPX05.Util.Optimizers
                 AddEdge($"{jobSeq[i]}_M2", $"{jobSeq[i + 1]}_M2");
             }
 
+            // re-apply terminating edges between the last of the machinesand the products
+            for (int i = 1; i <= 3; i++) AddEdge($"J{i}_M2", $"P{i}");
+
             LogSolverActivity(LogSeverity.INFO,
                 "Vital edges added to the graph!", LogCtx);
         }

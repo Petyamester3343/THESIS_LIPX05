@@ -88,18 +88,15 @@ namespace Y0KAI_SA
             // sequential edges
             for (int i = 0; i < jobSeq.Count - 1; i++)
             {
-                g.Edges.Add(new()
+                for (int j = 1; j <= 2; j++)
                 {
-                    FromID = $"{jobSeq[i]}_M1",
-                    ToID = $"{jobSeq[i + 1]}_M1",
-                    Cost = 0d
-                });
-                g.Edges.Add(new()
-                {
-                    FromID = $"{jobSeq[i]}_M2",
-                    ToID = $"{jobSeq[i + 1]}_M2",
-                    Cost = 0d
-                });
+                    g.Edges.Add(new()
+                    {
+                        FromID = $"{jobSeq[i]}_M{j}",
+                        ToID = $"{jobSeq[i + 1]}_M{j}",
+                        Cost = 0d
+                    });
+                }
             }
 
             // products (J_i_M2 -> P_i)
@@ -110,14 +107,14 @@ namespace Y0KAI_SA
                     ToID = $"P{int.Parse(jobSeq.Last().Replace("J", ""))}",
                     Cost = 0d
                 });
-
-            double makespan =
-                GetLongestPathEFTs(isSilent)
-                .Where(kvp => kvp.Key.StartsWith('P'))
-                .Max(kvp => kvp.Value);
-
-            return (makespan <= 0) ? double.MaxValue : makespan;
+                
+            return DetermineMakespanValue(isSilent);
         }
+
+        private double DetermineMakespanValue(bool isSilent) =>
+            (GetLongestPathEFTs(isSilent).Where(kvp => kvp.Key.StartsWith('P')).Max(kvp => kvp.Value) <= 0)
+                ? double.MaxValue
+                : GetLongestPathEFTs(isSilent).Where(kvp => kvp.Key.StartsWith('P')).Max(kvp => kvp.Value);
 
         // Fetches the path's EFT (earliest finish time)
         private Dictionary<string, double> GetLongestPathEFTs(bool isSilent)
@@ -132,7 +129,8 @@ namespace Y0KAI_SA
             Dictionary<string, double> dist = g.Nodes.Keys.ToDictionary(k => k, v => MinDist);
             Dictionary<string, int> inDeg = g.Nodes.Keys.ToDictionary(k => k, v => 0);
 
-            foreach (Edge e in g.Edges) inDeg[e.ToID]++;
+            foreach (Edge e in g.Edges)
+                inDeg[e.ToID]++;
 
             // initialize starting nodes (in-deg 0) to EST = 0.0
             foreach (KeyValuePair<string, int> kvp in inDeg.Where(kvp => kvp.Value is 0))

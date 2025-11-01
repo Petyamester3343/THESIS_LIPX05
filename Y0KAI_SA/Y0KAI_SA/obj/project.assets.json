@@ -8,7 +8,7 @@
           "build/Microsoft.DotNet.ILCompiler.props": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.9": {
+      "Microsoft.NET.ILLink.Tasks/9.0.10": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -46,10 +46,10 @@
         "tools/netstandard/ILCompiler.Build.Tasks.dll"
       ]
     },
-    "Microsoft.NET.ILLink.Tasks/9.0.9": {
-      "sha512": "cHi1os/s6aobEgNkbOh/jW+ru//rHuedvj4PmTh2mMY7et/mJjqphBeXeKCesDvMd0+E2JyX9EPZZC4VRKslXg==",
+    "Microsoft.NET.ILLink.Tasks/9.0.10": {
+      "sha512": "sseaSJcBxKEpkc59hnB00b3NmJdGvJLfj74HK+nucHxERxbZSUREuWKjC9ywc+HdzJvJyiP2eiyEOROaGSfcPw==",
       "type": "package",
-      "path": "microsoft.net.illink.tasks/9.0.9",
+      "path": "microsoft.net.illink.tasks/9.0.10",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -63,7 +63,7 @@
         "build/Microsoft.NET.ILLink.Analyzers.props",
         "build/Microsoft.NET.ILLink.Tasks.props",
         "build/Microsoft.NET.ILLink.targets",
-        "microsoft.net.illink.tasks.9.0.9.nupkg.sha512",
+        "microsoft.net.illink.tasks.9.0.10.nupkg.sha512",
         "microsoft.net.illink.tasks.nuspec",
         "tools/net472/ILLink.Tasks.dll",
         "tools/net472/ILLink.Tasks.dll.config",
@@ -101,7 +101,7 @@
   "projectFileDependencyGroups": {
     "net9.0": [
       "Microsoft.DotNet.ILCompiler >= 9.0.9",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.9"
+      "Microsoft.NET.ILLink.Tasks >= 9.0.10"
     ]
   },
   "packageFolders": {
@@ -164,7 +164,7 @@
           "Microsoft.NET.ILLink.Tasks": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[9.0.9, )",
+            "version": "[9.0.10, )",
             "autoReferenced": true
           }
         },
@@ -190,7 +190,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

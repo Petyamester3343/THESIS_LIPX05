@@ -86,6 +86,9 @@ namespace Thesis_LIPX05.Util.Optimizers
                 AddEdge(idA_M2, idB_M2);
             }
 
+            // 4.: re-applying terminating edges
+            for (int i = 1; i <= 3; i++) AddEdge($"J{i}_M2", $"P{i}");
+            
             LogSolverActivity(LogSeverity.INFO,
                 "Graph rebuilt with necessary technological constraints (cost=duration) and zero-cost sequential constraints.", LogCtx);
 

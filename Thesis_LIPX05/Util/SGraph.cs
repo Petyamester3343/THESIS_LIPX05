@@ -97,7 +97,7 @@ namespace Thesis_LIPX05.Util
 
                 return
                     from.EndsWith("_M1") &&
-                    to.EndsWith("_M2")   &&
+                    to.EndsWith("_M2") &&
                     baseJobFrom.Equals(baseJobTo, StringComparison.OrdinalIgnoreCase);
             });
 
@@ -207,7 +207,10 @@ namespace Thesis_LIPX05.Util
 
             foreach (Edge e in edges)
             {
-                DrawArrow(cv, e, Brushes.DarkBlue);
+                double visualCost = 0;
+                if (e.From.ID.Substring(e.From.ID.Length - 3, 3) is "_M1" or "_M2") visualCost = e.From.TimeM1 > 0 ? e.From.TimeM1 : e.From.TimeM2;
+
+                DrawArrow(cv, e, Brushes.DarkBlue, visualCost);
                 LogGeneralActivity(LogSeverity.INFO,
                     $"Edge from {e.From.ID} to {e.To.ID} with cost {e.Cost} drawn.", GeneralLogContext.S_GRAPH);
             }
@@ -283,24 +286,30 @@ namespace Thesis_LIPX05.Util
             edge.To.ID.EndsWith("_M2", StringComparison.OrdinalIgnoreCase) &&
             edge.From.ID[..^3].Equals(edge.To.ID[..^3], StringComparison.OrdinalIgnoreCase);
 
+        private static bool IsSequentialPrecedenceEdge(Edge edge) =>
+            (edge.From.ID.EndsWith("_M1", StringComparison.OrdinalIgnoreCase) &&
+            edge.To.ID.EndsWith("_M1", StringComparison.OrdinalIgnoreCase)) ||
+            (edge.From.ID.EndsWith("_M2", StringComparison.OrdinalIgnoreCase) &&
+            edge.To.ID.EndsWith("_M2", StringComparison.OrdinalIgnoreCase));
+
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
-        private static void DrawArrow(Canvas cv, Edge edge, Brush color, double thickness = 2)
+        private static void DrawArrow(Canvas cv, Edge edge, Brush color, double visualCost, double thickness = 2)
         {
             WindowPoint
                 from = edge.From.Position,
                 to = edge.To.Position;
-            double weight = edge.Cost;
 
             // Calculating node centers
-            WindowPoint centerFrom = new(from.X + Node.Radius, from.Y + Node.Radius);
-            WindowPoint centerTo = new(to.X + Node.Radius, to.Y + Node.Radius);
+            WindowPoint
+                centerFrom = new(from.X + Node.Radius, from.Y + Node.Radius),
+                centerTo = new(to.X + Node.Radius, to.Y + Node.Radius);
 
             // Calculating connection points
             Vector delta = centerTo - centerFrom;
-            double dist = delta.Length;
+            double distance = delta.Length;
 
             // If nodes are too close, skip drawing edges
-            if (dist <= Node.Radius * 2 + 1)
+            if (distance <= Node.Radius * 2 + 1)
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "Nodes are too close or overlapping; skipping edge line!", GeneralLogContext.S_GRAPH);
@@ -308,7 +317,7 @@ namespace Thesis_LIPX05.Util
             }
 
             // Normalized direction from A's center to B's center
-            Vector dirTo = delta / dist;
+            Vector dirTo = delta / distance;
 
             // Calculating connection points on the circumference
             WindowPoint
@@ -318,12 +327,15 @@ namespace Thesis_LIPX05.Util
             // separating internal flows by checking if it is a technological precedence
             double dCurve;
             if (IsTechnologicalPrecEdge(edge))
-            {
-                dCurve = 50;
+                dCurve = 25;
+            else if (IsSequentialPrecedenceEdge(edge))
+                dCurve = -25;
+            else
+                dCurve = 0;
+
+            if (dCurve is not 0)
                 LogGeneralActivity(LogSeverity.INFO,
-                    $"Technological edge {edge.From.ID} to {edge.To.ID} set to fixed curve {dCurve}.", GeneralLogContext.S_GRAPH);
-            }
-            else dCurve = 0;
+                    $"Curve value of edge ({edge.From.ID} to {edge.To.ID}) set to {dCurve:F2}", GeneralLogContext.S_GRAPH);
 
             // Calculating the Bezier curve's control point
             Vector normal = new(-dirTo.Y, dirTo.X); // 90 degree rotation
@@ -340,10 +352,10 @@ namespace Thesis_LIPX05.Util
 
             // Drawing the weight label (if weight gt 0 is true)
             // Midpoint of a quadratic Bezier curve at t = 0.5 is (0,25 * P_0 + 0,5 * P_1 + 0,25 * P_2)
-            if (weight > 0) DrawWeightOnEdge(start, control, end, weight, cv);
+            if (visualCost > 0) DrawWeightOnEdge(start, control, end, visualCost, cv);
         }
 
-        // Helper method for drawing a Bezier curve
+        // Helper method for drawing a Bezier curve as the edge between two nodes
         private static void DrawCurvedEdge(WindowPoint start, WindowPoint control, WindowPoint end, Brush color, double thickness, Canvas cv)
         {
             PathFigure figure = new() { StartPoint = start };
@@ -352,6 +364,7 @@ namespace Thesis_LIPX05.Util
 
             PathGeometry geo = new();
             geo.Figures.Add(figure);
+
             ShapePath shapePath = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
             cv.Children.Add(shapePath);
             LogGeneralActivity(LogSeverity.INFO,
@@ -382,7 +395,7 @@ namespace Thesis_LIPX05.Util
             cv.Children.Add(arrowHead);
         }
 
-        // Helper method for drawing the weight label on the midpoint of the edge
+        // Helper method for drawing the weight label on the midpoint of the edge (for visual representation only)
         private static void DrawWeightOnEdge(WindowPoint start, WindowPoint control, WindowPoint end, double weight, Canvas cv)
         {
             double t = 0.5;
