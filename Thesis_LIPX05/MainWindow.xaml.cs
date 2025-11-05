@@ -31,24 +31,34 @@ namespace Thesis_LIPX05
     public partial class MainWindow : Window
     {
         // Private read-only fields
-        private readonly DataTable masterTable, recipeElementTable, stepTable;
-        private readonly XNamespace batchML, customNS;
+        private readonly DataTable
+            FlowShopMasterTable,
+            FlowShopRecipeElementTable,
+            FlowShopStepTable;
+        private readonly XNamespace
+            batchML,
+            customNS;
         private readonly string customSolverPath = FilePath.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Y0KAI_TaskScheduler", "custom_solvers.json");
 
         // Private read-only collections
         private readonly List<CustomSolver> CustomSolvers;
-        private readonly List<DataTable> SolutionsList;
+        private readonly HashSet<DataTable> SolutionsList;
         private readonly List<string> IntegratedSolvers = ["Johnson's Rule", "List Scheduling"];
-        private readonly Dictionary<string, TableMapper> Mappings;
+        private readonly Dictionary<string, TableMapper> DataTable_XML_Mappings;
 
         // Private overwritable fields
-        private XElement masterRecipe;
-        private double zoom;
-        private bool isFileLoaded = false, SGraphExists, GanttExists = false, isFileModified = false;
-        private string currentFilePath = string.Empty;
-        private int initCustomSolverCount = 0;
+        private XElement MasterRecipe;
+        private XDocument? MasterRecipeDocument;
+        private double ZoomValue;
+        private bool
+            IsFileLoaded = false,
+            IsFileModified = false,
+            SGraphExists = false,
+            GanttExists = false;
+        private string CurrFilePath = string.Empty;
+        private int InitialCustomSolverCount = 0;
 
         // Private mutable collections
         private List<GanttItem> GanttData;
@@ -73,18 +83,18 @@ namespace Thesis_LIPX05
             LogGeneralActivity(LogSeverity.INFO,
                 "Beginning initialization...", GeneralLogContext.INITIALIZATION);
 
-            masterRecipe = new("MasterRecipe");
+            MasterRecipe = new("MasterRecipe");
             batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02");
             customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom");
 
-            masterTable = new(MasterRecipeTableName);
-            recipeElementTable = new(RecipeElementsTableName);
-            stepTable = new(StepsTableName);
+            FlowShopMasterTable = new(MasterRecipeTableName);
+            FlowShopRecipeElementTable = new(RecipeElementsTableName);
+            FlowShopStepTable = new(StepsTableName);
 
             GanttData = [];
-            zoom = 1;
+            ZoomValue = 1;
 
-            Mappings = InitMappings();
+            DataTable_XML_Mappings = InitMappings();
 
             CustomSolvers = [];
             SolutionsList = [];
@@ -105,7 +115,7 @@ namespace Thesis_LIPX05
         private void ManageFileHandlers()
         {
             foreach (MenuItem menuItem in new[] { SaveFileMenuItem, CloseFileMenuItem })
-                menuItem.IsEnabled = isFileLoaded;
+                menuItem.IsEnabled = IsFileLoaded;
 
             ExportCanvasMenuItem.IsEnabled = GanttCanvas.Children.Count is not 0 || SGraphCanvas.Children.Count is not 0;
 
@@ -218,9 +228,9 @@ namespace Thesis_LIPX05
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             bool
-                isDataModified = isFileModified && (masterTable.GetChanges() is not null ||
-                recipeElementTable.GetChanges() is not null || stepTable.GetChanges() is not null),
-                isSolverModified = CustomSolvers.Count != initCustomSolverCount,
+                isDataModified = IsFileModified && (FlowShopMasterTable.GetChanges() is not null ||
+                FlowShopRecipeElementTable.GetChanges() is not null || FlowShopStepTable.GetChanges() is not null),
+                isSolverModified = CustomSolvers.Count != InitialCustomSolverCount,
                 shouldClose = true;
 
             if (isDataModified)
@@ -311,7 +321,7 @@ namespace Thesis_LIPX05
         // Event handler for the Exit menu item click event
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            if (isFileModified && HasUnsavedChanges())
+            if (IsFileModified && HasUnsavedChanges())
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "Unsaved changes detected, prompting user to save before exiting!", GeneralLogContext.EXITUS);
@@ -378,7 +388,7 @@ namespace Thesis_LIPX05
                 $"Gantt data built with {GanttData.Count} items from optimized path using {method}!", GeneralLogContext.GANTT);
 
             double totalT = GanttData.Max(x => x.Start + x.Duration);
-            double scale = BaseTimeScale * zoom;
+            double scale = BaseTimeScale * ZoomValue;
 
             CreateGanttChart(totalT, scale, method);
         }
@@ -546,7 +556,7 @@ namespace Thesis_LIPX05
             foreach (Node node in GetNodes().Values.Where(n => n.ID.EndsWith("_M1")))
                 AddEdge(node.ID, $"{node.ID[..^3]}_M2");
 
-            // apply sequential edges
+            // apply sequential edges in the solution's order
             for (int i = 0; i < optSeq.Count - 1; i++)
                 for (int j = 1; j <= 2; j++)
                     AddEdge($"{optSeq[i]}_M{j}", $"{optSeq[i + 1]}_M{j}");
@@ -706,8 +716,8 @@ namespace Thesis_LIPX05
         {
             if (GanttData is null || GanttData.Count is 0) return;
 
-            zoom = Math.Pow(2, e.NewValue);
-            double scale = BaseTimeScale * zoom;
+            ZoomValue = Math.Pow(2, e.NewValue);
+            double scale = BaseTimeScale * ZoomValue;
 
             double totalTime = GanttData.Max(x => x.Start + x.Duration);
             int rowC = GanttData.Count;
@@ -754,15 +764,15 @@ namespace Thesis_LIPX05
 
         // Helper expression-body method to check for unsaved changes in any of the data tables (dirty flag)
         private bool HasUnsavedChanges() =>
-            isFileLoaded &&
-            (masterTable.GetChanges() is not null ||
-            recipeElementTable.GetChanges() is not null ||
-            stepTable.GetChanges() is not null);
+            IsFileLoaded &&
+            (FlowShopMasterTable.GetChanges() is not null ||
+            FlowShopRecipeElementTable.GetChanges() is not null ||
+            FlowShopStepTable.GetChanges() is not null);
 
         // Event handler for opening a file
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            if (isFileLoaded)
+            if (IsFileLoaded)
             {
                 if (HasUnsavedChanges())
                 {
@@ -780,6 +790,7 @@ namespace Thesis_LIPX05
                     }
                 }
 
+                GanttData.Clear();
                 Purge();
                 PurgeDataTables();
             }
@@ -794,24 +805,48 @@ namespace Thesis_LIPX05
 
             if (dlg.ShowDialog() is true)
             {
-                currentFilePath = dlg.FileName;
-                LoadBatchML(currentFilePath);
+                CurrFilePath = dlg.FileName;
+                LoadBatchML(CurrFilePath);
 
-                isFileLoaded = true;
-                isFileModified = false;
+                IsFileLoaded = true;
+                IsFileModified = false;
                 ManageFileHandlers();
 
                 LogGeneralActivity(LogSeverity.INFO,
-                    $"BatchML file loaded from {currentFilePath}!", GeneralLogContext.LOAD);
+                    $"BatchML file loaded from {CurrFilePath}!", GeneralLogContext.LOAD);
             }
             else LogGeneralActivity(LogSeverity.INFO,
                 "Open file dialog cancelled by user.", GeneralLogContext.LOAD);
         }
 
+        private void SaveDataTableChanges()
+        {
+            DataTable?
+                    changesMaster = FlowShopMasterTable.GetChanges(),
+                    changesRecipe = FlowShopRecipeElementTable.GetChanges(),
+                    changesStep = FlowShopStepTable.GetChanges();
+
+            if (changesMaster is not null)
+                foreach (DataRow dr in changesMaster.Rows)
+                    SyncRow2XML(dr, "MasterRecipe");
+
+            if (changesRecipe is not null)
+                foreach (DataRow dr in changesRecipe.Rows)
+                    SyncRow2XML(dr, "RecipeElements");
+
+            if (changesStep is not null)
+                foreach (DataRow dr in changesStep.Rows)
+                    SyncRow2XML(dr, "Steps");
+
+            FlowShopMasterTable.AcceptChanges();
+            FlowShopRecipeElementTable.AcceptChanges();
+            FlowShopStepTable.AcceptChanges();
+        }
+
         // Event handler for saving a file
         private void SaveFile_Click(object sender, RoutedEventArgs e)
         {
-            if (!isFileLoaded || masterRecipe is null)
+            if (!IsFileLoaded || MasterRecipe is null)
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "No BatchML file loaded to save!", GeneralLogContext.SAVE);
@@ -820,9 +855,9 @@ namespace Thesis_LIPX05
                 return;
             }
 
-            if (isFileModified)
+            if (IsFileModified)
             {
-                string? s = (sender as MenuItem)?.Tag.ToString() ?? string.Empty;
+                string? s = $"{(sender as MenuItem)?.Tag}" ?? string.Empty;
                 if (s.Equals("Exit") is true || s.Equals("Close File") is true)
                 {
                     LogGeneralActivity(LogSeverity.WARNING,
@@ -830,6 +865,11 @@ namespace Thesis_LIPX05
                     MessageBox.Show("Please save changes before exiting!",
                         "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+
+                if (FlowShopMasterTable.GetChanges() is not null)
+                    SyncMasterTable();
+
+                SaveDataTableChanges();
 
                 SaveFileDialog saveDlg = new()
                 {
@@ -841,13 +881,13 @@ namespace Thesis_LIPX05
                 {
                     try
                     {
-                        masterRecipe.Document?.Save(saveDlg.FileName);
+                        MasterRecipe.Document?.Save(saveDlg.FileName);
                         LogGeneralActivity(LogSeverity.INFO,
                             $"BatchML file successfully saved as {saveDlg.FileName}", GeneralLogContext.SAVE);
                         MessageBox.Show($"BatchML file saved as {saveDlg.FileName}",
                             "Save Successful", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        isFileModified = false;
+                        IsFileModified = false;
                     }
                     catch (Exception ex)
                     {
@@ -863,7 +903,7 @@ namespace Thesis_LIPX05
         // Event handler for the S-Graph renderer button click event
         private void DrawGraph_Click(object sender, RoutedEventArgs e)
         {
-            if (isFileLoaded)
+            if (IsFileLoaded)
             {
                 SGraphCanvas.Children.Clear();
                 try
@@ -912,22 +952,22 @@ namespace Thesis_LIPX05
         // Clears all data tables
         private void PurgeDataTables()
         {
-            masterTable.Columns.Clear();
-            masterTable.Clear();
+            FlowShopMasterTable.Columns.Clear();
+            FlowShopMasterTable.Clear();
             LogGeneralActivity(LogSeverity.INFO,
-                $"{masterTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
+                $"{FlowShopMasterTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
 
             // removing the constraint before purging the entirety of the recipe element datatable
-            if (recipeElementTable.PrimaryKey.Length > 0) recipeElementTable.PrimaryKey = [];
-            recipeElementTable.Columns.Clear();
-            recipeElementTable.Clear();
+            if (FlowShopRecipeElementTable.PrimaryKey.Length > 0) FlowShopRecipeElementTable.PrimaryKey = [];
+            FlowShopRecipeElementTable.Columns.Clear();
+            FlowShopRecipeElementTable.Clear();
             LogGeneralActivity(LogSeverity.INFO,
-                $"{recipeElementTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
+                $"{FlowShopRecipeElementTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
 
-            stepTable.Columns.Clear();
-            stepTable.Clear();
+            FlowShopStepTable.Columns.Clear();
+            FlowShopStepTable.Clear();
             LogGeneralActivity(LogSeverity.INFO,
-                $"{stepTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
+                $"{FlowShopStepTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
 
             foreach (DataTable dt in SolutionsList)
             {
@@ -1036,7 +1076,7 @@ namespace Thesis_LIPX05
             SGraphCanvas.Children.Clear();
 
             // a list of AnonymousType representing the flow shop jobs' details
-            var jobData = masterRecipe.Descendants(batchML + "Step")
+            var jobData = MasterRecipe.Descendants(batchML + "Step")
                 .Select(x =>
                 {
                     return new
@@ -1095,26 +1135,28 @@ namespace Thesis_LIPX05
         {
             try
             {
-                XDocument doc = XDocument.Load(path)
+                MasterRecipeDocument = XDocument.Load(path)
                     ?? throw new Exception("Error while loading file!");
 
                 LogGeneralActivity(LogSeverity.INFO,
                     $"XML document loaded from {path}!", GeneralLogContext.LOAD);
 
-                masterRecipe = doc.Descendants(batchML + "MasterRecipe").FirstOrDefault()
+                MasterRecipe = MasterRecipeDocument.Descendants(batchML + "MasterRecipe").FirstOrDefault()
                     ?? throw new Exception("Master element not found in BatchML file.");
 
                 LogGeneralActivity(LogSeverity.INFO,
                     "XML element established!", GeneralLogContext.LOAD);
 
                 // Datatable of the master recipe's Header element
-                DisplayMasterTable(masterTable, batchML);
+                DisplayMasterTable(FlowShopMasterTable, batchML);
 
                 // Recipe Element datatable
-                DisplayRecipeElementTable(recipeElementTable, batchML);
+                DisplayRecipeElementTable(FlowShopRecipeElementTable, batchML);
 
                 // Steps datatable
-                DisplayStepTable(stepTable, batchML);
+                DisplayStepTable(FlowShopStepTable, batchML);
+
+                Title = $"Y0KAI Task Scheduler - {FilePath.GetFileName(path)}";
 
                 LogGeneralActivity(LogSeverity.INFO,
                     "BatchML file loaded and data tables populated!", GeneralLogContext.LOAD);
@@ -1131,7 +1173,7 @@ namespace Thesis_LIPX05
         // Handler event for closing an opened BatchML file
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            if (isFileModified && HasUnsavedChanges())
+            if (IsFileModified && HasUnsavedChanges())
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "Attempting to close file with unsaved changes; prompting user!", GeneralLogContext.CLOSE);
@@ -1144,14 +1186,15 @@ namespace Thesis_LIPX05
 
                 if (res is MessageBoxResult.Yes)
                 {
-                    masterTable.AcceptChanges();
-                    recipeElementTable.AcceptChanges();
-                    stepTable.AcceptChanges();
+                    FlowShopMasterTable.AcceptChanges();
+                    FlowShopRecipeElementTable.AcceptChanges();
+                    FlowShopStepTable.AcceptChanges();
+
                     SaveFile_Click(sender, e);
                 }
                 else if (res is MessageBoxResult.No)
                     LogGeneralActivity(LogSeverity.INFO,
-                        $"Closing file without saving (file modified: {isFileModified})", GeneralLogContext.CLOSE);
+                        $"Closing file without saving (file modified: {IsFileModified})", GeneralLogContext.CLOSE);
                 else
                 {
                     LogGeneralActivity(LogSeverity.INFO,
@@ -1164,8 +1207,13 @@ namespace Thesis_LIPX05
             {
                 Purge();
                 PurgeDataTables();
-                isFileLoaded = false;
+
+                IsFileLoaded = false;
+
                 ManageFileHandlers();
+
+                Title = "Y0KAI Task Scheduler";
+
                 LogGeneralActivity(LogSeverity.INFO,
                     "BatchML file closed and all data cleared!", GeneralLogContext.CLOSE);
             }
@@ -1242,7 +1290,7 @@ namespace Thesis_LIPX05
         // Displays the master recipe table
         private void DisplayMasterTable(DataTable mdt, XNamespace batchML)
         {
-            XElement? header = masterRecipe.Element(batchML + "Header");
+            XElement? header = MasterRecipe.Element(batchML + "Header");
 
             string?
                 id = header?.Element(batchML + "ID")?.Value,
@@ -1255,31 +1303,32 @@ namespace Thesis_LIPX05
 
             mdt.Rows.Add(id, ver, desc);
 
-            mdt.RowChanged += MasterTable_RowChanged;
+            mdt.RowChanged += (s, e) => IsFileModified = true;
 
             DisplayDataTable(mdt, "MasterRecipe");
         }
 
-        // Event handler for possible changes made inside the master recipe data table
-        private void MasterTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        private void SyncMasterTable()
         {
-            XElement header = masterRecipe.Element(batchML + "Header")
-                ?? throw new InvalidOperationException("XML structure error: Header element not found!");
+            DataRow? dr = FlowShopMasterTable.Rows.Cast<DataRow>().FirstOrDefault();
+            if (dr is null) return;
 
-            header.SetElementValue(batchML + "ID", e.Row["RecipeID"]);
-            header.SetElementValue(batchML + "Version", e.Row["Version"]);
+            XElement? header = MasterRecipe.Element(batchML + "Header");
+            if (header is null) return;
+
+            header.SetElementValue(batchML + "ID", dr["RecipeID"]);
+            header.SetElementValue(batchML + "Version", dr["Version"]);
 
             XElement? desc = header.Element(batchML + "Description");
-            if (desc is null)
+            if (header is null)
             {
                 desc = new(batchML + "Description");
-                header.Add(desc);
+                header?.Add(desc);
             }
-            desc.Value = e.Row["Description"].ToString() ?? string.Empty;
+            desc!.Value = $"dr[\"Description\"]" ?? string.Empty;
 
             LogGeneralActivity(LogSeverity.INFO,
-                "Changes made to Master Recipe table synced to XML!", GeneralLogContext.SYNC);
-            isFileModified = true;
+                "MAster REcipe Header synced to XML.", GeneralLogContext.MODIFY);
         }
 
         // Displays the recipe element table
@@ -1292,7 +1341,7 @@ namespace Thesis_LIPX05
 
             int keyCounter = 0;
 
-            var reList = masterRecipe.Descendants(batchML + "RecipeElement")
+            var reList = MasterRecipe.Descendants(batchML + "RecipeElement")
                 .Select(x => new
                 {
                     ID = x.Element(batchML + "ID")?.Value.Trim(),
@@ -1315,30 +1364,22 @@ namespace Thesis_LIPX05
                 }
                 redt.PrimaryKey = [redt.Columns["InternalKey"]!];
             }
-            redt.RowChanged += (s, e) =>
-            {
-                if (e.Row.RowState is not DataRowState.Deleted)
-                {
-                    SyncRow2XML(e.Row, "RecipeElements");
-                    isFileModified = true;
-                }
-            };
-            redt.RowDeleted += (s, e) =>
-            {
-                SyncRow2XML(e.Row, "RecipeElements");
-                isFileModified = true;
-            };
 
+            redt.RowChanged += (s, e) => IsFileModified = true;
+            redt.RowDeleted += (s, e) => IsFileModified = true;
 
             if (reList.Count is 0)
                 LogGeneralActivity(LogSeverity.WARNING,
                     "No Recipe Elements found in the BatchML file.", GeneralLogContext.DATATABLE);
+
             DisplayDataTable(redt, "RecipeElements");
 
-            // Some DataGrid gymnastics to collapse the "InternalKey" column
-            if (MainTab.SelectedItem is TabItem tab && tab.Tag.ToString() is "RecipeElements" &&
-                tab.Content is Grid Container && Container.Children.OfType<DataGrid>().FirstOrDefault() is DataGrid dg)
-            { dg.Loaded += RecipElementTable_HideInternalKeyColumn; }
+            // Some DataGrid gymnastics to collapse the "InternalKey" column (works even post-loading)
+            if (MainTab.SelectedItem is TabItem tab &&
+                tab.Tag.ToString()!.Equals("RecipeElements", StringComparison.OrdinalIgnoreCase) &&
+                tab.Content is Grid Container &&
+                Container.Children.OfType<DataGrid>().FirstOrDefault() is DataGrid dg)
+                dg.Loaded += RecipElementTable_HideInternalKeyColumn;
         }
 
         // Custom event handler to collapse the "InternalKey" column in the recipe elements datatable
@@ -1352,11 +1393,10 @@ namespace Thesis_LIPX05
                 {
                     internalKeyCol.Visibility = Visibility.Collapsed;
                     LogGeneralActivity(LogSeverity.INFO,
-                        $"InternalKey column successfully hidden in '{recipeElementTable.TableName}.'", GeneralLogContext.DATATABLE);
+                        $"InternalKey column successfully hidden in '{FlowShopRecipeElementTable.TableName}.'", GeneralLogContext.DATATABLE);
                 }
-                else
-                    LogGeneralActivity(LogSeverity.WARNING,
-                        $"InternalKey column could not be found in DataGrid for {recipeElementTable.TableName} after loading!", GeneralLogContext.DATATABLE);
+                else LogGeneralActivity(LogSeverity.WARNING,
+                        $"InternalKey column could not be found in DataGrid for {FlowShopRecipeElementTable.TableName} after loading!", GeneralLogContext.DATATABLE);
             }
         }
 
@@ -1368,7 +1408,7 @@ namespace Thesis_LIPX05
             sdt.Columns.Add("TimeM1", typeof(double));
             sdt.Columns.Add("TimeM2", typeof(double));
 
-            var stepList = masterRecipe.Element(batchML + "ProcedureLogic")?.Descendants(batchML + "Step")
+            var stepList = MasterRecipe.Element(batchML + "ProcedureLogic")?.Descendants(batchML + "Step")
                 .Select(x => new
                 {
                     ID = x.Element(batchML + "ID")?.Value.Trim(),
@@ -1390,45 +1430,21 @@ namespace Thesis_LIPX05
                     dr["TimeM2"] = step.TM2;
                     sdt.Rows.Add(dr);
                 }
-                sdt.RowChanged += (s, e) =>
-                {
-                    if (e.Row.RowState is not DataRowState.Deleted)
-                    {
-                        SyncRow2XML(e.Row, "Steps");
-                        isFileModified = true;
-                    }
-                };
-                sdt.RowDeleted += (s, e) =>
-                {
-                    SyncRow2XML(e.Row, "Steps");
-                    isFileModified = true;
-                };
+
+                sdt.RowChanged += (s, e) => IsFileModified = true;
+                sdt.RowDeleted += (s, e) => IsFileModified = true;
+
                 DisplayDataTable(sdt, "Steps");
             }
-            else
-            {
-                LogGeneralActivity(LogSeverity.WARNING,
+            else LogGeneralActivity(LogSeverity.WARNING,
                     "No Steps found in the BatchML file.", GeneralLogContext.DATATABLE);
-                sdt.RowChanged += (s, e) =>
-                {
-                    if (e.Row.RowState is not DataRowState.Deleted)
-                    {
-                        SyncRow2XML(e.Row, "Steps");
-                        isFileModified = true;
-                    }
-                };
-                sdt.RowDeleted += (s, e) =>
-                {
-                    SyncRow2XML(e.Row, "Steps");
-                    isFileModified = true;
-                };
-            }
         }
 
         // Displays the solution as a data table
         private void DisplaySolutionAsTable(List<GanttItem> ganttItems)
         {
-            DataTable sdt = new($"Solution ({GanttCanvas.Tag.ToString() ?? string.Empty})");
+            string? solverTag = $"{GanttCanvas.Tag}";
+            DataTable sdt = new($"Solution ({solverTag ?? string.Empty})");
 
             sdt.Columns.Add("TaskID");
             sdt.Columns.Add("StartTime (min)");
@@ -1531,7 +1547,7 @@ namespace Thesis_LIPX05
                     {
                         CustomSolvers.Clear();
                         CustomSolvers.AddRange(loaded);
-                        initCustomSolverCount = CustomSolvers.Count;
+                        InitialCustomSolverCount = CustomSolvers.Count;
                         CustomSolvers.Sort((a, b) => string.Compare(a.Name, b.Name));
                         foreach (CustomSolver cs in CustomSolvers)
                             AddCustomSolverMenuItem(cs);
@@ -1581,10 +1597,10 @@ namespace Thesis_LIPX05
         // A helper method to find an existing XML element based on key columns in the DataRow
         private XElement? FindExistingElement(string tableName, DataRow dRow, DataRowVersion dVer)
         {
-            bool mapExists = Mappings.TryGetValue(tableName, out TableMapper? map);
+            bool mapExists = DataTable_XML_Mappings.TryGetValue(tableName, out TableMapper? map);
 
             // if the master recipe doesn't exist
-            if (masterRecipe is null || !mapExists)
+            if (MasterRecipe is null || !mapExists)
             {
                 LogGeneralActivity(LogSeverity.ERROR,
                     $"Sync Error: No mapping found for table \"{tableName}\" or master recipe is null!", GeneralLogContext.SYNC);
@@ -1592,8 +1608,8 @@ namespace Thesis_LIPX05
             }
 
             XElement? container = tableName is "Steps"
-                ? masterRecipe.Element(batchML + "ProcedureLogic")
-                : masterRecipe;
+                ? MasterRecipe.Element(batchML + "ProcedureLogic")
+                : MasterRecipe;
 
             if (container is null)
             {
@@ -1611,7 +1627,7 @@ namespace Thesis_LIPX05
                 return null;
             }
 
-            XElement? tgtEl = masterRecipe
+            XElement? tgtEl = MasterRecipe
                 .Elements(batchML + map!.ParentElement)
                 .FirstOrDefault(el =>
                 el.Element(batchML + "ID")?.Value?.Trim().Equals(tgtID, StringComparison.OrdinalIgnoreCase) ?? false);
@@ -1658,7 +1674,7 @@ namespace Thesis_LIPX05
         // Custom non-delegate event handler for syncing a row from the DataTable to the XML when it's changed or added
         private void SyncRow2XML(DataRow dRow, string tableName)
         {
-            if (masterRecipe is null || !Mappings.TryGetValue(tableName, out TableMapper? map))
+            if (MasterRecipe is null || !DataTable_XML_Mappings.TryGetValue(tableName, out TableMapper? map))
             {
                 LogGeneralActivity(LogSeverity.ERROR, $"No mapping found for table \"{tableName}\" or master recipe is null!", GeneralLogContext.SYNC);
                 return;
@@ -1777,17 +1793,17 @@ namespace Thesis_LIPX05
         {
             if (parentElName is "Step")
             {
-                XElement? procLogic = masterRecipe.Element(batchML + "ProcedureLogic");
+                XElement? procLogic = MasterRecipe.Element(batchML + "ProcedureLogic");
                 if (procLogic is null)
                 {
                     procLogic = new(batchML + "ProcedureLogic");
-                    masterRecipe.Add(procLogic);
+                    MasterRecipe.Add(procLogic);
                     LogGeneralActivity(LogSeverity.WARNING,
                         "Missing <batchML:ProcedureLogic> element added to the master recipe!", GeneralLogContext.SYNC);
                 }
                 return procLogic;
             }
-            return masterRecipe;
+            return MasterRecipe;
         }
     }
 

@@ -1,0 +1,107 @@
+﻿11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Beginning initialization...
+11/2/2025 11:16 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/2/2025 11:16 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Initialization complete!
+11/2/2025 11:16 PM // INFO // [LOAD] // Open file dialog initiated...
+11/2/2025 11:16 PM // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/2/2025 11:16 PM // INFO // [LOAD] // XML element established!
+11/2/2025 11:16 PM // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/2/2025 11:16 PM // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/2/2025 11:16 PM // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/2/2025 11:16 PM // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/2/2025 11:16 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/2/2025 11:16 PM // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/2/2025 11:16 PM // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/2/2025 11:16 PM // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node J1_M1 at 100;70
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node J1_M2 at 300;70
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node P1 at 500;70
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node J2_M1 at 100;220
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node J2_M2 at 300;220
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node P2 at 500;220
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node J3_M2 at 300;370
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Node P3 at 500;370
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (300,0;105,0)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Weight 15 drawn at (235;117,5)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 15 drawn.
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge drawn from (370,0;105,0) to (500,0;105,0)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Weight 25 drawn at (435;105)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 25 drawn.
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (300,0;255,0)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Weight 16 drawn at (235;267,5)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 16 drawn.
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge drawn from (370,0;255,0) to (500,0;255,0)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Weight 26 drawn at (435;255)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 26 drawn.
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (300,0;405,0)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Weight 17 drawn at (235;417,5)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 17 drawn.
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge drawn from (370,0;405,0) to (500,0;405,0)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Weight 27 drawn at (435;405)!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 27 drawn.
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Canvas resized to 620x490!
+11/2/2025 11:16 PM // INFO // [S_GRAPH] // Flow Shop S-Graph built from BatchML file!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Branch And Bound solver enabled!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Campbell Dudek Smith solver enabled!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+11/2/2025 11:16 PM // INFO // [INITIALIZATION] //  solver enabled!
+11/2/2025 11:16 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/2/2025 11:16 PM // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/2/2025 11:17 PM // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/2/2025 11:17 PM // WARNING // [S_GRAPH] // Duplicate edge attempted: J1_M1 -> J1_M2. Skipping addition.
+11/2/2025 11:17 PM // WARNING // [S_GRAPH] // Duplicate edge attempted: J1_M2 -> P1. Skipping addition.
+11/2/2025 11:17 PM // WARNING // [S_GRAPH] // Duplicate edge attempted: J2_M1 -> J2_M2. Skipping addition.
+11/2/2025 11:17 PM // WARNING // [S_GRAPH] // Duplicate edge attempted: J2_M2 -> P2. Skipping addition.
+11/2/2025 11:17 PM // WARNING // [S_GRAPH] // Duplicate edge attempted: J3_M1 -> J3_M2. Skipping addition.
+11/2/2025 11:17 PM // WARNING // [S_GRAPH] // Duplicate edge attempted: J3_M2 -> P3. Skipping addition.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node J1_M1 at 100;70
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node J1_M2 at 300;70
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node P1 at 500;70
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node J2_M1 at 100;220
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node J2_M2 at 300;220
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node P2 at 500;220
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node J3_M2 at 300;370
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Node P3 at 500;370
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (300,0;105,0)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Weight 15 drawn at (235;117,5)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 15 drawn.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge drawn from (370,0;105,0) to (500,0;105,0)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Weight 25 drawn at (435;105)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 25 drawn.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (300,0;255,0)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Weight 16 drawn at (235;267,5)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 16 drawn.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge drawn from (370,0;255,0) to (500,0;255,0)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Weight 26 drawn at (435;255)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 26 drawn.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (300,0;405,0)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Weight 17 drawn at (235;417,5)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 17 drawn.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge drawn from (370,0;405,0) to (500,0;405,0)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Weight 27 drawn at (435;405)!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 27 drawn.
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Canvas resized to 620x490!
+11/2/2025 11:17 PM // INFO // [S_GRAPH] // Flow Shop S-Graph built from BatchML file!
+11/2/2025 11:17 PM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/2/2025 11:17 PM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/2/2025 11:17 PM // INFO // [INITIALIZATION] // Branch And Bound solver enabled!
+11/2/2025 11:17 PM // INFO // [INITIALIZATION] // Campbell Dudek Smith solver enabled!
+11/2/2025 11:17 PM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+11/2/2025 11:17 PM // INFO // [INITIALIZATION] //  solver enabled!
+11/2/2025 11:17 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.

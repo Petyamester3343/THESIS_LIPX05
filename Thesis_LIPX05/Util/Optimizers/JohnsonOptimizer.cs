@@ -75,19 +75,17 @@ namespace Thesis_LIPX05.Util.Optimizers
             // 3. M1 and M2 sequences (Job_k_Mx -> Job_k+1_Mx)
             for (int i = 0; i < optSeq.Count - 1; i++)
             {
-                string
-                    idA_M1 = $"{optSeq[i]}_M1",
-                    idB_M1 = $"{optSeq[i + 1]}_M1",
-                    idA_M2 = $"{optSeq[i]}_M2",
-                    idB_M2 = $"{optSeq[i + 1]}_M2";
-
                 // The cost must be 0, as EST/EFT calculation handles the duration.
-                AddEdge(idA_M1, idB_M1);
-                AddEdge(idA_M2, idB_M2);
+                AddEdge($"{optSeq[i]}_M1", $"{optSeq[i + 1]}_M1");
+                AddEdge($"{optSeq[i]}_M2", $"{optSeq[i + 1]}_M2");
             }
 
             // 4.: re-applying terminating edges
-            for (int i = 1; i <= 3; i++) AddEdge($"J{i}_M2", $"P{i}");
+            for (int i = 0; i < optSeq.Count; i++)
+            {
+                int edgeNum = int.Parse(optSeq[i].Replace("J", ""));
+                AddEdge($"J{edgeNum}_M2", $"P{edgeNum}");
+            }
             
             LogSolverActivity(LogSeverity.INFO,
                 "Graph rebuilt with necessary technological constraints (cost=duration) and zero-cost sequential constraints.", LogCtx);

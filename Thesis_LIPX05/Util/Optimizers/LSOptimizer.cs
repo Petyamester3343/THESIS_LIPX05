@@ -23,7 +23,7 @@ namespace Thesis_LIPX05.Util.Optimizers
             edges.Clear();
 
             // add sequential edges (J_i_MX -> J_i+1_MX) and product links (J_i_M2 -> P_i)
-            AddNecessaryEdges(jobSeq);
+            RemedyNecessaryEdges(jobSeq);
 
             // create sequence from the newly constrained graph.
             List<string> finalSchIDs = JohnsonOptimizer.TopoSort(nodes, edges);
@@ -80,7 +80,7 @@ namespace Thesis_LIPX05.Util.Optimizers
             return ganttPath;
         }
 
-        private void AddNecessaryEdges(List<string> jobSeq)
+        private void RemedyNecessaryEdges(List<string> jobSeq)
         {
             // re-apply technological edges
             foreach (Node node in nodes.Values.Where(n => n.ID.EndsWith("_M1")))
@@ -94,7 +94,11 @@ namespace Thesis_LIPX05.Util.Optimizers
             }
 
             // re-apply terminating edges between the last of the machinesand the products
-            for (int i = 1; i <= 3; i++) AddEdge($"J{i}_M2", $"P{i}");
+            for (int i = 0; i < jobSeq.Count; i++)
+            {
+                int edgeNum = int.Parse(jobSeq[i].Replace("J", ""));
+                AddEdge($"J{edgeNum}_M2", $"P{edgeNum}");
+            }
 
             LogSolverActivity(LogSeverity.INFO,
                 "Vital edges added to the graph!", LogCtx);

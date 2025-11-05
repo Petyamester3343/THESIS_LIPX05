@@ -23,11 +23,17 @@
 			<batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
 			<batchML:Description>J3</batchML:Description>
 		</batchML:RecipeElement>
+		
+		<batchML:RecipeElement>
+			<batchML:ID>J4_Module</batchML:ID>
+			<batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
+			<batchML:Description>J4</batchML:Description>
+		</batchML:RecipeElement>
 	
 		<batchML:ProcedureLogic>	  
 			<batchML:Step>
 				<batchML:ID>J1</batchML:ID>
-				<batchML:RecipeElementID>J1-Module</batchML:RecipeElementID>
+				<batchML:RecipeElementID>J1_Module</batchML:RecipeElementID>
 				<batchML:Extension>
 					<custom:TimeM1>15</custom:TimeM1>
 					<custom:TimeM2>25</custom:TimeM2> 
@@ -36,7 +42,7 @@
 
 			<batchML:Step>
 				<batchML:ID>J2</batchML:ID>
-				<batchML:RecipeElementID>J2-Module</batchML:RecipeElementID>
+				<batchML:RecipeElementID>J2_Module</batchML:RecipeElementID>
 				<batchML:Extension>
 					<custom:TimeM1>16</custom:TimeM1>
 					<custom:TimeM2>26</custom:TimeM2>
@@ -45,10 +51,19 @@
   
 			<batchML:Step>
 				<batchML:ID>J3</batchML:ID>
-				<batchML:RecipeElementID>J3-Module</batchML:RecipeElementID>
+				<batchML:RecipeElementID>J3_Module</batchML:RecipeElementID>
 				<batchML:Extension>
 					<custom:TimeM1>17</custom:TimeM1>
 					<custom:TimeM2>27</custom:TimeM2>
+				</batchML:Extension>
+			</batchML:Step>
+			
+			<batchML:Step>
+				<batchML:ID>J4</batchML:ID>
+				<batchML:RecipeElementID>J4_Module</batchML:RecipeElementID>
+				<batchML:Extension>
+					<custom:TimeM1>28</custom:TimeM1>
+					<custom:TimeM2>18</custom:TimeM2>
 				</batchML:Extension>
 			</batchML:Step>
 		</batchML:ProcedureLogic>

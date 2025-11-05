@@ -3,23 +3,23 @@
   <batchML:MasterRecipe>
     <batchML:Header>
       <batchML:ID>FlowShop-MR-001</batchML:ID>
-      <batchML:Version>1.01</batchML:Version>
-      <batchML:Description>2-MACHINE FLOW SHOP MODEL (Optimized)</batchML:Description>
+      <batchML:Version>1.1</batchML:Version>
+      <batchML:Description>dr["Description"]</batchML:Description>
     </batchML:Header>
     <batchML:RecipeElement>
       <batchML:ID>J1_Module</batchML:ID>
       <batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-      <batchML:Description>Job #1</batchML:Description>
+      <batchML:Description>J1</batchML:Description>
     </batchML:RecipeElement>
     <batchML:RecipeElement>
       <batchML:ID>J2_Module</batchML:ID>
       <batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-      <batchML:Description>Job #2</batchML:Description>
+      <batchML:Description>J2</batchML:Description>
     </batchML:RecipeElement>
     <batchML:RecipeElement>
       <batchML:ID>J3_Module</batchML:ID>
       <batchML:RecipeElementType>UnitProcedure</batchML:RecipeElementType>
-      <batchML:Description>Job #3</batchML:Description>
+      <batchML:Description>J3</batchML:Description>
     </batchML:RecipeElement>
     <batchML:ProcedureLogic>
       <batchML:Step>
@@ -27,7 +27,7 @@
         <batchML:RecipeElementID>J1-Module</batchML:RecipeElementID>
         <batchML:Extension>
           <custom:TimeM1>15</custom:TimeM1>
-          <custom:TimeM2>28</custom:TimeM2>
+          <custom:TimeM2>27</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
       <batchML:Step>
@@ -35,7 +35,7 @@
         <batchML:RecipeElementID>J2-Module</batchML:RecipeElementID>
         <batchML:Extension>
           <custom:TimeM1>16</custom:TimeM1>
-          <custom:TimeM2>30</custom:TimeM2>
+          <custom:TimeM2>26</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
       <batchML:Step>
@@ -43,7 +43,7 @@
         <batchML:RecipeElementID>J3-Module</batchML:RecipeElementID>
         <batchML:Extension>
           <custom:TimeM1>17</custom:TimeM1>
-          <custom:TimeM2>32</custom:TimeM2>
+          <custom:TimeM2>27</custom:TimeM2>
         </batchML:Extension>
       </batchML:Step>
     </batchML:ProcedureLogic>

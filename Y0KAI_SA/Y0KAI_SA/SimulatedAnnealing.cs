@@ -74,7 +74,7 @@ namespace Y0KAI_SA
         {
             g.Edges.Clear();
 
-            // technological edges
+            // technological edges (J(i)_M1 -> J(i)_M2)
             foreach (NodeKVP kvp in g.Nodes.Where(n => n.Value.TimeM1 > 0 && n.Key.EndsWith("_M1")))
             {
                 g.Edges.Add(new()
@@ -85,21 +85,17 @@ namespace Y0KAI_SA
                 });
             }
 
-            // sequential edges
+            // sequential edges (J(i)_M(i) -> J(i+1)_M(i))
             for (int i = 0; i < jobSeq.Count - 1; i++)
-            {
                 for (int j = 1; j <= 2; j++)
-                {
                     g.Edges.Add(new()
                     {
                         FromID = $"{jobSeq[i]}_M{j}",
                         ToID = $"{jobSeq[i + 1]}_M{j}",
                         Cost = 0d
                     });
-                }
-            }
 
-            // products (J_i_M2 -> P_i)
+            // products (J(i)_M2 -> P(i))
             if (jobSeq.Count > 0)
                 g.Edges.Add(new()
                 {
@@ -107,7 +103,7 @@ namespace Y0KAI_SA
                     ToID = $"P{int.Parse(jobSeq.Last().Replace("J", ""))}",
                     Cost = 0d
                 });
-                
+
             return DetermineMakespanValue(isSilent);
         }
 
