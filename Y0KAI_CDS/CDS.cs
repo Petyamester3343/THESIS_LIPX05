@@ -26,7 +26,7 @@ namespace Y0KAI_CDS
                     tM1 = g.Nodes.TryGetValue($"{id}_M1", out Node? m1Node) ? m1Node.TimeM1 : 0d,
                     tM2 = g.Nodes.TryGetValue($"{id}_M2", out Node? m2Node) ? m2Node.TimeM2 : 0d;
 
-                if (tM1 > 0 && tM2 > 0)
+                if (tM1 > 0 || tM2 > 0)
                     j4j.Add(new()
                     {
                         V_ID = id,
@@ -35,7 +35,8 @@ namespace Y0KAI_CDS
                     });
             }
 
-            if (j4j.Count is 0 && !isSilent) Error.WriteLine("Error: No valid jobs found for scheduling.");
+            if (j4j.Count is 0 && !isSilent)
+                Error.WriteLine("Error: No valid jobs found for scheduling.");
            
             return j4j.Count is not 0 ? RunJohnson(j4j) : [];
         }
@@ -51,7 +52,7 @@ namespace Y0KAI_CDS
                 else s2.Add(job);
 
             s1.Sort((a,b) => a.V_TM1.CompareTo(b.V_TM1));
-            s2.Sort((a,b) => a.V_TM2.CompareTo(b.V_TM2));
+            s2.Sort((a,b) => b.V_TM2.CompareTo(a.V_TM2));
 
             return [.. s1.Select(j => j.V_ID), .. s2.Select(j => j.V_ID)];
         }

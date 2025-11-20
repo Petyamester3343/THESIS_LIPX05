@@ -15,7 +15,7 @@ namespace Thesis_LIPX05.Util.Optimizers
             // create a feasible base sequence
             List<string> initSeq = JohnsonOptimizer.TopoSort(nodes, edges);
 
-            List<string> jobSeq = [.. from id in initSeq 
+            List<string> jobSeq = [.. from id in initSeq
                                       where id.EndsWith("_M1") && nodes.ContainsKey(id)
                                       select id[..^3]];
 
@@ -28,14 +28,14 @@ namespace Thesis_LIPX05.Util.Optimizers
             // create sequence from the newly constrained graph.
             List<string> finalSchIDs = JohnsonOptimizer.TopoSort(nodes, edges);
 
-            // time calculation (EST/EFT) - Re-using logic from Johnson's Rule
+            // -- Time calculation (EST/EFT) [recycling the logic from Johnson's Rule] --
             Dictionary<string, double> EFT = [];
 
             // EFT initialization
             foreach (Node n in nodes.Values)
                 EFT[n.ID] = 0d;
-            
-            // filling the "Gantt path"
+
+            // filling the Gantt chart
             List<Node> ganttPath = [];
             foreach (string id in finalSchIDs)
             {
@@ -43,14 +43,16 @@ namespace Thesis_LIPX05.Util.Optimizers
                 {
                     LogSolverActivity(LogSeverity.INFO,
                         "Product node detected, skipping...", LogCtx);
-                    continue; 
+                    continue;
                 }
-                
+
                 double dur = curr.TimeM1 > 0 ? curr.TimeM1 : curr.TimeM2;
                 if (dur <= 0) continue;
 
                 double est = 0d;
-                List<Edge> pred = [.. edges.Where(e => e.To.ID == curr.ID)];
+                List<Edge> pred = [.. from e in edges
+                                      where e.To.ID == curr.ID
+                                      select e];
 
                 foreach (Edge e in pred)
                 {
@@ -59,7 +61,7 @@ namespace Thesis_LIPX05.Util.Optimizers
                     LogSolverActivity(LogSeverity.INFO,
                         $"Estimated start time updated ({est})!", LogCtx);
                 }
-                
+
                 EFT[curr.ID] = est + dur;
                 LogSolverActivity(LogSeverity.INFO,
                     $"EFT for {curr.ID} updated({EFT[curr.ID]})!", LogCtx);
@@ -71,9 +73,8 @@ namespace Thesis_LIPX05.Util.Optimizers
 
             double finalMakespan = EFT
                 .Where(kvp => kvp.Key.StartsWith('P'))
-                .Max(kvp =>  kvp.Value);
+                .Max(kvp => kvp.Value);
 
-            // LogGeneralActivity is assumed to be the final log call
             LogSolverActivity(LogSeverity.INFO,
                 $"Optimization complete! Makespan: {finalMakespan:F2}.", LogCtx);
 
@@ -88,16 +89,15 @@ namespace Thesis_LIPX05.Util.Optimizers
 
             // add sequential edges edges (J_i_Mx -> J_i+1_Mx)
             for (int i = 0; i < jobSeq.Count - 1; i++)
-            {
-                AddEdge($"{jobSeq[i]}_M1", $"{jobSeq[i + 1]}_M1");
-                AddEdge($"{jobSeq[i]}_M2", $"{jobSeq[i + 1]}_M2");
-            }
+                for (int j = 1; j <= MainWindow.GetMachineCount(); j++)
+                    AddEdge($"{jobSeq[i]}_M{j}", $"{jobSeq[i + 1]}_M{j}");
 
-            // re-apply terminating edges between the last of the machinesand the products
-            for (int i = 0; i < jobSeq.Count; i++)
+
+            // re-apply terminating edges between the last of the machines and the products
+            foreach (string jobID in jobSeq)
             {
-                int edgeNum = int.Parse(jobSeq[i].Replace("J", ""));
-                AddEdge($"J{edgeNum}_M2", $"P{edgeNum}");
+                int edgeNum = int.Parse(jobID.Replace("J", ""));
+                AddEdge($"J{edgeNum}_M{MainWindow.GetMachineCount()}", $"P{edgeNum}");
             }
 
             LogSolverActivity(LogSeverity.INFO,

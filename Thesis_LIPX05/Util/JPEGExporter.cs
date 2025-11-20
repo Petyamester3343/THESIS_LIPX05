@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 
 using System.IO;
-using System.Transactions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -57,7 +56,7 @@ namespace Thesis_LIPX05.Util
         // Exports two Canvases as a single JPEG image (used for Gantt charts with time ruler)
         public static void ExportMultipleCanvases(Canvas rcv, Canvas gcv, Canvas lcv, string ctx)
         {
-            StackPanel panel = CreateStackPanel(rcv, gcv, lcv);
+            Grid panel = CreateExportGrid(rcv, gcv, lcv);
 
             LogGeneralActivity(LogSeverity.INFO,
                 $"{ctx} combined panel measured and arranged with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height}.", GeneralLogContext.EXPORT);
@@ -87,22 +86,37 @@ namespace Thesis_LIPX05.Util
         }
 
         // Helper method to create a stack panel
-        private static StackPanel CreateStackPanel(Canvas rcv, Canvas gcv, Canvas lcv)
+        private static Grid CreateExportGrid(Canvas rcv, Canvas gcv, Canvas lcv)
         {
-            // measuring and arranging the two canvases comprising the Gantt diagram
-            StackPanel panel = new() { Orientation = Orientation.Vertical };
+            lcv.Width = 60;
+            lcv.Height = rcv.ActualHeight + gcv.ActualHeight;
+
+            // defining the grid container for all three canvases
+            Grid exportGrid = new() { Background = Brushes.White };
+
+            exportGrid.ColumnDefinitions.Add(new() { Width = new(60) });
+            exportGrid.ColumnDefinitions.Add(new() { Width = new(1, GridUnitType.Star) });
             
-            foreach (Canvas cv in new[] { rcv, gcv, lcv })
-            {
-                cv.Measure(availableSize: new(cv.Width, cv.Height));
-                cv.Arrange(finalRect: new(0, 0, cv.Width, cv.Height));
-                panel.Children.Add(CloneVisual(cv));
-            }
+            // measuring and arranging the grid with all canvases as the Gantt diagram
+            StackPanel scrollingStack = new() { Orientation = Orientation.Vertical };
+            
+            foreach (Canvas cv in new[] { rcv, gcv })
+                scrollingStack.Children.Add(CloneVisual(cv));
 
-            panel.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
-            panel.Arrange(finalRect: new(panel.DesiredSize)); // arrange the panel to apply the measurements
+            scrollingStack.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
+            scrollingStack.Arrange(finalRect: new(scrollingStack.DesiredSize)); // arrange the panel to apply the measurements
 
-            return panel;
+            UIElement lblClone = CloneVisual(lcv);
+            Grid.SetColumn(lblClone, 0);
+            exportGrid.Children.Add(lblClone);
+
+            Grid.SetColumn(scrollingStack, 1);
+            exportGrid.Children.Add(scrollingStack);
+
+            exportGrid.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity));
+            exportGrid.Arrange(finalRect: new(exportGrid.DesiredSize));
+
+            return exportGrid;
         }
 
         // Helper method to create an encoded render target bitmap

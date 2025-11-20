@@ -1,0 +1,22 @@
+﻿11/12/2025 4:08 PM // INFO // [INITIALIZATION] // Beginning initialization...
+11/12/2025 4:08 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/12/2025 4:08 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/12/2025 4:08 PM // INFO // [INITIALIZATION] // Initialization complete!
+11/12/2025 4:08 PM // INFO // [LOAD] // Open file dialog initiated...
+11/12/2025 4:08 PM // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/12/2025 4:08 PM // INFO // [LOAD] // XML element established!
+11/12/2025 4:08 PM // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/12/2025 4:08 PM // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/12/2025 4:08 PM // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/12/2025 4:08 PM // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/12/2025 4:08 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/12/2025 4:08 PM // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/12/2025 4:08 PM // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/12/2025 4:08 PM // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/12/2025 4:10 PM // INFO // [EXITUS] // Shutting down...

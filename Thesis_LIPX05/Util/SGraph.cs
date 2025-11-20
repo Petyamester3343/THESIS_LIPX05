@@ -21,12 +21,26 @@ namespace Thesis_LIPX05.Util
         public class Node
         {
             public required string ID { get; set; } // unique ID of the node
-            public required string Desc { get; set; } // description of the node
+            public required string Description { get; set; } // description of the node
             public WindowPoint Position { get; set; } // position of the node on the canvas
+            public bool IsProduct { get; set; } = false; // product/completion node identifier
             public static double Radius { get; set; } = 35; // radius of the node, default is 35 (for visual representation)
+
+            // to be switched to an array for future extensions (more than 2 machines)
             public required double TimeM1 { get; set; } // time in minutes for machine 1
             public required double TimeM2 { get; set; } // time in minutes for machine 2
-            public bool IsProduct { get; set; } = false; // product/completion node identifier
+
+            /*
+            // for future extensions (more than 2 machines)
+            public double[] Times { get; set; } = [];
+
+            public double GetTimeForMachine(int machineIndex)
+            {
+                if (machineIndex < 0 || machineIndex >= Times.Length)
+                    throw new ArgumentOutOfRangeException(nameof(machineIndex), "Invalid machine index.");
+                return Times[machineIndex];
+            }
+            */
         }
 
         // The nested class representing a unidirectional (directed) edge between two nodes
@@ -46,12 +60,12 @@ namespace Thesis_LIPX05.Util
         public static List<Edge> GetEdges() => edges;
 
         // Writes the graph to a custom XML file
-        // The XML structure is as follows:
+        // The XML structure is as the example follows:
         /*
          <SGraph>
            <Nodes>
-             <Node ID="Node1" Desc="Description1" />
-             <Node ID="Node2" Desc="Description2" />
+             <Node ID="Node1" Desc="Description1" TimeM1 = "10" TimeM2 = "0"/>
+             <Node ID="Node2" Desc="Description2" TimeM1 = "0" TimeM2 = "20"/>
              ...
            </Nodes>
            <Edges>
@@ -70,12 +84,12 @@ namespace Thesis_LIPX05.Util
             XElement nodes = new("Nodes");
             root.Add(nodes);
             foreach (Node node in GetNodes().Values)
-            {
+            {             
                 XElement nodeElement = new("Node",
                     new XAttribute("ID", node.ID),
-                    new XAttribute("Desc", node.Desc),
-                    new XAttribute("TimeM1", node.TimeM1),
-                    new XAttribute("TimeM2", node.TimeM2));
+                    new XAttribute("Desc", node.Description),
+                    new XAttribute("TimeM1", node.ID.EndsWith("_M1") ? node.TimeM1 : 0),
+                    new XAttribute("TimeM2", node.ID.EndsWith("_M2") ? node.TimeM2 : 0));
                 nodes.Add(nodeElement);
             }
 
@@ -84,20 +98,16 @@ namespace Thesis_LIPX05.Util
 
             IEnumerable<Edge> edges2Out = GetEdges().Where(edge =>
             {
-                string
-                    from = edge.From.ID,
-                    to = edge.To.ID;
-
                 static string GetBaseID(string id)
                     => (id.Length >= 3 && (id.EndsWith("_M1") || id.EndsWith("_M2"))) ? id[..^3] : id;
 
                 string
-                    baseJobFrom = GetBaseID(from),
-                    baseJobTo = GetBaseID(to);
+                    baseJobFrom = GetBaseID(edge.From.ID),
+                    baseJobTo = GetBaseID(edge.To.ID);
 
                 return
-                    from.EndsWith("_M1") &&
-                    to.EndsWith("_M2") &&
+                    edge.From.ID.EndsWith("_M1") &&
+                    edge.To.ID.EndsWith("_M2") &&
                     baseJobFrom.Equals(baseJobTo, StringComparison.OrdinalIgnoreCase);
             });
 
@@ -155,7 +165,7 @@ namespace Thesis_LIPX05.Util
                 nodes.Add(id, new()
                 {
                     ID = id,
-                    Desc = desc,
+                    Description = desc,
                     Position = position,
                     TimeM1 = t1,
                     TimeM2 = t2,
@@ -245,7 +255,7 @@ namespace Thesis_LIPX05.Util
                 {
                     Content = new TextBlock
                     {
-                        Text = $"ID: {node.Desc}",
+                        Text = $"ID: {node.Description}",
                         FontSize = 12,
                         Width = 100,
                         Foreground = Brushes.Black,

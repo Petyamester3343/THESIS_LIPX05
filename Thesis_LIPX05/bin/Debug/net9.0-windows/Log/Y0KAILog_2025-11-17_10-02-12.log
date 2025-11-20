@@ -1,0 +1,140 @@
+﻿11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Beginning initialization...
+11/17/2025 10:02 AM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/17/2025 10:02 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Initialization complete!
+11/17/2025 10:02 AM // INFO // [LOAD] // Open file dialog initiated...
+11/17/2025 10:02 AM // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/17/2025 10:02 AM // INFO // [LOAD] // XML element established!
+11/17/2025 10:02 AM // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/17/2025 10:02 AM // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/17/2025 10:02 AM // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/17/2025 10:02 AM // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/17/2025 10:02 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/17/2025 10:02 AM // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/17/2025 10:02 AM // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J1_M1 at 100;70
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J1_M2 at 300;70
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P1 at 700;70
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J2_M1 at 100;220
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J2_M2 at 300;220
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P2 at 700;220
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J3_M2 at 300;370
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P3 at 700;370
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J4_M1 at 100;520
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J4_M2 at 300;520
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P4 at 700;520
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (300,0;105,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 15 drawn at (235;117,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 15 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;105,0) to (700,0;105,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 15 drawn at (535;105)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 25 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (300,0;255,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 16 drawn at (235;267,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 16 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;255,0) to (700,0;255,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 16 drawn at (535;255)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 26 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (300,0;405,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 17 drawn at (235;417,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 17 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;405,0) to (700,0;405,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 17 drawn at (535;405)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 27 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J4_M1 to J4_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;555,0) to (300,0;555,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 28 drawn at (235;567,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J4_M1 to J4_M2 with cost 28 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;555,0) to (700,0;555,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 28 drawn at (535;555)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J4_M2 to P4 with cost 18 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Canvas resized to 820x640!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Flow Shop S-Graph built from BatchML file!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Branch And Bound solver enabled!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Campbell Dudek Smith solver enabled!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+11/17/2025 10:02 AM // INFO // [INITIALIZATION] //  solver enabled!
+11/17/2025 10:02 AM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/17/2025 10:02 AM // INFO // [INTEG_SOLVER] // Johnson's Rule solver selected!
+11/17/2025 10:02 AM // INFO // [INTEG_SOLVER] // Starting Johnson's Rule solver...
+11/17/2025 10:02 AM // ERROR // [INTEG_SOLVER] // No valid jobs found for Johnson's Rule optimization.
+11/17/2025 10:02 AM // ERROR // [GANTT] // Optimized path is empty, cannot render schedule!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J1_M1 at 100;70
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J1_M2 at 300;70
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P1 at 700;70
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J2_M1 at 100;220
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J2_M2 at 300;220
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P2 at 700;220
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J3_M2 at 300;370
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P3 at 700;370
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J4_M1 at 100;520
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node J4_M2 at 300;520
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Node P4 at 700;520
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (300,0;105,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 15 drawn at (235;117,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 15 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;105,0) to (700,0;105,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 15 drawn at (535;105)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 25 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (300,0;255,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 16 drawn at (235;267,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 16 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;255,0) to (700,0;255,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 16 drawn at (535;255)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 26 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (300,0;405,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 17 drawn at (235;417,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 17 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;405,0) to (700,0;405,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 17 drawn at (535;405)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 27 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Curve value of edge (J4_M1 to J4_M2) set to 25,00
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (170,0;555,0) to (300,0;555,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 28 drawn at (235;567,5)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J4_M1 to J4_M2 with cost 28 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge drawn from (370,0;555,0) to (700,0;555,0)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Weight 28 drawn at (535;555)!
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Edge from J4_M2 to P4 with cost 18 drawn.
+11/17/2025 10:02 AM // INFO // [S_GRAPH] // Canvas resized to 820x640!
+11/17/2025 10:02 AM // INFO // [INTEG_SOLVER] // List Scheduling solver selected!
+11/17/2025 10:02 AM // INFO // [INTEG_SOLVER] // Starting List Scheduling solver...
+11/17/2025 10:02 AM // INFO // [List Scheduling] // Starting list scheuler...
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J1_M1 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of J1_M2 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J2_M1 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of J2_M2 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J3_M1 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of J3_M2 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J4_M1 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of J4_M2 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J1_M2 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of P1 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J2_M2 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of P2 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J3_M2 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of P3 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node J4_M2 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Decreased in-degree of P4 to 0.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node P1 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node P2 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node P3 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Node P4 added to topological order.
+11/17/2025 10:02 AM // INFO // [Johnson's Rule Optimizer] // Topological sort completed successfully.
+11/17/2025 10:02 AM // INFO // [List Scheduling] // Vital edges added to the graph!
+11/17/2025 10:02 AM // ERROR // [Johnson's Rule Optimizer] // Graph has at least one cycle; topological sort not possible.

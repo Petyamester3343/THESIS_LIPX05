@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +22,6 @@ using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
 
 using FilePath = System.IO.Path;
-using System.Text.Encodings.Web;
 
 namespace Thesis_LIPX05
 {
@@ -41,6 +41,7 @@ namespace Thesis_LIPX05
         private readonly string customSolverPath = FilePath.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Y0KAI_TaskScheduler", "custom_solvers.json");
+        private readonly Stopwatch TesterStopwatch;
 
         // Private read-only collections
         private readonly List<CustomSolver> CustomSolvers;
@@ -59,6 +60,7 @@ namespace Thesis_LIPX05
             GanttExists = false;
         private string CurrFilePath = string.Empty;
         private int InitialCustomSolverCount = 0;
+        private static int MachineCountForFlowShop = 2;
 
         // Private mutable collections
         private List<GanttItem> GanttData;
@@ -76,6 +78,8 @@ namespace Thesis_LIPX05
             Encoder = JavaScriptEncoder.Default,
             WriteIndented = true,
         };
+
+        public static int GetMachineCount() => MachineCountForFlowShop;
 
         // Constructor of the main window
         public MainWindow()
@@ -106,6 +110,8 @@ namespace Thesis_LIPX05
 
             ManageFileHandlers();
             ManageSolutionDataTableCreator();
+
+            TesterStopwatch = new();
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Initialization complete!", GeneralLogContext.INITIALIZATION);
@@ -341,6 +347,9 @@ namespace Thesis_LIPX05
         private void SolveClick(object sender, RoutedEventArgs e)
         {
             GanttData.Clear();
+            GanttCanvas.Children.Clear();
+            FixedLabelCanvas.Children.Clear();
+            RulerCanvas.Children.Clear();
 
             if (sender is not MenuItem menuItem) return;
 
@@ -421,8 +430,13 @@ namespace Thesis_LIPX05
             }
 
             JohnsonOptimizer opt = new(GetNodes(), GetEdges());
+            TesterStopwatch.Start();
             List<Node> optPath = opt.Optimize();
+            TesterStopwatch.Stop();
+            MessageBox.Show($"Johnson's Rule optimization completed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.",
+                "Optimization Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             RenderSchedule(optPath, "Johnson's Rule");
+            TesterStopwatch.Reset();
         }
 
         private void SolveWithLS()
@@ -440,14 +454,19 @@ namespace Thesis_LIPX05
             }
 
             LSOptimizer opt = new(GetNodes(), GetEdges());
+            TesterStopwatch.Start();
             List<Node> optPath = opt.Optimize();
+            TesterStopwatch.Stop();
+            MessageBox.Show($"List Scheduling optimization completed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.",
+                "Optimization Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             RenderSchedule(optPath, "List Scheduling");
+            TesterStopwatch.Reset();
         }
 
         // Initializes and runs an external custom solver
         private void InitExtSolver(MenuItem menuItem)
         {
-            // commencing inquiries and initializating the solver's logger
+            // commencing inquiries and initializing
             string
                 tempDir = FilePath.Combine(Environment.CurrentDirectory, "SolverTemp"),
                 txtName = $"{menuItem?.Tag?.ToString()?.Replace(" ", "").Replace("-", "")}_Solution.txt",
@@ -466,6 +485,7 @@ namespace Thesis_LIPX05
             LogGeneralActivity(LogSeverity.INFO,
                 $"{customSolver.Name} custom solver selected!", GeneralLogContext.EXTERN_SOLVER);
 
+            // running the external solver with the prepared arguments
             try
             {
                 WriteSGraph2XML(tempDir, out tempXmlPath);
@@ -509,6 +529,7 @@ namespace Thesis_LIPX05
                     }
                 };
 
+                TesterStopwatch.Start();
                 p.Start();
                 string stdErr = p.StandardError.ReadToEnd();
                 p.WaitForExit();
@@ -519,6 +540,11 @@ namespace Thesis_LIPX05
                         ? $"Solver exited with code {p.ExitCode} (no STDERR output)."
                         : $"Solver failed with code {p.ExitCode}! Error: {stdErr.Trim()}";
 
+                    TesterStopwatch.Stop();
+                    MessageBox.Show($"{customSolver.Name} execution failed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.\n\n{errMsg}",
+                        "Solver Execution Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    TesterStopwatch.Reset();
+
                     LogSolverActivity(LogSeverity.ERROR,
                         errMsg, customSolver.Name);
                     MessageBox.Show(errMsg,
@@ -526,14 +552,19 @@ namespace Thesis_LIPX05
                 }
                 else
                 {
+                    TesterStopwatch.Stop();
+                    MessageBox.Show($"{customSolver.Name} execution completed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.",
+                        "Solver Execution Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    TesterStopwatch.Reset();
+
                     GanttCanvas.Tag = customSolver.Name;
                     List<Node> path = LoadSolFromTxt(tempTxtPath);
 
                     GetEdges().Clear();
                     RecreateEdgesFromOptSeq([.. path.Where(n => n.ID.EndsWith("_M1")).Select(n => n.ID[..^3])]);
 
-                    RenderSchedule(path, customSolver.Name);
                     RenderSGraph(SGraphCanvas);
+                    RenderSchedule(path, customSolver.Name);
                 }
             }
             catch (Exception ex) // exception handling for external solver output
@@ -553,17 +584,18 @@ namespace Thesis_LIPX05
         private static void RecreateEdgesFromOptSeq(List<string> optSeq)
         {
             // re-add technological edges
-            foreach (Node node in GetNodes().Values.Where(n => n.ID.EndsWith("_M1")))
-                AddEdge(node.ID, $"{node.ID[..^3]}_M2");
+            int id = 1;
+            foreach (Node node in GetNodes().Values.Where(n => n.ID.EndsWith($"_M{id}")))
+                AddEdge(node.ID, $"{node.ID[..^3]}_M{id + 1}");
 
             // apply sequential edges in the solution's order
             for (int i = 0; i < optSeq.Count - 1; i++)
-                for (int j = 1; j <= 2; j++)
+                for (int j = 1; j <= MachineCountForFlowShop; j++)
                     AddEdge($"{optSeq[i]}_M{j}", $"{optSeq[i + 1]}_M{j}");
 
             // re-apply terminating edges
             foreach (string jobID in optSeq)
-                AddEdge($"{jobID}_M2", $"P{int.Parse(jobID.Replace("J", ""))}");
+                AddEdge($"{jobID}_M{MachineCountForFlowShop}", $"P{int.Parse(jobID.Replace("J", ""))}");
         }
 
         private static List<Node> LoadSolFromTxt(string filePath)
@@ -595,29 +627,19 @@ namespace Thesis_LIPX05
                             string baseJobId = parts[1];
                             if (baseJobId.StartsWith("P", StringComparison.OrdinalIgnoreCase)) continue;
 
-                            string
-                                idM1 = $"{baseJobId}_M1",
-                                idM2 = $"{baseJobId}_M2";
-
-                            // M1 node
-                            if (GetNodes().TryGetValue(idM1, out Node? nodeM1))
+                            for (int i = 1; i <= MachineCountForFlowShop; i++)
                             {
-                                path.Add(nodeM1);
-                                LogGeneralActivity(LogSeverity.INFO,
-                                    $"Node {idM1} added to solution path from file.", GeneralLogContext.LOAD);
+                                string idMi = $"{baseJobId}_M{i}";
+                                // M_i node
+                                if (GetNodes().TryGetValue(idMi, out Node? nodeMi))
+                                {
+                                    path.Add(nodeMi);
+                                    LogGeneralActivity(LogSeverity.INFO,
+                                        $"Node {idMi} added to solution path from file.", GeneralLogContext.LOAD);
+                                }
+                                else LogGeneralActivity(LogSeverity.WARNING,
+                                    $"Node {idMi} not found in current S-Graph, skipping...", GeneralLogContext.LOAD);
                             }
-                            else LogGeneralActivity(LogSeverity.WARNING,
-                                $"Node {idM1} not found in current S-Graph, skipping...", GeneralLogContext.LOAD);
-
-                            // M2 node
-                            if (GetNodes().TryGetValue(idM2, out Node? nodeM2))
-                            {
-                                path.Add(nodeM2);
-                                LogGeneralActivity(LogSeverity.INFO,
-                                    $"Node {idM2} added to solution path from file.", GeneralLogContext.LOAD);
-                            }
-                            else LogGeneralActivity(LogSeverity.WARNING,
-                                $"Node {idM2} not found in current S-Graph, skipping...", GeneralLogContext.LOAD);
                         }
                     }
                 }
@@ -738,12 +760,18 @@ namespace Thesis_LIPX05
         {
             if (GanttData is null || GanttData.Count is 0) return;
 
-            const double h = 30;
+            FixedLabelCanvas.Children.Clear();
+
+            const double
+                h = 30,
+                margin = 5;
 
             List<string> rsc = [.. (from i in GanttData
                                     group i by i.ResourceID into g
                                     select g.Key)
                                     .OrderBy(r => r)];
+
+            FixedLabelCanvas.Height = rsc.Count * h + 50;
 
             for (int i = 0; i < rsc.Count; i++)
             {
@@ -755,6 +783,8 @@ namespace Thesis_LIPX05
                     Foreground = Brushes.DarkBlue,
                     VerticalAlignment = VerticalAlignment.Top
                 };
+
+                double top = i * h + margin;
 
                 Canvas.SetLeft(rscLbl, 0);
                 Canvas.SetTop(rscLbl, (i + 1) * h + 5);
@@ -952,22 +982,13 @@ namespace Thesis_LIPX05
         // Clears all data tables
         private void PurgeDataTables()
         {
-            FlowShopMasterTable.Columns.Clear();
-            FlowShopMasterTable.Clear();
-            LogGeneralActivity(LogSeverity.INFO,
-                $"{FlowShopMasterTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
-
-            // removing the constraint before purging the entirety of the recipe element datatable
-            if (FlowShopRecipeElementTable.PrimaryKey.Length > 0) FlowShopRecipeElementTable.PrimaryKey = [];
-            FlowShopRecipeElementTable.Columns.Clear();
-            FlowShopRecipeElementTable.Clear();
-            LogGeneralActivity(LogSeverity.INFO,
-                $"{FlowShopRecipeElementTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
-
-            FlowShopStepTable.Columns.Clear();
-            FlowShopStepTable.Clear();
-            LogGeneralActivity(LogSeverity.INFO,
-                $"{FlowShopStepTable.TableName} datatable purged!", GeneralLogContext.CLEAR);
+            foreach (DataTable dt in new[] { FlowShopMasterTable, FlowShopRecipeElementTable, FlowShopStepTable })
+            {
+                dt.Columns.Clear();
+                dt.Clear();
+                LogGeneralActivity(LogSeverity.INFO,
+                    $"{dt.TableName} datatable purged!", GeneralLogContext.CLEAR);
+            }
 
             foreach (DataTable dt in SolutionsList)
             {
@@ -1018,54 +1039,59 @@ namespace Thesis_LIPX05
         private void BuildSGraphDemo()
         {
             SGraphCanvas.Children.Clear();
+            GetNodes().Clear();
+            GetEdges().Clear();
 
             // 0.: preparations
-            // an examplary situation I came up with (Johnson's rule)
+            // an examplary, randomized situation (values are between 1 and 50)
             Dictionary<string, (double T1, double T2, string Desc)> demoJobs = new()
             {
-                {"J1", (10d, 30d, "Job 1 (M1 <= M2)")}, // S1: T1 lowest
-                {"J2", (20d, 40d, "Job 2 (M1 <= M2)")}, // S1: T1 next
-                {"J3",  (50d, 10d, "Job 3 (M1 > M2)")}  // S2: T2 lowest
+                {"J1", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 1")},
+                {"J2", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 2")},
+                {"J3", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 3")}
             };
 
-            // 1. Layout and products from each job
+            // --- Layout Constants ---
             const double
-                x_m1 = 100,
-                x_m2 = x_m1 + 200,
-                x_prod = x_m2 + 200,
+                x_mach_def = 100, // Starting X for M1
+                x_delta = 300, // Horizontal spacing between M1 and M2
                 y = 50,
-                vsp = 100;
+                vsp = 150; // Vertical spacing
 
-            // 2. Nodes and technological precedence edges
-            int i = 0;
+            // --- Core Logic ---
+            int jobIndex = 0;
             foreach (KeyValuePair<string, (double T1, double T2, string Desc)> job in demoJobs)
             {
-                // M1 Node
-                AddNode($"{job.Key}_M1", $"M1: {job.Value.Desc}", new(0, 0), job.Value.T1, 0.0, false);
-                // M2 Node
-                AddNode($"{job.Key}_M2", $"M2: {job.Value.Desc}", new(0, 0), 0.0, job.Value.T2, false);
+                string jobID = job.Key;
+                double
+                    T1 = job.Value.T1,
+                    T2 = job.Value.T2,
+                    currY = y + (jobIndex * vsp);
 
-                // Technological Precedence: M1 -> M2 (Cost = T1)
-                AddEdge($"{job.Key}_M1", $"{job.Key}_M2", job.Value.T1);
+                // 1. Create M1 Node and Assign Position
+                AddNode($"{jobID}_M1", $"M1: {job.Value.Desc}", new(x_mach_def, currY), T1, 0.0, false);
 
-                // Positions of Jx_Mx nodes
-                if (GetNodes().TryGetValue($"{job.Key}_M1", out Node? nodeM1)) nodeM1.Position = new(x_m1, y + (i * vsp));
-                if (GetNodes().TryGetValue($"{job.Key}_M2", out Node? nodeM2)) nodeM2.Position = new(x_m2, y + (i * vsp));
+                // 2. Create M2 Node and Assign Position
+                AddNode($"{jobID}_M2", $"M2: {job.Value.Desc}", new(x_mach_def + x_delta, currY), 0.0, T2, false);
 
-                // Product Nodes: J_x_M2 -> P_x (Cost: T2)
-                AddNode($"P{int.Parse(job.Key.Replace("J", ""))}", $"Product {$"P{int.Parse(job.Key.Replace("J", ""))}"}", new(0, 0), 0, 0, true);
+                // 3. Create Product Node and Assign Position
+                int prodNum = int.Parse(jobID.Replace("J", ""));
+                double x_prod = x_mach_def + (2 * x_delta); // Place product node after M2
+                AddNode($"P{prodNum}", $"Product P{prodNum}", new(x_prod, currY), 0.0, 0.0, true);
 
-                // Position node P_x next to J_x_M2
-                if (GetNodes().TryGetValue($"P{int.Parse(job.Key.Replace("J", ""))}", out Node? pNode))
-                    pNode.Position = new(x_prod, y + (i * vsp));
+                // --- 4. Edges ---
 
-                // Terminating edges
-                AddEdge($"{job.Key}_M2", $"P{int.Parse(job.Key.Replace("J", ""))}", job.Value.T2);
+                // Technological precedence: M1 -> M2 (Cost = 0.0 for stable scheduling)
+                AddEdge($"{jobID}_M1", $"{jobID}_M2", 0.0);
 
-                i++; // for the current job's y coordinate
+                // Terminating edge: J_x_M2 -> P_x (Cost: 0.0)
+                AddEdge($"{jobID}_M2", $"P{prodNum}", 0.0);
+
+                jobIndex++;
             }
 
-            // 3. Rendering and menu item management
+            // 5. Rendering and menu item management
+            // Note: The sequential edges (J_A_M -> J_B_M) are added by the OPTIMIZER, not the demo builder.
             RenderSGraph(SGraphCanvas);
             EnableSolvers();
         }
@@ -1074,6 +1100,8 @@ namespace Thesis_LIPX05
         private void BuildSGraphFromXml()
         {
             SGraphCanvas.Children.Clear();
+            GetNodes().Clear();
+            GetEdges().Clear();
 
             // a list of AnonymousType representing the flow shop jobs' details
             var jobData = MasterRecipe.Descendants(batchML + "Step")
@@ -1099,27 +1127,30 @@ namespace Thesis_LIPX05
             }
 
             const double
-                x_m1 = 100,
-                x_m2 = x_m1 + 200,
-                x_prod = x_m2 + 200,
+                x_mach_def = 100,
+                x_delta = 200,
                 y = 70,
                 vsp = 150;
 
             int i = 0;
             foreach (var job in jobData)
             {
-                // Node M1 and M2
-                AddNode($"{job.ID}_M1", $"{job.ID}_M1", new(x_m1, y + (i * vsp)), job.TimeM1, 0, false);
-                AddNode($"{job.ID}_M2", $"{job.ID}_M2", new(x_m2, y + (i * vsp)), 0, job.TimeM2, false);
+                // Ji_M1 node
+                AddNode($"{job.ID}_M1", $"M1: {job.Desc}", new(x_mach_def, y + (i * vsp)), job.TimeM1, 0, false);
 
-                // Technological precedence edges
-                AddEdge($"{job.ID}_M1", $"{job.ID}_M2", job.TimeM1);
+                // Ji_M2 node
+                AddNode($"{job.ID}_M2", $"M2: {job.Desc}", new(x_mach_def + x_delta, y + (i * vsp)), 0, job.TimeM2, false);
 
-                // Product nodes and terminating edges
-                AddNode($"P{int.Parse(job.ID!.Replace("J", ""))}", $"Product_{int.Parse(job.ID!.Replace("J", ""))}", new(x_prod, y + (i * vsp)), 0, 0, true);
-                AddEdge($"{job.ID}_M2", $"P{int.Parse(job.ID!.Replace("J", ""))}", job.TimeM2);
+                // Tech. precedence (M1 -> M2, cost = T1)
+                AddEdge($"{job.ID}_M1", $"{job.ID}_M2");
 
-                // for current y position
+                // Product node
+                int prodNum = int.Parse(job.ID!.Replace("J", ""));
+                AddNode($"P{prodNum}", $"Product #{prodNum}", new(x_mach_def + x_delta + vsp, y + (i * vsp)), 0, 0, true);
+
+                // Terminating edge (Ji_M2 -> Pi, cost = T2)
+                AddEdge($"{job.ID}_M2", $"P{prodNum}", job.TimeM2);
+
                 i++;
             }
 
@@ -1143,6 +1174,8 @@ namespace Thesis_LIPX05
 
                 MasterRecipe = MasterRecipeDocument.Descendants(batchML + "MasterRecipe").FirstOrDefault()
                     ?? throw new Exception("Master element not found in BatchML file.");
+
+                MachineCountForFlowShop = int.Parse(MasterRecipe.Element(batchML + "Extension")?.Element(customNS + "MachineCount")?.Value ?? "2"); // fallback to 2 machines if not specified
 
                 LogGeneralActivity(LogSeverity.INFO,
                     "XML element established!", GeneralLogContext.LOAD);
@@ -1295,13 +1328,15 @@ namespace Thesis_LIPX05
             string?
                 id = header?.Element(batchML + "ID")?.Value,
                 ver = header?.Element(batchML + "Version")?.Value,
-                desc = header?.Elements(batchML + "Description").LastOrDefault()?.Value;
+                desc = header?.Elements(batchML + "Description").LastOrDefault()?.Value,
+                machineCountStr = header?.Element(batchML + "Extension")?.Element(customNS + "MachineCount")?.Value;
 
             mdt.Columns.Add("RecipeID");
             mdt.Columns.Add("Version");
             mdt.Columns.Add("Description");
+            mdt.Columns.Add("MachineCount");
 
-            mdt.Rows.Add(id, ver, desc);
+            mdt.Rows.Add(id, ver, desc, machineCountStr);
 
             mdt.RowChanged += (s, e) => IsFileModified = true;
 
@@ -1327,8 +1362,10 @@ namespace Thesis_LIPX05
             }
             desc!.Value = $"dr[\"Description\"]" ?? string.Empty;
 
+            header?.Element(batchML + "Extension")?.SetElementValue(customNS + "MachineCount", dr["MachineCount"]);
+
             LogGeneralActivity(LogSeverity.INFO,
-                "MAster REcipe Header synced to XML.", GeneralLogContext.MODIFY);
+                "Master REcipe Header synced to XML.", GeneralLogContext.MODIFY);
         }
 
         // Displays the recipe element table
@@ -1443,13 +1480,15 @@ namespace Thesis_LIPX05
         // Displays the solution as a data table
         private void DisplaySolutionAsTable(List<GanttItem> ganttItems)
         {
-            string? solverTag = $"{GanttCanvas.Tag}";
-            DataTable sdt = new($"Solution ({solverTag ?? string.Empty})");
+            DataTable sdt = new($"Solution ({GanttCanvas.Tag.ToString() ?? string.Empty})");
 
             sdt.Columns.Add("TaskID");
-            sdt.Columns.Add("StartTime (min)");
-            sdt.Columns.Add("Duration (min)");
-            sdt.Columns.Add("EndTime (min)");
+            sdt.Columns.Add("StartTime (min)", typeof(double));
+            sdt.Columns.Add("Duration (min)", typeof(double));
+            sdt.Columns.Add("EndTime (min)", typeof(double));
+
+            // to be sorted in this format
+            // Jfirst_M1, Jfirst_M2, Jsecond_M1, ..., Jlast_M1, JLast_M2
 
             foreach (GanttItem item in ganttItems)
             {

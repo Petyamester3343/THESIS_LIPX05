@@ -12,16 +12,16 @@ namespace Thesis_LIPX05
     /// </summary>
     public partial class App : Application
     {
-        private static Mutex? appMutex;
+        private static Mutex? AppMTX;
 
         // Win32 imports
         [LibraryImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool SetForegroundWindow(IntPtr hWnd);
+        private static partial bool SetForegroundWindow(nint hWnd);
 
         [LibraryImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        private static partial bool ShowWindow(nint hWnd, int nCmdShow);
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -29,7 +29,7 @@ namespace Thesis_LIPX05
 
             try
             {
-                appMutex = new(true, MutexName, out bool createdNew);
+                AppMTX = new(true, MutexName, out bool createdNew);
 
                 if (!createdNew)
                 {
@@ -37,7 +37,7 @@ namespace Thesis_LIPX05
 
                     Process runningProc = GetProcessesByName(GetCurrentProcess().ProcessName).FirstOrDefault(p => p.Id != currID)!;
 
-                    if (runningProc is not null && runningProc.MainWindowHandle != IntPtr.Zero)
+                    if (runningProc is not null && runningProc.MainWindowHandle != nint.Zero)
                     {
                         // Ensure the window is restored before bringing to foreground
                         ShowWindow(runningProc.MainWindowHandle, 9); // 9 -> SW_RESTORE
@@ -62,8 +62,8 @@ namespace Thesis_LIPX05
 
         protected override void OnExit(ExitEventArgs e)
         {
-            appMutex?.ReleaseMutex();
-            appMutex?.Dispose();
+            AppMTX?.ReleaseMutex();
+            AppMTX?.Dispose();
             base.OnExit(e);
         }
 
@@ -74,7 +74,7 @@ namespace Thesis_LIPX05
             loading.Show();
 
             // Simulate loading progress by updating the loading window's progress text
-            for (int i = 0; i <= 100; i++)
+            for (int i = 1; i <= 100; i++)
             {
                 switch (DecideRang(i))
                 {
@@ -85,7 +85,7 @@ namespace Thesis_LIPX05
                         await loading.UpdateProgressAsync("Fetching solvers...");
                         break;
                     case LoadingStatusHelper.THIRD:
-                        await loading.UpdateProgressAsync("Remembering S-Graph...");
+                        await loading.UpdateProgressAsync("Remembering task scheduling...");
                         break;
                     case LoadingStatusHelper.FOURTH:
                         await loading.UpdateProgressAsync("Preparing renderers...");
@@ -104,12 +104,13 @@ namespace Thesis_LIPX05
             e.Equals(null);
         }
 
-        // Launches the main application window asynchronously
-        private async void LaunchMainWindowAsync(LoadingWindow shouldBeClosedByNow) => await Dispatcher.InvokeAsync(() =>
+        // Launches the main application window asynchronously (in maximized state)
+        private async void LaunchMainWindowAsync(LoadingWindow shouldBeClosedByNow) =>
+            await Dispatcher.InvokeAsync(() =>
             {
                 MainWindow ts_app = new();
                 MainWindow = ts_app;
-                ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                ts_app.WindowState = WindowState.Maximized;
                 ts_app.Show();
                 ts_app.Activate();
                 shouldBeClosedByNow.Close();

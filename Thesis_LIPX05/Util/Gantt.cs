@@ -74,7 +74,7 @@ namespace Thesis_LIPX05.Util
                     ganttItems.Add(new()
                     {
                         ID = curr.ID.Replace("_M1", "").Replace("_M2", ""),
-                        Desc = curr.Desc,
+                        Desc = curr.Description,
                         Start = est,
                         Duration = dur,
                         ResourceID = curr.ID.EndsWith("M1") ? "M1" : "M2"

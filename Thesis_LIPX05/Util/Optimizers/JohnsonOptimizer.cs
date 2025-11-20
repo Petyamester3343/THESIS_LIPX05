@@ -1,4 +1,5 @@
-﻿using static Thesis_LIPX05.Util.LogManager;
+﻿using System.Windows;
+using static Thesis_LIPX05.Util.LogManager;
 using static Thesis_LIPX05.Util.SGraph;
 
 namespace Thesis_LIPX05.Util.Optimizers
@@ -10,11 +11,17 @@ namespace Thesis_LIPX05.Util.Optimizers
         private class FSJobData
         {
             public required string ID { get; set; }
+
+            // to be switched with a double container for more than 2 machines
             public required double TimeM1 { get; set; }
             public required double TimeM2 { get; set; }
+
+            /* for future extensions (more than 2 machines, compatible with flexible flow shop)
+            public required double[][] Times { get; set; }
+            */
         }
 
-        //Johnson's Rule implementation
+        // Johnson's Rule implementation (with only 2 machines for now)
         public List<Node> Optimize()
         {
             List<FSJobData> jobs = [.. nodes.Values
@@ -24,7 +31,7 @@ namespace Thesis_LIPX05.Util.Optimizers
                     double timeM2 = nodes.TryGetValue($"{baseID}_M2", out Node? m2Node) ? m2Node.TimeM2 : double.MaxValue;
                     return new FSJobData { ID = baseID, TimeM1 = n.TimeM1, TimeM2 = timeM2 };
                 })
-                .Where(j => j.TimeM1 > 0 && j.TimeM2 > 0)];
+                .Where(j => j.TimeM1 > 0 || j.TimeM2 > 0)];
 
             if (jobs.Count is 0)
             {
@@ -74,19 +81,17 @@ namespace Thesis_LIPX05.Util.Optimizers
 
             // 3. M1 and M2 sequences (Job_k_Mx -> Job_k+1_Mx)
             for (int i = 0; i < optSeq.Count - 1; i++)
-            {
                 // The cost must be 0, as EST/EFT calculation handles the duration.
-                AddEdge($"{optSeq[i]}_M1", $"{optSeq[i + 1]}_M1");
-                AddEdge($"{optSeq[i]}_M2", $"{optSeq[i + 1]}_M2");
-            }
+                for (int j = 1; j <= MainWindow.GetMachineCount(); j++)
+                    AddEdge($"{optSeq[i]}_M{j}", $"{optSeq[i + 1]}_M{j}");
 
             // 4.: re-applying terminating edges
-            for (int i = 0; i < optSeq.Count; i++)
+            foreach (string optSeqFrag in optSeq)
             {
-                int edgeNum = int.Parse(optSeq[i].Replace("J", ""));
-                AddEdge($"J{edgeNum}_M2", $"P{edgeNum}");
+                int jobNum = int.Parse(optSeqFrag.Replace("J", ""));
+                AddEdge($"J{jobNum}_M2", $"P{jobNum}");
             }
-            
+
             LogSolverActivity(LogSeverity.INFO,
                 "Graph rebuilt with necessary technological constraints (cost=duration) and zero-cost sequential constraints.", LogCtx);
 
@@ -94,33 +99,41 @@ namespace Thesis_LIPX05.Util.Optimizers
             return [.. TopoSort(nodes, edges).Select(id => nodes[id])];
         }
 
-        // Performs a topological sort on the directed graph (Kahn's algorithm)
+        // Performs a topological sort on the directed graph (inspired by Kahn's algorithm)
         public static List<string> TopoSort(Dictionary<string, Node> allNodes, List<Edge> allEdges)
         {
             Dictionary<string, int> inDegree = allNodes.Keys.ToDictionary(k => k, v => 0);
             foreach (Edge e in allEdges) inDegree[e.To.ID]++;
 
-            Queue<string> zeroInDegree = new(inDegree.Where(kvp => kvp.Value is 0).Select(kvp => kvp.Key));
+            Queue<string> zeroInDegree = new(from kvp in inDegree
+                                             where kvp.Value is 0
+                                             select kvp.Key);
             List<string> topoOrder = [];
 
-            while (zeroInDegree.Count is not 0)
+            try
             {
-                string n = zeroInDegree.Dequeue();
-                topoOrder.Add(n);
-                LogSolverActivity(LogSeverity.INFO, $"Node {n} added to topological order.", LogCtx);
-
-                foreach (Edge e in allEdges.Where(e => e.From.ID == n))
+                while (zeroInDegree.Count is not 0)
                 {
-                    string m = e.To.ID;
-                    inDegree[m]--;
-                    if (inDegree[m] is 0) zeroInDegree.Enqueue(m);
-                    LogSolverActivity(LogSeverity.INFO, $"Decreased in-degree of {m} to {inDegree[m]}.", LogCtx);
+                    string n = zeroInDegree.Dequeue();
+                    topoOrder.Add(n);
+                    LogSolverActivity(LogSeverity.INFO, $"Node {n} added to topological order.", LogCtx);
+
+                    foreach (Edge e in allEdges.Where(e => e.From.ID == n))
+                    {
+                        string m = e.To.ID;
+                        inDegree[m]--;
+                        if (inDegree[m] is 0) zeroInDegree.Enqueue(m);
+                        LogSolverActivity(LogSeverity.INFO, $"Decreased in-degree of {m} to {inDegree[m]}.", LogCtx);
+                    }
                 }
+                if (topoOrder.Count != allNodes.Count)
+                    LogSolverActivity(LogSeverity.ERROR, "Graph has at least one cycle; topological sort not possible.", LogCtx);
             }
-            if (topoOrder.Count != allNodes.Count)
+            catch
             {
-                LogSolverActivity(LogSeverity.ERROR, "Graph has at least one cycle; topological sort not possible.", LogCtx);
-                throw new InvalidOperationException("Graph is not a DAG; topological sort failed.");
+                MessageBox.Show("Graph is not a DAG; topological sort failed.",
+                    "Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return [];
             }
 
             LogSolverActivity(LogSeverity.INFO, "Topological sort completed successfully.", LogCtx);

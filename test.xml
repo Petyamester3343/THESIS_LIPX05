@@ -3,7 +3,7 @@
 		<batchML:Header>
 			<batchML:ID>FlowShop-MR-001</batchML:ID>
 			<batchML:Version>1.0</batchML:Version>
-			<batchML:Description>2-MACHINE FLOW SHOP MODEL (Optimized)</batchML:Description>
+			<batchML:Description>N-JOB K-MACHINE FLOW SHOP MODEL</batchML:Description>		
 		</batchML:Header>
 
 		<batchML:RecipeElement>

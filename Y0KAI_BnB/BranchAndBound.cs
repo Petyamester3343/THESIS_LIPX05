@@ -1,19 +1,21 @@
 ﻿using static System.Console;
 
+using BnBPQ = System.Collections.Generic.PriorityQueue<Y0KAI_BnB.BranchAndBound.BnBNode, double>;
+using JobList = System.Collections.Generic.List<Y0KAI_BnB.BranchAndBound.JobData>;
 using NodeKVP = System.Collections.Generic.KeyValuePair<string, Y0KAI_BnB.Node>;
 
 namespace Y0KAI_BnB
 {
     internal class BranchAndBound(Graph g)
     {
-        private class JobData
+        public class JobData
         {
             public required string ID { get; set; }
             public required double TimeM1 { get; set; } // V_A Time
             public required double TimeM2 { get; set; } // V_B Time
         }
 
-        private class BnBNode
+        public class BnBNode
         {
             public List<string> ScheduledJobs { get; set; } = [];
             public HashSet<string> UnscheduledJobs { get; set; } = [];
@@ -32,11 +34,11 @@ namespace Y0KAI_BnB
 
             if (currCUB is double.MaxValue)
             {
-                Error.WriteLine("Initial C_UB is infeasable. Cannot start B&B!");
+                Error.WriteLine("Initial C_UB is infeasable. Cannot start Branch & Bound!");
                 return [];
             }
 
-            PriorityQueue<BnBNode, double> openList = new();
+            BnBPQ openList = new();
 
             BnBNode root = new()
             {
@@ -86,9 +88,9 @@ namespace Y0KAI_BnB
             return bestSch;
         }
 
-        private List<JobData> GetJobs4Johnson(List<string> baseJobIDs)
+        private JobList GetJobs4Johnson(List<string> baseJobIDs)
         {
-            List<JobData> j4j = [];
+            JobList j4j = [];
 
             foreach (string bID in baseJobIDs)
             {
@@ -96,7 +98,7 @@ namespace Y0KAI_BnB
                     tm1 = g.Nodes.TryGetValue($"{bID}_M1", out Node? m1N) ? m1N.TimeM1 : 0d,
                     tm2 = g.Nodes.TryGetValue($"{bID}_M2", out Node? m2N) ? m2N.TimeM2 : 0d;
 
-                if (tm1 > 0 && tm2 > 0)
+                if (tm1 > 0 || tm2 > 0)
                     j4j.Add(new()
                     {
                         ID = bID,
@@ -108,14 +110,14 @@ namespace Y0KAI_BnB
             return (j4j.Count is not 0) ? j4j : [];
         }
 
-        private List<string> GetBaseJobIDs() => [.. g.Nodes.Keys
-                .Where(id => id.EndsWith("_M1"))
-                .Select(id => id[..^3])
+        private List<string> GetBaseJobIDs() => [.. (from id in g.Nodes.Keys
+                 where id.EndsWith("_M1")
+                 select id[..^3])
                 .Distinct()];
 
-        private static List<string> RunJohnson(List<JobData> jobs)
+        private static List<string> RunJohnson(JobList jobs)
         {
-            List<JobData>
+            JobList
                 s1 = [],
                 s2 = [];
 
@@ -235,7 +237,8 @@ namespace Y0KAI_BnB
             Dictionary<string, double> dist = g.Nodes.Keys.ToDictionary(k => k, v => MinDist);
             Dictionary<string, int> inDeg = g.Nodes.Keys.ToDictionary(k => k, v => 0);
 
-            foreach (Edge e in g.Edges) inDeg[e.ToID]++;
+            foreach (Edge e in g.Edges)
+                inDeg[e.ToID]++;
 
             // initialize starting nodes (in-deg 0) to EST = 0.0
             foreach (KeyValuePair<string, int> kvp in inDeg.Where(kvp => kvp.Value is 0))
@@ -282,7 +285,8 @@ namespace Y0KAI_BnB
         private static List<string> TopoSort(Dictionary<string, Node> nodes, List<Edge> edges, bool isSilent)
         {
             Dictionary<string, int> inDegree = nodes.Keys.ToDictionary(k => k, v => 0);
-            foreach (Edge e in edges) inDegree[e.ToID]++;
+            foreach (Edge e in edges)
+                inDegree[e.ToID]++;
 
             Queue<string> zeroInDegree = new(inDegree.Where(kvp => kvp.Value is 0).Select(kvp => kvp.Key));
             List<string> topoOrder = [];
