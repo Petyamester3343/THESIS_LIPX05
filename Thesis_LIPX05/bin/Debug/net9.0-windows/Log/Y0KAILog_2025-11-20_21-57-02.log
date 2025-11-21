@@ -1,0 +1,27 @@
+﻿11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Beginning initialization...
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 9:57 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Initialization complete!
+11/20/2025 9:57 PM // INFO // [EXTERN_SOLVER] // Custom deterministic solver "Branch And Bound" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Debug\net9.0\Y0KAI_BnB.exe
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 9:57 PM // INFO // [EXTERN_SOLVER] // Custom deterministic solver "Campbell-Dudek-Smith" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Debug\net9.0\Y0KAI_CDS.exe
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 9:57 PM // INFO // [EXTERN_SOLVER] // Custom metaheuristic solver "Simulated Annealing" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.exe
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 9:57 PM // INFO // [SAVE] // Custom solvers saved to JSON file!
+11/20/2025 9:57 PM // INFO // [EXITUS] // Custom solvers saved during exit!
+11/20/2025 9:57 PM // INFO // [EXITUS] // Shutting down...

@@ -1,4 +1,4 @@
-﻿using static Thesis_LIPX05.Util.SGraph;
+﻿using static Thesis_LIPX05.Util.PrecedenceGraph;
 
 namespace Thesis_LIPX05.Util.Optimizers
 {

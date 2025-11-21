@@ -2,13 +2,11 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
 using static Thesis_LIPX05.Util.LogManager;
-using static Thesis_LIPX05.Util.SGraph;
-
-using NodeList = System.Collections.Generic.List<Thesis_LIPX05.Util.SGraph.Node>;
-using EdgeList = System.Collections.Generic.List<Thesis_LIPX05.Util.SGraph.Edge>;
+using static Thesis_LIPX05.Util.PrecedenceGraph;
+using EdgeList = System.Collections.Generic.List<Thesis_LIPX05.Util.PrecedenceGraph.Edge>;
 using GanttList = System.Collections.Generic.List<Thesis_LIPX05.Util.Gantt.GanttItem>;
+using NodeList = System.Collections.Generic.List<Thesis_LIPX05.Util.PrecedenceGraph.Node>;
 
 namespace Thesis_LIPX05.Util
 {

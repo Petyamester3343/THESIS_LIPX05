@@ -19,7 +19,7 @@ using Thesis_LIPX05.Util.Optimizers;
 
 using static Thesis_LIPX05.Util.Gantt;
 using static Thesis_LIPX05.Util.LogManager;
-using static Thesis_LIPX05.Util.SGraph;
+using static Thesis_LIPX05.Util.PrecedenceGraph;
 
 using FilePath = System.IO.Path;
 
@@ -207,16 +207,10 @@ namespace Thesis_LIPX05
                     LogGeneralActivity(LogSeverity.INFO,
                         "{cs.Name} ({cs.TypeID} type) solver added!", GeneralLogContext.INITIALIZATION);
                 }
-                AddSeparator(solverMenu);
 
-                MenuItem addSolverItem = new()
-                {
-                    Header = "Add Custom Solver...",
-                    IsEnabled = true
-                };
+                MenuItem addSolverItem = new() { Header = "Add Custom Solver...", IsEnabled = true };
                 addSolverItem.Click += AddCustomSolver_Click;
                 solverMenu.Items.Add(addSolverItem);
-                AddSeparator(solverMenu);
 
                 LogGeneralActivity(LogSeverity.INFO,
                     "Solver menu successfully built!", GeneralLogContext.INITIALIZATION);
@@ -938,7 +932,7 @@ namespace Thesis_LIPX05
                 SGraphCanvas.Children.Clear();
                 try
                 {
-                    BuildSGraphFromXml();
+                    BuildPrecedenceGraphFromXml();
                     ManageFileHandlers();
                 }
                 catch (Exception ex)
@@ -955,7 +949,7 @@ namespace Thesis_LIPX05
                     "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 LogGeneralActivity(LogSeverity.WARNING,
                     "No BatchML file loaded, drawing example S-Graph!", GeneralLogContext.S_GRAPH);
-                BuildSGraphDemo();
+                BuildDemoPrecedenceGraph();
                 ManageFileHandlers();
             }
         }
@@ -1036,7 +1030,7 @@ namespace Thesis_LIPX05
         }
 
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no BatchML file is loaded)
-        private void BuildSGraphDemo()
+        private void BuildDemoPrecedenceGraph()
         {
             SGraphCanvas.Children.Clear();
             GetNodes().Clear();
@@ -1097,7 +1091,7 @@ namespace Thesis_LIPX05
         }
 
         // Builds the S-Graph from the loaded BatchML file
-        private void BuildSGraphFromXml()
+        private void BuildPrecedenceGraphFromXml()
         {
             SGraphCanvas.Children.Clear();
             GetNodes().Clear();
@@ -1532,7 +1526,7 @@ namespace Thesis_LIPX05
                     }
 
                     MessageBoxResult typeRes = MessageBox.Show(
-                        "Is this an Iterative/Metaheuristic Solver (e.g., SA, GA) that requires numeric parameters?",
+                        "Is this an Iterative/Metaheuristic Solver (e.g., Simulated Annealing) that requires numeric parameters?",
                         "Define Solver Type",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Question);

@@ -1,0 +1,10 @@
+﻿11/20/2025 7:23 PM // INFO // [INITIALIZATION] // Beginning initialization...
+11/20/2025 7:23 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+11/20/2025 7:23 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 7:23 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 7:23 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 7:23 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 7:23 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 7:23 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/20/2025 7:23 PM // INFO // [INITIALIZATION] // Initialization complete!
+11/20/2025 7:23 PM // ERROR // [REPORT] // Failed to send report email: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to

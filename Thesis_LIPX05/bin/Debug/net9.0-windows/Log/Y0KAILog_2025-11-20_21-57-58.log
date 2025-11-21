@@ -1,0 +1,11 @@
+﻿11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Beginning initialization...
+11/20/2025 9:57 PM // INFO // [SAVE] // Custom solvers loaded from JSON file!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 9:57 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/20/2025 9:57 PM // INFO // [INITIALIZATION] // Initialization complete!
+11/20/2025 9:58 PM // INFO // [EXITUS] // Shutting down...

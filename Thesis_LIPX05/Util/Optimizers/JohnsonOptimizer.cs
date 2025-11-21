@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using static Thesis_LIPX05.Util.LogManager;
-using static Thesis_LIPX05.Util.SGraph;
+using static Thesis_LIPX05.Util.PrecedenceGraph;
 
 namespace Thesis_LIPX05.Util.Optimizers
 {
@@ -47,7 +47,7 @@ namespace Thesis_LIPX05.Util.Optimizers
             return RebuildGraphForMakespan(optSeq);
         }
 
-        // Applies Johnson's Rule to determine the optimal job sequence
+        // Applies Johnson's Rule to determine the optimal job sequence (for 2 machines)
         private static List<string> RunJohnsonRule(List<FSJobData> jobs)
         {
             List<FSJobData>

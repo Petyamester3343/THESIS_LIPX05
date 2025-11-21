@@ -1,0 +1,8 @@
+﻿11/20/2025 9:52 PM // INFO // [INITIALIZATION] // Beginning initialization...
+11/20/2025 9:52 PM // ERROR // [SAVE] // Error loading custom solvers: Deserialization of types without a parameterless constructor, a singular parameterized constructor, or a parameterized constructor annotated with 'JsonConstructorAttribute' is not supported. Type 'Thesis_LIPX05.Util.CustomSolver'. Path: $[0] | LineNumber: 1 | BytePositionInLine: 3.
+11/20/2025 9:52 PM // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/20/2025 9:52 PM // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/20/2025 9:52 PM // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/20/2025 9:52 PM // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/20/2025 9:52 PM // INFO // [INITIALIZATION] // Initialization complete!
+11/20/2025 9:52 PM // INFO // [EXITUS] // Shutting down...
