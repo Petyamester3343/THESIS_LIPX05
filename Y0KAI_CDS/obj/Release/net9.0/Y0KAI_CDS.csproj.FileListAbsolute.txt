@@ -1,0 +1,15 @@
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Release\net9.0\Y0KAI_CDS.exe
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Release\net9.0\Y0KAI_CDS.deps.json
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Release\net9.0\Y0KAI_CDS.runtimeconfig.json
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Release\net9.0\Y0KAI_CDS.dll
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Release\net9.0\Y0KAI_CDS.pdb
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.AssemblyInfoInputs.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.AssemblyInfo.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.csproj.CoreCompileInputs.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.sourcelink.json
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.dll
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\refint\Y0KAI_CDS.dll
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.pdb
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\Y0KAI_CDS.genruntimeconfig.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\obj\Release\net9.0\ref\Y0KAI_CDS.dll

@@ -1,0 +1,15 @@
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Release\net9.0\Y0KAI_BnB.exe
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Release\net9.0\Y0KAI_BnB.deps.json
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Release\net9.0\Y0KAI_BnB.runtimeconfig.json
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Release\net9.0\Y0KAI_BnB.dll
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Release\net9.0\Y0KAI_BnB.pdb
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.AssemblyInfoInputs.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.AssemblyInfo.cs
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.csproj.CoreCompileInputs.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.sourcelink.json
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.dll
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\refint\Y0KAI_BnB.dll
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.pdb
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\Y0KAI_BnB.genruntimeconfig.cache
+C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\obj\Release\net9.0\ref\Y0KAI_BnB.dll

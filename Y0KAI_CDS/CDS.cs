@@ -44,17 +44,20 @@ namespace Y0KAI_CDS
         private static List<string> RunJohnson(List<VJobData> jobs)
         {
             List<VJobData>
-                s1 = [],
-                s2 = [];
+                s1 = [], // M1 < M2
+                s2 = []; // M1 >= M2
 
             foreach (VJobData job in jobs)
-                if (job.V_TM1 <= job.V_TM2) s1.Add(job);
+            {
+                if (job.V_TM1 < job.V_TM2) s1.Add(job);
                 else s2.Add(job);
+                jobs.Remove(job);
+            }
 
-            s1.Sort((a,b) => a.V_TM1.CompareTo(b.V_TM1));
-            s2.Sort((a,b) => b.V_TM2.CompareTo(a.V_TM2));
+            s1.Sort((a,b) => a.V_TM1.CompareTo(b.V_TM1)); // Ascending M1
+            s2.Sort((a,b) => b.V_TM2.CompareTo(a.V_TM2)); // Descending M2
 
-            return [.. s1.Select(j => j.V_ID), .. s2.Select(j => j.V_ID)];
+            return [.. from j1 in s1 select j1.V_ID, .. from j2 in s2 select j2.V_ID];
         }
     }
 }

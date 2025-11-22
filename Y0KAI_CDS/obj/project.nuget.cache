@@ -1,12 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "NAAA+NJc1J0=",
+  "dgSpecHash": "XF0MrfFR84w=",
   "success": true,
   "projectFilePath": "C:\\Users\\Phant0m\\Desktop\\THESIS_LIPX05\\Y0KAI_CDS\\Y0KAI_CDS.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\9.0.9\\microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512",
-    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.10\\microsoft.net.illink.tasks.9.0.10.nupkg.sha512",
-    "C:\\Users\\Phant0m\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\9.0.9\\runtime.win-x64.microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512"
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.11\\microsoft.net.illink.tasks.9.0.11.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.11\\microsoft.windowsdesktop.app.ref.9.0.11.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\9.0.9\\runtime.win-x64.microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.11\\microsoft.netcore.app.ref.9.0.11.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.11\\microsoft.aspnetcore.app.ref.9.0.11.nupkg.sha512",
+    "C:\\Users\\Phant0m\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.11\\microsoft.netcore.app.host.win-x64.9.0.11.nupkg.sha512"
   ],
   "logs": []
 }

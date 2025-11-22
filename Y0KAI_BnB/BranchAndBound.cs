@@ -118,15 +118,18 @@ namespace Y0KAI_BnB
         private static List<string> RunJohnson(JobList jobs)
         {
             JobList
-                s1 = [],
-                s2 = [];
+                s1 = [], // M1 < M2
+                s2 = []; // M1 >= M2
 
             foreach (JobData job in jobs)
-                if (job.TimeM1 <= job.TimeM2) s1.Add(job);
+            {
+                if (job.TimeM1 < job.TimeM2) s1.Add(job);
                 else s2.Add(job);
+                jobs.Remove(job);
+            }
 
-            s1.Sort((a, b) => a.TimeM1.CompareTo(b.TimeM1));
-            s2.Sort((a, b) => a.TimeM2.CompareTo(b.TimeM2));
+            s1.Sort((a, b) => a.TimeM1.CompareTo(b.TimeM1)); // ascending M1
+            s2.Sort((a, b) => b.TimeM2.CompareTo(a.TimeM2)); // descending M2
 
             return [.. s1.Select(j => j.ID), .. s2.Select(j => j.ID)];
         }

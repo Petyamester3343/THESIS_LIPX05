@@ -13,7 +13,7 @@ namespace Y0KAI_SA
         public List<string> Solve(double initTemp, double coolRate, int maxIt, bool isSilent)
         {
             List<string>
-                baseJobIDs = [.. g.Nodes.Keys.Where(id => id.EndsWith("_M1")).Select(id => id[..^3]).Distinct()],
+                baseJobIDs = [.. (from id in g.Nodes.Keys where id.EndsWith("_M1") select id[..^3]).Distinct()],
                 currPath = [.. baseJobIDs.OrderBy(id => id)],
                 bestPath = [.. currPath];
 
@@ -175,7 +175,7 @@ namespace Y0KAI_SA
             Dictionary<string, int> inDegree = nodes.Keys.ToDictionary(k => k, v => 0);
             foreach (Edge e in edges) inDegree[e.ToID]++;
 
-            Queue<string> zeroInDegree = new(inDegree.Where(kvp => kvp.Value is 0).Select(kvp => kvp.Key));
+            Queue<string> zeroInDegree = new(from kvp in inDegree where kvp.Value is 0 select kvp.Key);
             List<string> topoOrder = [];
 
             while (zeroInDegree.Count is not 0)
