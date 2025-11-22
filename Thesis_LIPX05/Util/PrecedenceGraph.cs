@@ -33,13 +33,6 @@ namespace Thesis_LIPX05.Util
             /*
             // for future extensions (more than 2 machines)
             public double[] Times { get; set; } = [];
-
-            public double GetTimeForMachine(int machineIndex)
-            {
-                if (machineIndex < 0 || machineIndex >= Times.Length)
-                    throw new ArgumentOutOfRangeException(nameof(machineIndex), "Invalid machine index.");
-                return Times[machineIndex];
-            }
             */
         }
 
@@ -70,7 +63,6 @@ namespace Thesis_LIPX05.Util
            </Nodes>
            <Edges>
              <Edge From="Node1" To="Node2" Cost="10" />
-             <Edge From="Node2" To="Node3" Cost="20" />
              ...
            </Edges>
          </SGraph>
@@ -203,7 +195,7 @@ namespace Thesis_LIPX05.Util
         }
 
         // Renders the graph on the given canvas
-        public static void RenderSGraph(Canvas cv)
+        public static void RenderPrecedenceGraph(Canvas cv)
         {
             cv.Children.Clear();
 
@@ -218,9 +210,10 @@ namespace Thesis_LIPX05.Util
             foreach (Edge e in edges)
             {
                 double visualCost = 0;
-                if (e.From.ID.Substring(e.From.ID.Length - 3, 3) is "_M1" or "_M2") visualCost = e.From.TimeM1 > 0 ? e.From.TimeM1 : e.From.TimeM2;
+                if (e.From.ID.Substring(e.From.ID.Length - 3, 3) is "_M1" or "_M2")
+                    visualCost = e.From.TimeM1 > 0 ? e.From.TimeM1 : e.From.TimeM2;
 
-                DrawArrow(cv, e, Brushes.DarkBlue, visualCost);
+                DrawPrecedenceArrow(cv, e, Brushes.DarkBlue, visualCost);
                 LogGeneralActivity(LogSeverity.INFO,
                     $"Edge from {e.From.ID} to {e.To.ID} with cost {e.Cost} drawn.", GeneralLogContext.S_GRAPH);
             }
@@ -303,7 +296,7 @@ namespace Thesis_LIPX05.Util
             edge.To.ID.EndsWith("_M2", StringComparison.OrdinalIgnoreCase));
 
         // Draws a quadratic Bezier curve with a triangular polygon at its end between two nodes on the provided canvas
-        private static void DrawArrow(Canvas cv, Edge edge, Brush color, double visualCost, double thickness = 2)
+        private static void DrawPrecedenceArrow(Canvas cv, Edge edge, Brush color, double visualCost, double thickness = 2)
         {
             WindowPoint
                 from = edge.From.Position,
@@ -354,19 +347,18 @@ namespace Thesis_LIPX05.Util
                 control = mid + normal * dCurve;
 
             // Drawing the directed edge
-            DrawCurvedEdge(start, control, end, color, thickness, cv);
+            DrawBezierCurve(start, control, end, color, thickness, cv);
 
-            // Drawing the arrowhead
-            // It relies on the geometrically correct 'end' point
-            DrawArrowHead(control, end, color, cv);
+            // Drawing the arrowhead, relying on the geometrically correct 'end' point
+            DrawArrowHeadPolygon(control, end, color, cv);
 
             // Drawing the weight label (if weight gt 0 is true)
-            // Midpoint of a quadratic Bezier curve at t = 0.5 is (0,25 * P_0 + 0,5 * P_1 + 0,25 * P_2)
-            if (visualCost > 0) DrawWeightOnEdge(start, control, end, visualCost, cv);
+            if (visualCost > 0)
+                DrawWeightOnPrecedenceEdge(start, control, end, visualCost, cv);
         }
 
         // Helper method for drawing a Bezier curve as the edge between two nodes
-        private static void DrawCurvedEdge(WindowPoint start, WindowPoint control, WindowPoint end, Brush color, double thickness, Canvas cv)
+        private static void DrawBezierCurve(WindowPoint start, WindowPoint control, WindowPoint end, Brush color, double thickness, Canvas cv)
         {
             PathFigure figure = new() { StartPoint = start };
             QuadraticBezierSegment segment = new() { Point1 = control, Point2 = end };
@@ -382,7 +374,7 @@ namespace Thesis_LIPX05.Util
         }
 
         // Helper method for drawing an arrowhead at the end of a Bezier curve
-        private static void DrawArrowHead(WindowPoint control, WindowPoint end, Brush color, Canvas cv)
+        private static void DrawArrowHeadPolygon(WindowPoint control, WindowPoint end, Brush color, Canvas cv)
         {
             Vector arrowDir = control - end;
             arrowDir.Normalize();
@@ -406,9 +398,10 @@ namespace Thesis_LIPX05.Util
         }
 
         // Helper method for drawing the weight label on the midpoint of the edge (for visual representation only)
-        private static void DrawWeightOnEdge(WindowPoint start, WindowPoint control, WindowPoint end, double weight, Canvas cv)
+        private static void DrawWeightOnPrecedenceEdge(WindowPoint start, WindowPoint control, WindowPoint end, double weight, Canvas cv)
         {
-            double t = 0.5;
+            double t = .5d;
+            // Midpoint of a quadratic Bezier curve at t = 0.5 is (0,25 * P_0 + 0,5 * P_1 + 0,25 * P_2)
             WindowPoint midCurve = new()
             {
                 X = Math.Pow(1 - t, 2) * start.X + 2 * (1 - t) * t * control.X + Math.Pow(t, 2) * end.X,
@@ -420,12 +413,12 @@ namespace Thesis_LIPX05.Util
                 normal = new(-line.Y, line.X);
             normal.Normalize();
 
-            double distOff = 10;
+            double distOff = 10d;
             WindowPoint lblPos = midCurve + normal * distOff;
 
             TextBlock weightTXT = new()
             {
-                Text = Convert.ToInt32(weight).ToString(),
+                Text = $"{Convert.ToInt32(weight)}",
                 Foreground = Brushes.Black,
                 Background = Brushes.White,
                 FontSize = 10,

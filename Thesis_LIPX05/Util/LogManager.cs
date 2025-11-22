@@ -78,11 +78,8 @@ namespace Thesis_LIPX05.Util
 
         public static void CloseLog()
         {
-            if (LogWriter is not null)
-            {
-                LogWriter.Close();
-                LogWriter = null;
-            }
+            LogWriter?.Close();
+            LogWriter = null;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Thesis_LIPX05.Util.Optimizers
     {
         private const string LogCtx = "Johnson's Rule Optimizer";
 
-        private class FSJobData
+        private class JobData
         {
             public required string ID { get; set; }
 
@@ -24,12 +24,12 @@ namespace Thesis_LIPX05.Util.Optimizers
         // Johnson's Rule implementation (with only 2 machines for now)
         public List<Node> Optimize()
         {
-            List<FSJobData> jobs = [.. nodes.Values
+            List<JobData> jobs = [.. nodes.Values
                 .Where(n => n.ID.EndsWith("_M1") && n.TimeM1 > 0)
                 .Select(n => {
                     string baseID = n.ID[..^3];
                     double timeM2 = nodes.TryGetValue($"{baseID}_M2", out Node? m2Node) ? m2Node.TimeM2 : double.MaxValue;
-                    return new FSJobData { ID = baseID, TimeM1 = n.TimeM1, TimeM2 = timeM2 };
+                    return new JobData { ID = baseID, TimeM1 = n.TimeM1, TimeM2 = timeM2 };
                 })
                 .Where(j => j.TimeM1 > 0 || j.TimeM2 > 0)];
 
@@ -48,20 +48,23 @@ namespace Thesis_LIPX05.Util.Optimizers
         }
 
         // Applies Johnson's Rule to determine the optimal job sequence (for 2 machines)
-        private static List<string> RunJohnsonRule(List<FSJobData> jobs)
+        private static List<string> RunJohnsonRule(List<JobData> jobs)
         {
-            List<FSJobData>
-                s1 = [], // M1 <= M2
-                s2 = []; // M1 > M2
+            List<JobData>
+                s1 = [], // M1 < M2
+                s2 = []; // M1 >= M2
 
-            foreach (FSJobData job in jobs)
-                if (job.TimeM1 <= job.TimeM2) s1.Add(job);
+            foreach (JobData job in jobs)
+            {
+                if (job.TimeM1 < job.TimeM2) s1.Add(job);
                 else s2.Add(job);
+                jobs.Remove(job);
+            }
 
             s1.Sort((a, b) => a.TimeM1.CompareTo(b.TimeM1));
             s2.Sort((a, b) => b.TimeM2.CompareTo(a.TimeM2));
 
-            return [.. s1.Select(j => j.ID), .. s2.Select(j => j.ID)];
+            return [.. from j1 in s1 select j1.ID, .. from j2 in s2 select j2.ID];
         }
 
         // Rebuilds the S-Graph based on the optimized job sequence to calculate makespan
@@ -71,32 +74,24 @@ namespace Thesis_LIPX05.Util.Optimizers
             edges.Clear();
             LogSolverActivity(LogSeverity.INFO, "Cleared all existing S-Graph edges for sequence rebuild.", LogCtx);
 
-            // 2.: re-adding tech. edges
+            // 2.: re-adding tech. edges (cost = duration of the M1 task (technological precedence))
             foreach (Node node in nodes.Values.Where(n => n.ID.EndsWith("_M1")))
-            {
-                string jobID = node.ID[..^3];
-                // Cost = duration of the M1 task (technological precedence)
-                AddEdge(node.ID, $"{jobID}_M2");
-            }
+                AddEdge(node.ID, $"{node.ID[..^3]}_M2");
 
-            // 3. M1 and M2 sequences (Job_k_Mx -> Job_k+1_Mx)
+            // 3. M1 and M2 sequences (Job_k_Mx -> Job_k+1_Mx) (the cost must be 0, as EST/EFT calculation handles the duration)
             for (int i = 0; i < optSeq.Count - 1; i++)
-                // The cost must be 0, as EST/EFT calculation handles the duration.
                 for (int j = 1; j <= MainWindow.GetMachineCount(); j++)
                     AddEdge($"{optSeq[i]}_M{j}", $"{optSeq[i + 1]}_M{j}");
 
             // 4.: re-applying terminating edges
             foreach (string optSeqFrag in optSeq)
-            {
-                int jobNum = int.Parse(optSeqFrag.Replace("J", ""));
-                AddEdge($"J{jobNum}_M2", $"P{jobNum}");
-            }
-
+                AddEdge($"J{int.Parse(optSeqFrag.Replace("J", ""))}_M2", $"P{int.Parse(optSeqFrag.Replace("J", ""))}");
+            
             LogSolverActivity(LogSeverity.INFO,
-                "Graph rebuilt with necessary technological constraints (cost=duration) and zero-cost sequential constraints.", LogCtx);
+                "Graph rebuilt with necessary technological constraints (cost = duration) and zero-cost sequential constraints.", LogCtx);
 
             // 5.: return Topological Sort result
-            return [.. TopoSort(nodes, edges).Select(id => nodes[id])];
+            return [.. from id in TopoSort(nodes, edges) select nodes[id]];
         }
 
         // Performs a topological sort on the directed graph (inspired by Kahn's algorithm)
@@ -105,9 +100,7 @@ namespace Thesis_LIPX05.Util.Optimizers
             Dictionary<string, int> inDegree = allNodes.Keys.ToDictionary(k => k, v => 0);
             foreach (Edge e in allEdges) inDegree[e.To.ID]++;
 
-            Queue<string> zeroInDegree = new(from kvp in inDegree
-                                             where kvp.Value is 0
-                                             select kvp.Key);
+            Queue<string> zeroInDegree = new(from kvp in inDegree where kvp.Value is 0 select kvp.Key);
             List<string> topoOrder = [];
 
             try
@@ -116,18 +109,21 @@ namespace Thesis_LIPX05.Util.Optimizers
                 {
                     string n = zeroInDegree.Dequeue();
                     topoOrder.Add(n);
-                    LogSolverActivity(LogSeverity.INFO, $"Node {n} added to topological order.", LogCtx);
+                    LogSolverActivity(LogSeverity.INFO,
+                        $"Node {n} added to topological order.", LogCtx);
 
                     foreach (Edge e in allEdges.Where(e => e.From.ID == n))
                     {
-                        string m = e.To.ID;
-                        inDegree[m]--;
-                        if (inDegree[m] is 0) zeroInDegree.Enqueue(m);
-                        LogSolverActivity(LogSeverity.INFO, $"Decreased in-degree of {m} to {inDegree[m]}.", LogCtx);
+                        inDegree[e.To.ID]--;
+                        if (inDegree[e.To.ID] is 0)
+                            zeroInDegree.Enqueue(e.To.ID);
+                        LogSolverActivity(LogSeverity.INFO,
+                            $"Decreased in-degree of {e.To.ID} to {inDegree[e.To.ID]}.", LogCtx);
                     }
                 }
                 if (topoOrder.Count != allNodes.Count)
-                    LogSolverActivity(LogSeverity.ERROR, "Graph has at least one cycle; topological sort not possible.", LogCtx);
+                    LogSolverActivity(LogSeverity.ERROR,
+                        "Graph has at least one cycle; topological sort not possible.", LogCtx);
             }
             catch
             {
@@ -136,7 +132,8 @@ namespace Thesis_LIPX05.Util.Optimizers
                 return [];
             }
 
-            LogSolverActivity(LogSeverity.INFO, "Topological sort completed successfully.", LogCtx);
+            LogSolverActivity(LogSeverity.INFO,
+                "Topological sort completed successfully.", LogCtx);
             return topoOrder;
         }
     }

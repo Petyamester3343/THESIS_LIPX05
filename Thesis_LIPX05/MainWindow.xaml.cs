@@ -207,6 +207,7 @@ namespace Thesis_LIPX05
                     LogGeneralActivity(LogSeverity.INFO,
                         "{cs.Name} ({cs.TypeID} type) solver added!", GeneralLogContext.INITIALIZATION);
                 }
+                AddSeparator(solverMenu);
 
                 MenuItem addSolverItem = new() { Header = "Add Custom Solver...", IsEnabled = true };
                 addSolverItem.Click += AddCustomSolver_Click;
@@ -372,7 +373,7 @@ namespace Thesis_LIPX05
                     }
             }
 
-            RenderSGraph(SGraphCanvas);
+            RenderPrecedenceGraph(SGraphCanvas);
         }
 
         private void RenderSchedule(List<Node> optPath, string method)
@@ -557,7 +558,7 @@ namespace Thesis_LIPX05
                     GetEdges().Clear();
                     RecreateEdgesFromOptSeq([.. path.Where(n => n.ID.EndsWith("_M1")).Select(n => n.ID[..^3])]);
 
-                    RenderSGraph(SGraphCanvas);
+                    RenderPrecedenceGraph(SGraphCanvas);
                     RenderSchedule(path, customSolver.Name);
                 }
             }
@@ -1063,15 +1064,15 @@ namespace Thesis_LIPX05
                     currY = y + (jobIndex * vsp);
 
                 // 1. Create M1 Node and Assign Position
-                AddNode($"{jobID}_M1", $"M1: {job.Value.Desc}", new(x_mach_def, currY), T1, 0.0, false);
+                AddNode($"{jobID}_M1", $"Machine 1 - {job.Value.Desc}", new(x_mach_def, currY), T1, 0.0, false);
 
                 // 2. Create M2 Node and Assign Position
-                AddNode($"{jobID}_M2", $"M2: {job.Value.Desc}", new(x_mach_def + x_delta, currY), 0.0, T2, false);
+                AddNode($"{jobID}_M2", $"Machine 2 - {job.Value.Desc}", new(x_mach_def + x_delta, currY), 0.0, T2, false);
 
                 // 3. Create Product Node and Assign Position
                 int prodNum = int.Parse(jobID.Replace("J", ""));
                 double x_prod = x_mach_def + (2 * x_delta); // Place product node after M2
-                AddNode($"P{prodNum}", $"Product P{prodNum}", new(x_prod, currY), 0.0, 0.0, true);
+                AddNode($"P{prodNum}", $"Product - P{prodNum}", new(x_prod, currY), 0.0, 0.0, true);
 
                 // --- 4. Edges ---
 
@@ -1086,7 +1087,7 @@ namespace Thesis_LIPX05
 
             // 5. Rendering and menu item management
             // Note: The sequential edges (J_A_M -> J_B_M) are added by the OPTIMIZER, not the demo builder.
-            RenderSGraph(SGraphCanvas);
+            RenderPrecedenceGraph(SGraphCanvas);
             EnableSolvers();
         }
 
@@ -1149,7 +1150,7 @@ namespace Thesis_LIPX05
             }
 
             // Render and enablement
-            RenderSGraph(SGraphCanvas);
+            RenderPrecedenceGraph(SGraphCanvas);
             LogGeneralActivity(LogSeverity.INFO,
                 "Flow Shop S-Graph built from BatchML file!", GeneralLogContext.S_GRAPH);
             EnableSolvers();

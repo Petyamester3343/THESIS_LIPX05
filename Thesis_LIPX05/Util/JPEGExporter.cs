@@ -1,12 +1,10 @@
 ﻿using Microsoft.Win32;
-
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 using static Thesis_LIPX05.Util.LogManager;
 
 namespace Thesis_LIPX05.Util

@@ -17,12 +17,13 @@ namespace Thesis_LIPX05
         // Win32 imports
         [LibraryImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool SetForegroundWindow(nint hWnd);
+        private static partial bool SetForegroundWindow(nint hWnd); // nint is IntPtr
 
         [LibraryImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool ShowWindow(nint hWnd, int nCmdShow);
 
+        // Ensure single instance application using Mutex
         protected override void OnStartup(StartupEventArgs e)
         {
             const string MutexName = "Y0KAI Task Scheduler";
@@ -60,6 +61,7 @@ namespace Thesis_LIPX05
             }
         }
 
+        // Clean up the mutex on application exit
         protected override void OnExit(ExitEventArgs e)
         {
             AppMTX?.ReleaseMutex();
@@ -110,7 +112,7 @@ namespace Thesis_LIPX05
             {
                 MainWindow ts_app = new();
                 MainWindow = ts_app;
-                ts_app.WindowState = WindowState.Maximized;
+                ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 ts_app.Show();
                 ts_app.Activate();
                 shouldBeClosedByNow.Close();
@@ -118,7 +120,7 @@ namespace Thesis_LIPX05
 
 
         // Decides the loading status based on the given integer value
-        public static LoadingStatusHelper DecideRang(int i)
+        private static LoadingStatusHelper DecideRang(int i)
         {
             if (i <= 20) return LoadingStatusHelper.FIRST;
             else if (i <= 40) return LoadingStatusHelper.SECOND;
@@ -129,7 +131,7 @@ namespace Thesis_LIPX05
     }
 
     // The loading status helper enum to determine the current loading stage (through simulation)
-    public enum LoadingStatusHelper
+    enum LoadingStatusHelper
     {
         FIRST,
         SECOND,
