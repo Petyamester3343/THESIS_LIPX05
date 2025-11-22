@@ -39,6 +39,7 @@
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Click="About_Click"/>
+                <MenuItem Header="_User manual" Click="UserManual_Click"/>
             </MenuItem>
         </Menu>
 

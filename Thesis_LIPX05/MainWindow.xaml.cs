@@ -701,6 +701,14 @@ namespace Thesis_LIPX05
         // Event handler for the About menu item click event (only a static, disposable window)
         private void About_Click(object sender, RoutedEventArgs e)
         {
+            if (Application.Current.Windows.OfType<AboutWindow>().Any())
+            {
+                LogGeneralActivity(LogSeverity.INFO,
+                    "\"About\" window is already open; focusing on it!", GeneralLogContext.INITIALIZATION);
+                Application.Current.Windows.OfType<AboutWindow>().First().Activate();
+                return;
+            }
+            
             new AboutWindow().Show();
             LogGeneralActivity(LogSeverity.INFO,
                 "\"About\" window opened!", GeneralLogContext.INITIALIZATION);
@@ -1549,6 +1557,21 @@ namespace Thesis_LIPX05
                     BuildSolverMenu(SolverMenu);
                 }
             }
+        }
+
+        private void UserManual_Click(object sender, RoutedEventArgs e)
+        {
+            if (Application.Current.Windows.OfType<UserGuideWindow>().Any())
+            {
+                LogGeneralActivity(LogSeverity.INFO,
+                    "\"User Guide\" window is already open!", GeneralLogContext.INITIALIZATION);
+                Application.Current.Windows.OfType<UserGuideWindow>().First().Activate();
+                return;
+            }
+            
+            new UserGuideWindow().Show();
+            LogGeneralActivity(LogSeverity.INFO,
+                "New \"User Guide\" window opened!", GeneralLogContext.INITIALIZATION);
         }
 
         // Saves custom solvers to a JSON file within %AppData%
