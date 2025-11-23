@@ -31,8 +31,8 @@
             </MenuItem>
             <MenuItem Header="_Solver" Name="SolverMenu">
             </MenuItem>
-            <MenuItem Header="_S-Graph">
-                <MenuItem Header="_Draw S-Graph" Click="DrawGraph_Click"/>
+            <MenuItem Header="_Precedence graph">
+                <MenuItem Header="_Draw precedence graph" Click="DrawGraph_Click"/>
             </MenuItem>
             <MenuItem Header="_Gantt">
                 <MenuItem Header="_Create datatable" Name="CreateSolutionTableMenuItem" Click="CreateSolutionTableMenuItem_Click"/>
@@ -73,7 +73,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="_S-Graph" Name="SGraphTabItem" Tag="SGraph" GotFocus="Focus4Export_Click" LostFocus="Focus4Export_Click">
+            <TabItem Header="_Precedence graph" Name="SGraphTabItem" Tag="SGraph" GotFocus="Focus4Export_Click" LostFocus="Focus4Export_Click">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <Canvas Name="SGraphCanvas" Background="White"/>
                 </ScrollViewer>

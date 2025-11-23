@@ -56,6 +56,7 @@ namespace Thesis_LIPX05
         private bool
             IsFileLoaded = false,
             IsFileModified = false,
+            IsFullScreen = false,
             SGraphExists = false,
             GanttExists = false;
         private string CurrFilePath = string.Empty;
@@ -112,6 +113,8 @@ namespace Thesis_LIPX05
             ManageSolutionDataTableCreator();
 
             TesterStopwatch = new();
+
+            KeyUp += MainWindow_KeyUp;
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Initialization complete!", GeneralLogContext.INITIALIZATION);
@@ -248,34 +251,12 @@ namespace Thesis_LIPX05
                             LogGeneralActivity(LogSeverity.INFO,
                                 "User opted to save changes in the datatables to the BatchML file before exiting!", GeneralLogContext.SAVE);
                             SaveFile_Click(sender, new());
-                            MessageBoxResult res2 = MessageBox.Show("Do you wish to save your custom solvers?",
-                                "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-                            if (res2 is MessageBoxResult.Yes)
-                            {
-                                SaveCustomSolvers2JSON();
-                                LogGeneralActivity(LogSeverity.INFO,
-                                    "Shutting down after saving custom solvers and the changes made to the datatable...", GeneralLogContext.EXITUS);
-                            }
-                            else LogGeneralActivity(LogSeverity.INFO,
-                                "Shutting down after saving the changes made to the datatable, without saving custom solvers...", GeneralLogContext.EXITUS);
-                            CloseLog();
                             break;
                         }
                     case MessageBoxResult.No:
                         {
                             LogGeneralActivity(LogSeverity.WARNING,
                                 "User opted to exit without saving changes in the datatables to the BatchML file before exiting!", GeneralLogContext.EXITUS);
-                            MessageBoxResult res3 = MessageBox.Show("Do you wish to save your custom solvers?",
-                                "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-                            if (res3 is MessageBoxResult.Yes)
-                            {
-                                SaveCustomSolvers2JSON();
-                                LogGeneralActivity(LogSeverity.WARNING,
-                                    "Shutting down with saving only the custom solvers...", GeneralLogContext.EXITUS);
-                            }
-                            else LogGeneralActivity(LogSeverity.WARNING,
-                                "Shutting down without saving anything...", GeneralLogContext.EXITUS);
-                            CloseLog();
                             break;
                         }
                     case MessageBoxResult.Cancel:
@@ -298,6 +279,12 @@ namespace Thesis_LIPX05
                             SaveCustomSolvers2JSON();
                             LogGeneralActivity(LogSeverity.INFO,
                                 "Custom solvers saved during exit!", GeneralLogContext.EXITUS);
+                            break;
+                        }
+                        case MessageBoxResult.No:
+                        {
+                            LogGeneralActivity(LogSeverity.WARNING,
+                                "Custom solvers not saved during exit!", GeneralLogContext.EXITUS);
                             break;
                         }
                     case MessageBoxResult.Cancel:
@@ -334,6 +321,29 @@ namespace Thesis_LIPX05
                     "No changes were made, shutting down...", GeneralLogContext.EXITUS);
                 CloseLog();
                 Application.Current.Shutdown();
+            }
+        }
+
+        private void MainWindow_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.F11)
+            {
+                if (IsFullScreen)
+                {
+                    WindowStyle = WindowStyle.SingleBorderWindow;
+                    WindowState = WindowState.Normal;
+                    LogGeneralActivity(LogSeverity.INFO,
+                        "Exiting full-screen mode...", GeneralLogContext.MODIFY);
+                    IsFullScreen = false;
+                }
+                else
+                {
+                    WindowStyle = WindowStyle.None;
+                    WindowState = WindowState.Maximized;
+                    LogGeneralActivity(LogSeverity.INFO,
+                        "Entering full-screen mode...", GeneralLogContext.MODIFY);
+                    IsFullScreen = true;
+                }
             }
         }
 

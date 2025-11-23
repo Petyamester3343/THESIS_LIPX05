@@ -1,0 +1,195 @@
+﻿11/23/2025 07:38 // INFO // [INITIALIZATION] // Beginning initialization...
+11/23/2025 07:38 // INFO // [SAVE] // Custom solvers loaded from JSON file!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/23/2025 07:38 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Initialization complete!
+11/23/2025 07:38 // WARNING // [S_GRAPH] // No BatchML file loaded, drawing example S-Graph!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J1_M1 at 100;50
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J1_M2 at 400;50
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node P1 at 700;50
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J2_M1 at 100;200
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J2_M2 at 400;200
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node P2 at 700;200
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J3_M1 at 100;350
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J3_M2 at 400;350
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node P3 at 700;350
+11/23/2025 07:38 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (170,0;85,0) to (400,0;85,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 9 drawn at (285;97,5)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (470,0;85,0) to (700,0;85,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 34 drawn at (585;85)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (170,0;235,0) to (400,0;235,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 49 drawn at (285;247,5)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (470,0;235,0) to (700,0;235,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 40 drawn at (585;235)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (170,0;385,0) to (400,0;385,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 1 drawn at (285;397,5)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (470,0;385,0) to (700,0;385,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 29 drawn at (585;385)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Canvas resized to 820x470!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Branch And Bound solver enabled!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Campbell-Dudek-Smith solver enabled!
+11/23/2025 07:38 // INFO // [INITIALIZATION] // Simulated Annealing solver enabled!
+11/23/2025 07:38 // INFO // [INITIALIZATION] //  solver enabled!
+11/23/2025 07:38 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/23/2025 07:38 // INFO // [EXTERN_SOLVER] // Campbell-Dudek-Smith custom solver selected!
+11/23/2025 07:38 // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp is currently non-existent; (re-)creating...
+11/23/2025 07:38 // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp\SGraph_58fc17fb-ffe9-403e-b3fd-359ed7cd2077.xml!
+11/23/2025 07:38 // INFO // [Campbell-Dudek-Smith] // Deterministic solver selected; skipping numeric parameter gathering...
+11/23/2025 07:38 // ERROR // [Campbell-Dudek-Smith] // Solver failed with code 4! Error: Fatal error: The given key 'J2_M3' was not present in the dictionary.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J1_M1 at 100;50
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J1_M2 at 400;50
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node P1 at 700;50
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J2_M1 at 100;200
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J2_M2 at 400;200
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node P2 at 700;200
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J3_M1 at 100;350
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node J3_M2 at 400;350
+11/23/2025 07:38 // INFO // [S_GRAPH] // Node P3 at 700;350
+11/23/2025 07:38 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (170,0;85,0) to (400,0;85,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 9 drawn at (285;97,5)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (470,0;85,0) to (700,0;85,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 34 drawn at (585;85)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (170,0;235,0) to (400,0;235,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 49 drawn at (285;247,5)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (470,0;235,0) to (700,0;235,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 40 drawn at (585;235)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (170,0;385,0) to (400,0;385,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 1 drawn at (285;397,5)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge drawn from (470,0;385,0) to (700,0;385,0)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Weight 29 drawn at (585;385)!
+11/23/2025 07:38 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+11/23/2025 07:38 // INFO // [S_GRAPH] // Canvas resized to 820x470!
+11/23/2025 07:39 // INFO // [EXTERN_SOLVER] // Campbell-Dudek-Smith custom solver selected!
+11/23/2025 07:39 // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp successfully discovered!
+11/23/2025 07:39 // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp\SGraph_3f81e507-c5f3-4879-8f40-7872e88c4080.xml!
+11/23/2025 07:39 // INFO // [Campbell-Dudek-Smith] // Deterministic solver selected; skipping numeric parameter gathering...
+11/23/2025 07:43 // ERROR // [Campbell-Dudek-Smith] // Solver failed with code 4! Error: Fatal error: The given key 'J2_M3' was not present in the dictionary.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node J1_M1 at 100;50
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node J1_M2 at 400;50
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node P1 at 700;50
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node J2_M1 at 100;200
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node J2_M2 at 400;200
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node P2 at 700;200
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node J3_M1 at 100;350
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node J3_M2 at 400;350
+11/23/2025 07:43 // INFO // [S_GRAPH] // Node P3 at 700;350
+11/23/2025 07:43 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge drawn from (170,0;85,0) to (400,0;85,0)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Weight 9 drawn at (285;97,5)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge drawn from (470,0;85,0) to (700,0;85,0)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Weight 34 drawn at (585;85)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 0 drawn.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge drawn from (170,0;235,0) to (400,0;235,0)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Weight 49 drawn at (285;247,5)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge drawn from (470,0;235,0) to (700,0;235,0)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Weight 40 drawn at (585;235)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 0 drawn.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge drawn from (170,0;385,0) to (400,0;385,0)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Weight 1 drawn at (285;397,5)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge drawn from (470,0;385,0) to (700,0;385,0)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Weight 29 drawn at (585;385)!
+11/23/2025 07:43 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+11/23/2025 07:43 // INFO // [S_GRAPH] // Canvas resized to 820x470!
+11/23/2025 07:43 // INFO // [EXTERN_SOLVER] // Campbell-Dudek-Smith custom solver selected!
+11/23/2025 07:43 // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp successfully discovered!
+11/23/2025 07:43 // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp\SGraph_c98c094f-4276-42e1-8ec4-033477fa006e.xml!
+11/23/2025 07:43 // INFO // [Campbell-Dudek-Smith] // Deterministic solver selected; skipping numeric parameter gathering...
+11/23/2025 07:44 // ERROR // [Campbell-Dudek-Smith] // Solver failed with code 4! Error: Fatal error: The given key 'J2_M3' was not present in the dictionary.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node J1_M1 at 100;50
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node J1_M2 at 400;50
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node P1 at 700;50
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node J2_M1 at 100;200
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node J2_M2 at 400;200
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node P2 at 700;200
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node J3_M1 at 100;350
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node J3_M2 at 400;350
+11/23/2025 07:44 // INFO // [S_GRAPH] // Node P3 at 700;350
+11/23/2025 07:44 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge drawn from (170,0;85,0) to (400,0;85,0)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Weight 9 drawn at (285;97,5)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge drawn from (470,0;85,0) to (700,0;85,0)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Weight 34 drawn at (585;85)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 0 drawn.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge drawn from (170,0;235,0) to (400,0;235,0)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Weight 49 drawn at (285;247,5)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge drawn from (470,0;235,0) to (700,0;235,0)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Weight 40 drawn at (585;235)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 0 drawn.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge drawn from (170,0;385,0) to (400,0;385,0)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Weight 1 drawn at (285;397,5)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge drawn from (470,0;385,0) to (700,0;385,0)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Weight 29 drawn at (585;385)!
+11/23/2025 07:44 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+11/23/2025 07:44 // INFO // [S_GRAPH] // Canvas resized to 820x470!
+11/23/2025 07:45 // INFO // [EXTERN_SOLVER] // Simulated Annealing custom solver selected!
+11/23/2025 07:45 // INFO // [S_GRAPH] // C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp successfully discovered!
+11/23/2025 07:45 // INFO // [S_GRAPH] // SGraph saved to C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows\SolverTemp\SGraph_634729ae-f8cf-4ae5-a2bd-e53ef2c2ffd8.xml!
+11/23/2025 07:45 // INFO // [Simulated Annealing] // Gathering parameters for Simulated Annealing
+11/23/2025 07:45 // INFO // [Simulated Annealing] // Parameters gathered: 1000, 0.995, 5000
+11/23/2025 07:45 // ERROR // [EXTERN_SOLVER] // Error while running custom solver: An error occurred trying to start process 'C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_SA\Y0KAI_SA\bin\Debug\net9.0\Y0KAI_SA.exe' with working directory 'C:\Users\Phant0m\Desktop\THESIS_LIPX05\Thesis_LIPX05\bin\x64\Debug\net9.0-windows'. A rendszer nem találja a megadott fájlt.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node J1_M1 at 100;50
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node J1_M2 at 400;50
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node P1 at 700;50
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node J2_M1 at 100;200
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node J2_M2 at 400;200
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node P2 at 700;200
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node J3_M1 at 100;350
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node J3_M2 at 400;350
+11/23/2025 07:45 // INFO // [S_GRAPH] // Node P3 at 700;350
+11/23/2025 07:45 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge drawn from (170,0;85,0) to (400,0;85,0)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Weight 9 drawn at (285;97,5)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge drawn from (470,0;85,0) to (700,0;85,0)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Weight 34 drawn at (585;85)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 0 drawn.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge drawn from (170,0;235,0) to (400,0;235,0)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Weight 49 drawn at (285;247,5)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge drawn from (470,0;235,0) to (700,0;235,0)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Weight 40 drawn at (585;235)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 0 drawn.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge drawn from (170,0;385,0) to (400,0;385,0)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Weight 1 drawn at (285;397,5)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge drawn from (470,0;385,0) to (700,0;385,0)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Weight 29 drawn at (585;385)!
+11/23/2025 07:45 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+11/23/2025 07:45 // INFO // [S_GRAPH] // Canvas resized to 820x470!
+11/23/2025 07:45 // INFO // [EXITUS] // Shutting down...

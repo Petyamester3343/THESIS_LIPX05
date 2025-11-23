@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 
+using static System.Console;
+
 namespace Thesis_LIPX05.Util
 {
     public class LogManager
@@ -51,7 +53,7 @@ namespace Thesis_LIPX05.Util
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"FATAL: Failed to initialize log writer: {ex.Message}");
+                Error.WriteLine($"FATAL: Failed to initialize log writer: {ex.Message}");
             }
         }
 

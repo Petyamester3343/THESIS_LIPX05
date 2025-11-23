@@ -51,7 +51,8 @@ namespace Y0KAI_BnB
             while (openList.Count > 0)
             {
                 BnBNode curr = openList.Dequeue();
-                if (curr.LowerBound >= currCUB) continue;
+                if (curr.LowerBound >= currCUB)
+                    continue;
 
                 foreach (string j2s in curr.UnscheduledJobs)
                 {
@@ -125,7 +126,6 @@ namespace Y0KAI_BnB
             {
                 if (job.TimeM1 < job.TimeM2) s1.Add(job);
                 else s2.Add(job);
-                jobs.Remove(job);
             }
 
             s1.Sort((a, b) => a.TimeM1.CompareTo(b.TimeM1)); // ascending M1
@@ -147,21 +147,13 @@ namespace Y0KAI_BnB
                 });
 
             for (int i = 0; i < jobSeq.Count - 1; i++)
-            {
-                g.Edges.Add(new()
-                {
-                    FromID = $"{jobSeq[i]}_M1",
-                    ToID = $"{jobSeq[i + 1]}_M1",
-                    Cost = 0d
-                });
-
-                g.Edges.Add(new()
-                {
-                    FromID = $"{jobSeq[i]}_M2",
-                    ToID = $"{jobSeq[i + 1]}_M2",
-                    Cost = 0d
-                });
-            }
+                for (int j = 1; j <= 2; j++)
+                    g.Edges.Add(new()
+                    {
+                        FromID = $"{jobSeq[i]}_M{j}",
+                        ToID = $"{jobSeq[i + 1]}_M{j}",
+                        Cost = 0d
+                    });
 
             if (jobSeq.Count > 0)
                 g.Edges.Add(new()

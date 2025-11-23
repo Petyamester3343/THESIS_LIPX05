@@ -40,6 +40,8 @@ namespace Thesis_LIPX05
 
                     if (runningProc is not null && runningProc.MainWindowHandle != nint.Zero)
                     {
+                        MessageBox.Show("Another instance of Y0KAI Task Scheduler is already running. Bringing the existing instance to the foreground.",
+                            "Instance Already Running", MessageBoxButton.OK, MessageBoxImage.Information);
                         // Ensure the window is restored before bringing to foreground
                         ShowWindow(runningProc.MainWindowHandle, 9); // 9 -> SW_RESTORE
                         SetForegroundWindow(runningProc.MainWindowHandle);
@@ -97,7 +99,7 @@ namespace Thesis_LIPX05
                         break;
                 }
 
-                await Task.Delay(33);
+                await Task.Delay(30);
             }
 
             // Show the main window and close the loading window
@@ -113,6 +115,7 @@ namespace Thesis_LIPX05
                 MainWindow ts_app = new();
                 MainWindow = ts_app;
                 ts_app.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                // ts_app.ResizeMode = ResizeMode.NoResize; // for future plans
                 ts_app.Show();
                 ts_app.Activate();
                 shouldBeClosedByNow.Close();

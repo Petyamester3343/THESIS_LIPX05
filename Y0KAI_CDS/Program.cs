@@ -69,7 +69,7 @@ namespace Y0KAI_CDS
             {
                 // Must log the exception message to see *why* it stopped
                 if (!isSilent)
-                    Error.WriteLine($"Fatal error: {ex.Message}");
+                    Error.WriteLine($"{ex.StackTrace}");
                 return 4;
             }
         }

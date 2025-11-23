@@ -58,7 +58,6 @@ namespace Thesis_LIPX05.Util.Optimizers
             {
                 if (job.TimeM1 < job.TimeM2) s1.Add(job);
                 else s2.Add(job);
-                jobs.Remove(job);
             }
 
             s1.Sort((a, b) => a.TimeM1.CompareTo(b.TimeM1));

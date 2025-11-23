@@ -5,52 +5,70 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Thesis_LIPX05"
         mc:Ignorable="d"
-        Title="User Guide: Flow Shop Scheduler" Height="600" Width="800">
+        Title="User Guide" Height="600" Width="800">
     <Grid Margin="10">
         <TabControl>
             <TabItem Header="1. Data Setup &amp; Snyc">
                 <StackPanel Margin="10">
-                    <TextBlock Text="A. Loading Files" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="To load a BatchML file, navigate to File &gt; Open BatchML file. Select the desired file from your system. The application will parse the file and populate the data grid with tasks and their parameters, including the M1/M2 processing times as custom extensions." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="A. Loading Files" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="To load a BatchML file, navigate to File &gt; Open BatchML file. Select the desired file from your system. The application will parse the file and populate the data grid with tasks and their parameters, including the M1/M2 processing times as custom extensions." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="B. Data Table &amp; Saving" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="The data table displays tasks with their respective parameters. You can edit the M1 and M2 processing times directly in the table. After making changes, save your work by going to File &gt; Save BatchML file. This ensures that all modifications, including custom extensions, are preserved." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="B. Data Table &amp; Saving" FontWeight="Bold" FontSize="19" Margin="0,0,0,5"/>
+                    <TextBlock Text="The data table displays tasks with their respective parameters. You can edit each of their attributes directly in the data tables (with responsibility). After making your changes, save your work by navigating to File &gt; Save BatchML file. This ensures that all modifications, including those made to the custom extensions, are preserved." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                 </StackPanel>
             </TabItem>
 
             <TabItem Header="2. Visualization">
                 <StackPanel Margin="10">
-                    <TextBlock Text="A. S-Graph Visualization" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="To visualize the S-Graph, go to S-Graph &gt; Draw S-Graph. The application will generate a graphical representation of the task dependencies based on the loaded data." TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <TextBlock Text="B. Gantt Chart Overview" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="The Gantt chart provides a visual representation of the task schedule. Each task is displayed as a bar spanning its start and end times on the timeline. For each task, the machine's identifier is placed on their left." TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <TextBlock Text="C. Zooming &amp; Navigation" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="Use the zoom slider above the Gantt chart to adjust the time scale for better visibility. You can also scroll horizontally to navigate through the timeline." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="A. Precedence Graph Visualization" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="To visualize the precedence graph, go to S-Graph &gt; Draw S-Graph. The application will generate a graphical representation of the task dependencies based on the loaded data." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="B. Gantt Chart Overview" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="The Gantt chart provides a visual representation of the task schedule right after a solution was generated. Each task is displayed as a bar spanning its start and end times on the timeline. For each task, their corresponding machines' identifiers are placed on their left." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="C. Zooming &amp; Navigation" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="Use the zoom slider above the Gantt chart to adjust the time scale for better visibility. You can also scroll horizontally to navigate through the timeline." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="D. Generating Data Table From Solution" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="After generating a solution, you can create a non-modifiable data table representing the schedule by navigating to Gantt &gt; Create data table. This table will display each task along with its assigned start and end times (duration included) based on the generated schedule." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                 </StackPanel>
             </TabItem>
 
             <TabItem Header="3. Optimization">
                 <StackPanel Margin="10">
-                    <TextBlock Text="A. Integrated Solvers" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
+                    <TextBlock Text="A. Integrated Solvers" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
                     <BulletDecorator Margin="0,0,0,5">
                         <BulletDecorator.Bullet>
-                            <TextBlock Text="• "/>
+                            <TextBlock Text="• " FontSize="15"/>
                         </BulletDecorator.Bullet>
-                        <TextBlock Text="Johnson's Rule: Provides the guaranteed optimal sequence for 2-machine problems." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                        <TextBlock Text="Johnson's Rule: Provides the guaranteed optimal sequence for 2-machine problems." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                     </BulletDecorator>
                     <BulletDecorator Margin="0,0,0,5">
                         <BulletDecorator.Bullet>
-                            <TextBlock Text="• "/>
+                            <TextBlock Text="• " FontSize="15"/>
                         </BulletDecorator.Bullet>
-                        <TextBlock Text="List Scheduling: Provides a fast, heuristic (non-optimal) feasible schedule." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                        <TextBlock Text="List Scheduling: Provides a fast, heuristic (non-optimal) feasible schedule." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                     </BulletDecorator>
 
-                    <TextBlock Text="B. Custom Solvers" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="You can integrate external executable files (.exe) like Simulated Annealing (SA) or Branch &amp; Bound (B&amp;B) via the Solvers menu. These require a specific XML input file format to create text-based solution files." TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <TextBlock Text="To import a custom solver, navigate to Solver &gt; Add Custom Solver, and specify its path with the Open file dialog's help. The solver's path is then saved in a JSON file for future usage." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="B. Custom Solvers" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="You can integrate external executable files (.exe) like Simulated Annealing (SA) or Branch &amp; Bound (B&amp;B) via the Solvers menu. These require a specific XML input file format to create text-based solution files." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="To import a custom solver, navigate to Solver &gt; Add Custom Solver, and specify its path with the Open file dialog's help. The solver's path is then saved in a JSON file for future usage." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="C. Running the Solver" FontWeight="Bold" FontSize="14" Margin="0,0,0,5"/>
-                    <TextBlock Text="To run a solver, navigate to the Solver menu and select any of the available solvers. The application will process the data and update the Gantt chart with a schedule either created by an integrated solver or interpreted from an external solver's solution." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="C. Running the Solver" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="To run a solver, navigate to the Solver menu and select any of the available solvers. The application will process the data and update the Gantt chart with a schedule either created by an integrated solver or interpreted from an external solver's solution." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="4. Additional Features">
+                <StackPanel Margin="10">
+                    <TextBlock Text="A. Exporting Precedence Graph" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="You can export the current precedence graph view as a JPEG image file. Go to File &gt; Export current canvas to save the precedence graph in JPEG image format." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="B. Exporting Gantt Chart" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="To export the Gantt chart, use the same option: File &gt; Export current canvas. This will save the Gantt chart as a JPEG image file." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="C. About" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="For more information about the application, navigate to Help &gt; About." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                 </StackPanel>
             </TabItem>
         </TabControl>
