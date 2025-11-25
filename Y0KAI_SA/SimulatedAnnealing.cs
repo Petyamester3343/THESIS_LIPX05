@@ -21,8 +21,8 @@ namespace Y0KAI_SA
                 currCost = EvaluateMakespan(currPath, isSilent),
                 bestCost = currCost;
 
-            if (bestCost == double.MaxValue && !isSilent)
-                Error.WriteLine("Initial random sequence caused MaxValue makespan; search span may be challenging.");
+            if (bestCost is double.MaxValue && !isSilent)
+                WriteLine("Initial random sequence caused MaxValue makespan; search span may be challenging.");
 
             for (int i = 0; i < maxIt && initTemp > 0.1; i++)
             {
@@ -41,13 +41,15 @@ namespace Y0KAI_SA
                 {
                     bestPath = [.. currPath];
                     bestCost = currCost;
-                    if (!isSilent) WriteLine($"New best makespan found: {bestCost:F2}");
+                    if (!isSilent)
+                        WriteLine($"New best makespan found: {bestCost:F2}");
                 }
 
                 initTemp *= coolRate;
             }
 
-            if (!isSilent) WriteLine($"Optimization complete. Best makespan: {bestCost:F2}");
+            if (!isSilent)
+                WriteLine($"Optimization complete. Best makespan: {bestCost:F2}");
             return [.. bestPath];
         }
 
@@ -81,7 +83,7 @@ namespace Y0KAI_SA
                 {
                     FromID = kvp.Key,
                     ToID = $"{kvp.Key[..^3]}_M2",
-                    Cost = kvp.Value.TimeM1
+                    Cost = 0d
                 });
             }
 

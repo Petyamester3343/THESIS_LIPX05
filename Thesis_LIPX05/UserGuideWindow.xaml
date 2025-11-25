@@ -11,10 +11,15 @@
             <TabItem Header="1. Data Setup &amp; Snyc">
                 <StackPanel Margin="10">
                     <TextBlock Text="A. Loading Files" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                    <TextBlock Text="To load a BatchML file, navigate to File &gt; Open BatchML file. Select the desired file from your system. The application will parse the file and populate the data grid with tasks and their parameters, including the M1/M2 processing times as custom extensions." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="To load a BatchML file, navigate to File &gt; Open BatchML file. Select the desired file from your system." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="The application will parse the file and populate the data grid with tasks and their parameters, including the M1/M2 processing times as custom extensions." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="B. Data Table &amp; Saving" FontWeight="Bold" FontSize="19" Margin="0,0,0,5"/>
-                    <TextBlock Text="The data table displays tasks with their respective parameters. You can edit each of their attributes directly in the data tables (with responsibility). After making your changes, save your work by navigating to File &gt; Save BatchML file. This ensures that all modifications, including those made to the custom extensions, are preserved." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="B. Data Table &amp; Saving" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
+                    <TextBlock Text="The data table displays tasks with their respective parameters." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10">
+                        <Run Text="You can edit each of their attributes directly in the data tables, add new rows with data, or even delete them "/><Run FontWeight="Bold" Text="(with responsibility)"/><Run Text="."/>
+                    </TextBlock>
+                    <TextBlock Text="After making your changes, save your work by navigating to File &gt; Save BatchML file. This ensures that all modifications, including those made to the custom extensions, are preserved." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                 </StackPanel>
             </TabItem>
 
@@ -52,20 +57,26 @@
 
                     <TextBlock Text="B. Custom Solvers" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
                     <TextBlock Text="You can integrate external executable files (.exe) like Simulated Annealing (SA) or Branch &amp; Bound (B&amp;B) via the Solvers menu. These require a specific XML input file format to create text-based solution files." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <TextBlock Text="To import a custom solver, navigate to Solver &gt; Add Custom Solver, and specify its path with the Open file dialog's help. The solver's path is then saved in a JSON file for future usage." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="To import a custom solver, navigate to Solver &gt; Add Custom Solver, and specify its path with the Open file dialog's help. Then you have to name the solver and declare its type. For now, the framework can only recognize deterministic and heuristic solvers." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="After the naming and type declaration proecss, the solver's path is then saved in a JSON file for future usage." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
                     <TextBlock Text="C. Running the Solver" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                    <TextBlock Text="To run a solver, navigate to the Solver menu and select any of the available solvers. The application will process the data and update the Gantt chart with a schedule either created by an integrated solver or interpreted from an external solver's solution." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="To run a solver, click to the Solver menu item and select any of the available solvers." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="The framework will process the data and update the Gantt chart with a schedule either created by an integrated solver or interpreted from an external solver's solution." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                 </StackPanel>
             </TabItem>
 
             <TabItem Header="4. Additional Features">
                 <StackPanel Margin="10">
                     <TextBlock Text="A. Exporting Precedence Graph" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                    <TextBlock Text="You can export the current precedence graph view as a JPEG image file. Go to File &gt; Export current canvas to save the precedence graph in JPEG image format." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="You can export the current precedence graph view as a JPEG image file." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="Navigate to File &gt; Export current canvas while staying on the 'Precedence graph' tab." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="This will save the picture comprising the precedence graph onto your computer at a specified location." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                     
                     <TextBlock Text="B. Exporting Gantt Chart" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
-                    <TextBlock Text="To export the Gantt chart, use the same option: File &gt; Export current canvas. This will save the Gantt chart as a JPEG image file." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="You can also export the Gantt chart as a JPEG image file." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="Navigate to File &gt; Export current canvas while staying on the Gantt chart tab." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="This will save the Gantt chart as a JPEG image file at a specified location on your computer." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>
                     
                     <TextBlock Text="C. About" FontWeight="Bold" FontSize="18" Margin="0,0,0,5"/>
                     <TextBlock Text="For more information about the application, navigate to Help &gt; About." FontSize="15" TextWrapping="Wrap" Margin="0,0,0,10"/>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SGraph>
+  <Nodes>
+    <Node ID="J1_M1" Desc="Machine 1 - Job 1" TimeM1="23" TimeM2="0" />
+    <Node ID="J1_M2" Desc="Machine 2 - Job 1" TimeM1="0" TimeM2="9" />
+    <Node ID="P1" Desc="Product - P1" TimeM1="0" TimeM2="0" />
+    <Node ID="J2_M1" Desc="Machine 1 - Job 2" TimeM1="40" TimeM2="0" />
+    <Node ID="J2_M2" Desc="Machine 2 - Job 2" TimeM1="0" TimeM2="23" />
+    <Node ID="P2" Desc="Product - P2" TimeM1="0" TimeM2="0" />
+    <Node ID="J3_M1" Desc="Machine 1 - Job 3" TimeM1="47" TimeM2="0" />
+    <Node ID="J3_M2" Desc="Machine 2 - Job 3" TimeM1="0" TimeM2="26" />
+    <Node ID="P3" Desc="Product - P3" TimeM1="0" TimeM2="0" />
+  </Nodes>
+  <Edges>
+    <Edge From="J1_M1" To="J1_M2" Cost="0" />
+    <Edge From="J2_M1" To="J2_M2" Cost="0" />
+    <Edge From="J3_M1" To="J3_M2" Cost="0" />
+  </Edges>
+</SGraph>

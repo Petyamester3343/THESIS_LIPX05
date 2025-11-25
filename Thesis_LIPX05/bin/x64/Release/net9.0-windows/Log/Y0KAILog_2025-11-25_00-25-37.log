@@ -1,0 +1,191 @@
+﻿11/25/2025 00:25 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 00:25 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 00:25 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 00:25 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 00:25 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:25 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 00:25 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 00:25 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:25 // INFO // [LOAD] // XML element established!
+11/25/2025 00:25 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/25/2025 00:25 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/25/2025 00:25 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/25/2025 00:25 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/25/2025 00:25 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:25 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:25 // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/25/2025 00:46 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 00:48 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 00:52 // WARNING // [CLOSE] // Attempting to close file with unsaved changes; prompting user!
+11/25/2025 00:52 // INFO // [CLOSE] // Closing file without saving (file modified: True)
+11/25/2025 00:52 // INFO // [CLEAR] // PrecedenceGraphCanvas has been cleared!
+11/25/2025 00:52 // INFO // [CLEAR] // GanttCanvas has been cleared!
+11/25/2025 00:52 // INFO // [CLEAR] // RulerCanvas has been cleared!
+11/25/2025 00:52 // INFO // [CLEAR] // FixedLabelCanvas has been cleared!
+11/25/2025 00:52 // INFO // [CLEAR] // Precedence graph's node container cleared!
+11/25/2025 00:52 // INFO // [CLEAR] // Precedence graph's edge container cleared!
+11/25/2025 00:52 // INFO // [CLEAR] // Master Recipe Table datatable purged!
+11/25/2025 00:52 // INFO // [CLEAR] // Recipe Elements Table datatable purged!
+11/25/2025 00:52 // INFO // [CLEAR] // Steps Table datatable purged!
+11/25/2025 00:52 // INFO // [CLEAR] // Master Recipe Table tab removed!
+11/25/2025 00:52 // INFO // [CLEAR] // Recipe Elements Table tab removed!
+11/25/2025 00:52 // INFO // [CLEAR] // Steps Table tab removed!
+11/25/2025 00:52 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:52 // INFO // [CLOSE] // BatchML file closed and all data cleared!
+11/25/2025 00:53 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 00:53 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:53 // INFO // [LOAD] // XML element established!
+11/25/2025 00:53 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/25/2025 00:53 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/25/2025 00:53 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/25/2025 00:53 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/25/2025 00:53 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:53 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:53 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 00:53 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 01:08 // WARNING // [CLOSE] // Attempting to close file with unsaved changes; prompting user!
+11/25/2025 01:13 // INFO // [CLOSE] // Closing file cancelled by user.
+11/25/2025 01:13 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J1_M1 at 100;70
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J1_M2 at 300;70
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node P1 at 450;70
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J2_M1 at 100;220
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J2_M2 at 300;220
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node P2 at 450;220
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J3_M2 at 300;370
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node P3 at 450;370
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J4_M1 at 100;520
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node J4_M2 at 300;520
+11/25/2025 01:54 // INFO // [S_GRAPH] // Node P4 at 450;520
+11/25/2025 01:54 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (300,0;105,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 15 drawn at (235;117,5)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (370,0;105,0) to (450,0;105,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 25 drawn at (410;105)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 25 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (300,0;255,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 16 drawn at (235;267,5)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (370,0;255,0) to (450,0;255,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 26 drawn at (410;255)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 26 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (300,0;405,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 17 drawn at (235;417,5)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (370,0;405,0) to (450,0;405,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 27 drawn at (410;405)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 27 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Curve value of edge (J4_M1 to J4_M2) set to 25,00
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (170,0;555,0) to (300,0;555,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 28 drawn at (235;567,5)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J4_M1 to J4_M2 with cost 0 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge drawn from (370,0;555,0) to (450,0;555,0)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Weight 18 drawn at (410;555)!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Edge from J4_M2 to P4 with cost 18 drawn.
+11/25/2025 01:54 // INFO // [S_GRAPH] // Canvas resized to 570x640!
+11/25/2025 01:54 // INFO // [S_GRAPH] // Flow Shop S-Graph built from BatchML file!
+11/25/2025 01:54 // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/25/2025 01:54 // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/25/2025 01:54 // INFO // [INITIALIZATION] //  solver enabled!
+11/25/2025 01:54 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 02:08 // INFO // [MODIFY] // Master REcipe Header synced to XML.
+11/25/2025 02:08 // ERROR // [SYNC] // No mapping found for table "MasterRecipe" or master recipe is null!
+11/25/2025 02:08 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J1_Module
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 02:08 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J2_Module
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 02:08 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J3_Module
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 02:08 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 02:08 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 02:08 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 02:08 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 02:08 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 02:08 // INFO // [CLEAR] // PrecedenceGraphCanvas has been cleared!
+11/25/2025 02:08 // INFO // [CLEAR] // GanttCanvas has been cleared!
+11/25/2025 02:08 // INFO // [CLEAR] // RulerCanvas has been cleared!
+11/25/2025 02:08 // INFO // [CLEAR] // FixedLabelCanvas has been cleared!
+11/25/2025 02:08 // INFO // [CLEAR] // Precedence graph's node container cleared!
+11/25/2025 02:08 // INFO // [CLEAR] // Precedence graph's edge container cleared!
+11/25/2025 02:08 // INFO // [CLEAR] // Master Recipe Table datatable purged!
+11/25/2025 02:08 // INFO // [CLEAR] // Recipe Elements Table datatable purged!
+11/25/2025 02:08 // INFO // [CLEAR] // Steps Table datatable purged!
+11/25/2025 02:08 // INFO // [CLEAR] // Master Recipe Table tab removed!
+11/25/2025 02:08 // INFO // [CLEAR] // Recipe Elements Table tab removed!
+11/25/2025 02:08 // INFO // [CLEAR] // Steps Table tab removed!
+11/25/2025 02:08 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 02:08 // INFO // [CLOSE] // BatchML file closed and all data cleared!
+11/25/2025 02:46 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 02:46 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\savingTest.xml!
+11/25/2025 02:46 // INFO // [LOAD] // XML element established!
+11/25/2025 02:46 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/25/2025 02:46 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/25/2025 02:46 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/25/2025 02:46 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/25/2025 02:46 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 02:46 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\savingTest.xml!
+11/25/2025 02:46 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J1_M1 at 100;70
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J1_M2 at 300;70
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node P1 at 450;70
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J2_M1 at 100;220
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J2_M2 at 300;220
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node P2 at 450;220
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J3_M1 at 100;370
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J3_M2 at 300;370
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node P3 at 450;370
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J4_M1 at 100;520
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J4_M2 at 300;520
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node P4 at 450;520
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J5_M1 at 100;670
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node J5_M2 at 300;670
+11/25/2025 02:48 // INFO // [S_GRAPH] // Node P5 at 450;670
+11/25/2025 02:48 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (170,0;105,0) to (300,0;105,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 15 drawn at (235;117,5)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (370,0;105,0) to (450,0;105,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 25 drawn at (410;105)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 25 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (170,0;255,0) to (300,0;255,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 16 drawn at (235;267,5)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (370,0;255,0) to (450,0;255,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 26 drawn at (410;255)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 26 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (170,0;405,0) to (300,0;405,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 17 drawn at (235;417,5)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (370,0;405,0) to (450,0;405,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 27 drawn at (410;405)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 27 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Curve value of edge (J4_M1 to J4_M2) set to 25,00
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (170,0;555,0) to (300,0;555,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 28 drawn at (235;567,5)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J4_M1 to J4_M2 with cost 0 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (370,0;555,0) to (450,0;555,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 18 drawn at (410;555)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J4_M2 to P4 with cost 18 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Curve value of edge (J5_M1 to J5_M2) set to 25,00
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (170,0;705,0) to (300,0;705,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 30 drawn at (235;717,5)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J5_M1 to J5_M2 with cost 0 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge drawn from (370,0;705,0) to (450,0;705,0)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Weight 29 drawn at (410;705)!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Edge from J5_M2 to P5 with cost 29 drawn.
+11/25/2025 02:48 // INFO // [S_GRAPH] // Canvas resized to 570x790!
+11/25/2025 02:48 // INFO // [S_GRAPH] // Flow Shop S-Graph built from BatchML file!
+11/25/2025 02:48 // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/25/2025 02:48 // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/25/2025 02:48 // INFO // [INITIALIZATION] //  solver enabled!
+11/25/2025 02:48 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 04:03 // INFO // [EXITUS] // Shutting down...

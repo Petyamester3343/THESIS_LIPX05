@@ -1,0 +1,37 @@
+﻿11/25/2025 06:19 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 06:19 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 06:19 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 06:19 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 06:19 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 06:19 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 06:19 // INFO // [MODIFY] // Entering full-screen mode...
+11/25/2025 06:19 // INFO // [MODIFY] // Exiting full-screen mode...
+11/25/2025 06:19 // INFO // [MODIFY] // Entering full-screen mode...
+11/25/2025 06:19 // INFO // [MODIFY] // Exiting full-screen mode...
+11/25/2025 06:19 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 06:19 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 06:19 // INFO // [LOAD] // XML element established!
+11/25/2025 06:19 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/25/2025 06:19 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/25/2025 06:19 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/25/2025 06:19 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/25/2025 06:19 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 06:19 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 06:19 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 06:19 // WARNING // [CLOSE] // Attempting to close file with unsaved changes; prompting user!
+11/25/2025 06:19 // INFO // [CLEAR] // PrecedenceGraphCanvas has been cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // GanttCanvas has been cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // RulerCanvas has been cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // FixedLabelCanvas has been cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // Precedence graph's node container cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // Precedence graph's edge container cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // Gantt chart data cleared!
+11/25/2025 06:19 // INFO // [CLEAR] // Master Recipe Table datatable purged!
+11/25/2025 06:19 // INFO // [CLEAR] // Recipe Elements Table datatable purged!
+11/25/2025 06:19 // INFO // [CLEAR] // Steps Table datatable purged!
+11/25/2025 06:19 // INFO // [CLEAR] // Master Recipe Table tab removed!
+11/25/2025 06:19 // INFO // [CLEAR] // Recipe Elements Table tab removed!
+11/25/2025 06:19 // INFO // [CLEAR] // Steps Table tab removed!
+11/25/2025 06:19 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 06:19 // INFO // [CLOSE] // BatchML file closed and all data cleared!
+11/25/2025 06:20 // INFO // [EXITUS] // Shutting down...

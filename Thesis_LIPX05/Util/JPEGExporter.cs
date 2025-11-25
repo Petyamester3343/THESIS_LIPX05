@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,7 +24,7 @@ namespace Thesis_LIPX05.Util
                 Title = $"Export {ctx} as JPEG",
                 Filter = "JPEG Image (*.jpg)|*.jpg",
                 DefaultExt = "jpg",
-                FileName = $"{ctx.ToLower()}_{DateTime.Now:yyyyMMdd_HHmmss}.jpg",
+                FileName = $"{ctx.Replace(" ", "_").ToLower(CultureInfo.InvariantCulture)}_{DateTime.Now:yyyyMMdd_HHmmss}.jpg",
                 AddExtension = true
             };
 
@@ -42,7 +43,7 @@ namespace Thesis_LIPX05.Util
                 wrapper, renderW, renderH, DPI_VALUE, PixelFormats.Pbgra32
                 );
             LogGeneralActivity(LogSeverity.INFO,
-                $"{ctx} RenderTargetBitmap created with size {cv.Width}x{cv.Height} at 384 DPI.", GeneralLogContext.EXPORT);
+                $"{ctx} RenderTargetBitmap created with size {cv.Width}x{cv.Height} at {DPI_VALUE} DPI.", GeneralLogContext.EXPORT);
 
             JpegBitmapEncoder enc = EncodedBitmap(rtb);
             LogGeneralActivity(LogSeverity.INFO,
@@ -64,7 +65,7 @@ namespace Thesis_LIPX05.Util
                 Title = $"Export {ctx} as JPEG",
                 Filter = "JPEG Image (*.jpg)|*.jpg",
                 DefaultExt = "jpg",
-                FileName = $"{ctx.ToLower()}_{DateTime.Now:yyyyMMdd_HHmmss}.jpg",
+                FileName = $"{ctx.Replace(" ", "_").ToLower(CultureInfo.InvariantCulture)}_{DateTime.Now:yyyyMMdd_HHmmss}.jpg",
                 AddExtension = true
             };
 
@@ -74,7 +75,7 @@ namespace Thesis_LIPX05.Util
 
             RenderTargetBitmap rtb = RenderedTargetBitmap(panel, renderW, renderH, DPI_VALUE, PixelFormats.Pbgra32);
             LogGeneralActivity(LogSeverity.INFO,
-                $"{ctx} combined RenderTargetBitmap created with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height} at 96 DPI.", GeneralLogContext.EXPORT);
+                $"{ctx} combined RenderTargetBitmap created with size {panel.DesiredSize.Width}x{panel.DesiredSize.Height} at {DPI_VALUE} DPI.", GeneralLogContext.EXPORT);
 
             JpegBitmapEncoder enc = EncodedBitmap(rtb);
             LogGeneralActivity(LogSeverity.INFO,
@@ -94,17 +95,17 @@ namespace Thesis_LIPX05.Util
 
             exportGrid.ColumnDefinitions.Add(new() { Width = new(60) });
             exportGrid.ColumnDefinitions.Add(new() { Width = new(1, GridUnitType.Star) });
-            
+
             // measuring and arranging the grid with all canvases as the Gantt diagram
             StackPanel scrollingStack = new() { Orientation = Orientation.Vertical };
-            
+
             foreach (Canvas cv in new[] { rcv, gcv })
                 scrollingStack.Children.Add(CloneVisual(cv));
 
             scrollingStack.Measure(availableSize: new(double.PositiveInfinity, double.PositiveInfinity)); // measure the panel to get its desired size
             scrollingStack.Arrange(finalRect: new(scrollingStack.DesiredSize)); // arrange the panel to apply the measurements
 
-            UIElement lblClone = CloneVisual(lcv);
+            Canvas lblClone = CloneVisual(lcv);
             Grid.SetColumn(lblClone, 0);
             exportGrid.Children.Add(lblClone);
 
@@ -124,7 +125,7 @@ namespace Thesis_LIPX05.Util
             enc.Frames.Add(BitmapFrame.Create(rtb));
             return enc;
         }
-        
+
         // Helper method to create a raw render target bitmap
         private static RenderTargetBitmap RenderedTargetBitmap(Visual visual, int w, int h, int dpi, PixelFormat pf)
         {
@@ -169,15 +170,10 @@ namespace Thesis_LIPX05.Util
             {
                 if (child is UIElement uie)
                 {
-                    string xaml = XamlWriter.Save(uie);
-                    UIElement deepCopy = (UIElement)XamlReader.Parse(xaml);
+                    UIElement deepCopy = (UIElement)XamlReader.Parse(XamlWriter.Save(uie));
 
-                    double
-                        left = Canvas.GetLeft(uie),
-                        top = Canvas.GetTop(uie);
-
-                    if (!double.IsNaN(left)) Canvas.SetLeft(deepCopy, left);
-                    if (!double.IsNaN(top)) Canvas.SetTop(deepCopy, top);
+                    if (!double.IsNaN(Canvas.GetLeft(uie))) Canvas.SetLeft(deepCopy, Canvas.GetLeft(uie));
+                    if (!double.IsNaN(Canvas.GetTop(uie))) Canvas.SetTop(deepCopy, Canvas.GetTop(uie));
 
                     clone.Children.Add(deepCopy);
                     LogGeneralActivity(LogSeverity.INFO,

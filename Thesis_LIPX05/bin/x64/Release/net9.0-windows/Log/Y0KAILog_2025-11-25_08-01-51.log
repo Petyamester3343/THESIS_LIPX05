@@ -1,0 +1,17 @@
+﻿11/25/2025 08:01 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 08:01 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 08:01 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 08:01 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 08:01 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 08:01 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 08:03 // INFO // [EXTERN_SOLVER] // Custom metaheuristic solver "Simulated Annealing" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_SA\bin\Release\net9.0\Y0KAI_SA.exe
+11/25/2025 08:08 // INFO // [EXTERN_SOLVER] // User opted to save custom solvers after adding a new one.
+11/25/2025 08:08 // INFO // [SAVE] // Custom solvers saved to JSON file!
+11/25/2025 08:22 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 08:22 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 08:22 // INFO // [EXTERN_SOLVER] // User opted to save custom solvers after adding a new one.
+11/25/2025 08:22 // INFO // [SAVE] // Custom solvers saved to JSON file!
+11/25/2025 08:22 // INFO // [LOAD] // Custom solver "Simulated Annealing" (metaheuristic) loaded from JSON file.
+11/25/2025 08:22 // INFO // [LOAD] // Custom solvers loaded from JSON file!
+11/25/2025 08:22 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 08:27 // INFO // [EXITUS] // Shutting down...

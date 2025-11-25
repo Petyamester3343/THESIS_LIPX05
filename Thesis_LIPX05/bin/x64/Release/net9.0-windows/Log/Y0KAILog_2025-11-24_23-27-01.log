@@ -1,0 +1,48 @@
+﻿11/24/2025 23:27 // INFO // [INITIALIZATION] // Beginning initialization...
+11/24/2025 23:27 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/24/2025 23:27 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/24/2025 23:27 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/24/2025 23:27 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 23:27 // INFO // [INITIALIZATION] // Initialization complete!
+11/24/2025 23:27 // WARNING // [S_GRAPH] // User tried to draw a graph with no BatchML file loaded!
+11/24/2025 23:33 // WARNING // [S_GRAPH] // User tried to draw a graph with no BatchML file loaded!
+11/24/2025 23:33 // INFO // [INITIALIZATION] // New "User Guide" window opened!
+11/24/2025 23:37 // INFO // [LOAD] // Open file dialog initiated...
+11/24/2025 23:37 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\savingTest.xml!
+11/24/2025 23:37 // INFO // [LOAD] // XML element established!
+11/24/2025 23:37 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/24/2025 23:37 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/24/2025 23:37 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/24/2025 23:37 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/24/2025 23:37 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 23:37 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\savingTest.xml!
+11/24/2025 23:37 // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/24/2025 23:37 // WARNING // [CLOSE] // Attempting to close file with unsaved changes; prompting user!
+11/24/2025 23:48 // INFO // [CLOSE] // Closing file without saving (file modified: True)
+11/24/2025 23:48 // INFO // [CLEAR] // SGraphCanvas has been cleared!
+11/24/2025 23:48 // INFO // [CLEAR] // GanttCanvas has been cleared!
+11/24/2025 23:48 // INFO // [CLEAR] // RulerCanvas has been cleared!
+11/24/2025 23:48 // INFO // [CLEAR] // FixedLabelCanvas has been cleared!
+11/24/2025 23:48 // INFO // [CLEAR] // Precedence graph's node container cleared!
+11/24/2025 23:48 // INFO // [CLEAR] // Precedence graph's edge container cleared!
+11/24/2025 23:48 // INFO // [CLEAR] // Master Recipe Table datatable purged!
+11/24/2025 23:48 // INFO // [CLEAR] // Recipe Elements Table datatable purged!
+11/24/2025 23:48 // INFO // [CLEAR] // Steps Table datatable purged!
+11/24/2025 23:48 // INFO // [CLEAR] // Master Recipe Table tab removed!
+11/24/2025 23:48 // INFO // [CLEAR] // Recipe Elements Table tab removed!
+11/24/2025 23:48 // INFO // [CLEAR] // Steps Table tab removed!
+11/24/2025 23:48 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 23:48 // INFO // [CLOSE] // BatchML file closed and all data cleared!
+11/24/2025 23:48 // INFO // [LOAD] // Open file dialog initiated...
+11/24/2025 23:48 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/24/2025 23:48 // INFO // [LOAD] // XML element established!
+11/24/2025 23:48 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/24/2025 23:48 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/24/2025 23:48 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/24/2025 23:48 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/24/2025 23:48 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 23:48 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/24/2025 23:48 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/24/2025 23:48 // WARNING // [EXITUS] // App is about to be shut down with unsaved changes! Prompting user to save before exiting!
+11/24/2025 23:48 // WARNING // [EXITUS] // User opted to exit without saving changes in the datatables to the BatchML file before exiting!
+11/24/2025 23:48 // INFO // [EXITUS] // Shutting down...

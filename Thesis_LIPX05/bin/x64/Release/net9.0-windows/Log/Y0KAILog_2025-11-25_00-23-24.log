@@ -1,0 +1,45 @@
+﻿11/25/2025 00:23 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 00:23 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 00:23 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 00:23 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 00:23 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:23 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 00:23 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 00:23 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:23 // INFO // [LOAD] // XML element established!
+11/25/2025 00:23 // ERROR // [LOAD] // Error loading BatchML file: Input array is longer than the number of columns in this table.
+11/25/2025 00:23 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:23 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:23 // INFO // [CLEAR] // PrecedenceGraphCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // GanttCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // RulerCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // FixedLabelCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // Precedence graph's node container cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // Precedence graph's edge container cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // Master Recipe Table datatable purged!
+11/25/2025 00:23 // INFO // [CLEAR] // Recipe Elements Table datatable purged!
+11/25/2025 00:23 // INFO // [CLEAR] // Steps Table datatable purged!
+11/25/2025 00:23 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 00:23 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:23 // INFO // [LOAD] // XML element established!
+11/25/2025 00:23 // ERROR // [LOAD] // Error loading BatchML file: Input array is longer than the number of columns in this table.
+11/25/2025 00:23 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:23 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:23 // INFO // [CLEAR] // PrecedenceGraphCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // GanttCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // RulerCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // FixedLabelCanvas has been cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // Precedence graph's node container cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // Precedence graph's edge container cleared!
+11/25/2025 00:23 // INFO // [CLEAR] // Master Recipe Table datatable purged!
+11/25/2025 00:23 // INFO // [CLEAR] // Recipe Elements Table datatable purged!
+11/25/2025 00:23 // INFO // [CLEAR] // Steps Table datatable purged!
+11/25/2025 00:23 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:23 // INFO // [CLOSE] // BatchML file closed and all data cleared!
+11/25/2025 00:23 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 00:23 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:23 // INFO // [LOAD] // XML element established!
+11/25/2025 00:25 // ERROR // [LOAD] // Error loading BatchML file: Input array is longer than the number of columns in this table.
+11/25/2025 00:25 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 00:25 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 00:25 // INFO // [EXITUS] // Shutting down...

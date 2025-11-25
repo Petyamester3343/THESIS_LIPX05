@@ -90,7 +90,7 @@ namespace Y0KAI_CDS
 
                 // root
                 XDocument gFile = XDocument.Load(filePath);
-                XElement? root = gFile.Element("SGraph");
+                XElement? root = gFile.Element("PrecGraph");
 
                 if (root is null)
                 {

@@ -84,7 +84,7 @@ namespace Y0KAI_SA
             {
                 // Must log the exception message to see *why* it stopped
                 if (!isSilent)
-                    Error.WriteLine($"Fatal error: {ex.Message}");
+                    Error.WriteLine($"Fatal error: {ex.StackTrace}");
                 return 4;
             }
         }
@@ -105,7 +105,7 @@ namespace Y0KAI_SA
 
                 // root
                 XDocument gFile = XDocument.Load(filePath);
-                XElement? root = gFile.Element("SGraph");
+                XElement? root = gFile.Element("PrecGraph");
 
                 if (root is null)
                 {

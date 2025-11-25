@@ -1,0 +1,31 @@
+﻿11/25/2025 05:47 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 05:47 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 05:47 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 05:47 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 05:47 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 05:47 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 05:47 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 05:47 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 05:47 // INFO // [LOAD] // XML element established!
+11/25/2025 05:47 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/25/2025 05:47 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/25/2025 05:47 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/25/2025 05:47 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/25/2025 05:47 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 05:47 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 05:47 // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/25/2025 05:47 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/25/2025 05:47 // INFO // [MODIFY] // Master REcipe Header synced to XML.
+11/25/2025 05:47 // INFO // [SAVE] // Synchronizing 4 changes for Recipe Elements Table table...
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Recipe Elements Table" or master recipe is null!
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Recipe Elements Table" or master recipe is null!
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Recipe Elements Table" or master recipe is null!
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Recipe Elements Table" or master recipe is null!
+11/25/2025 05:47 // INFO // [SAVE] // All changes in table Recipe Elements Table have been saved to XML!
+11/25/2025 05:47 // INFO // [SAVE] // Synchronizing 4 changes for Steps Table table...
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Steps Table" or master recipe is null!
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Steps Table" or master recipe is null!
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Steps Table" or master recipe is null!
+11/25/2025 05:47 // ERROR // [SYNC] // No mapping found for table "Steps Table" or master recipe is null!
+11/25/2025 05:47 // INFO // [SAVE] // All changes in table Steps Table have been saved to XML!
+11/25/2025 05:47 // INFO // [SAVE] // BatchML file successfully saved as C:\Users\Phant0m\Desktop\THESIS_LIPX05\test_saving_with_new_code.xml

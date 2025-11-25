@@ -23,7 +23,7 @@ namespace Thesis_LIPX05
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool ShowWindow(nint hWnd, int nCmdShow);
 
-        // Ensure single instance application using Mutex
+        // Ensure single instance application using an instance of mutual exclusion (mutex)
         protected override void OnStartup(StartupEventArgs e)
         {
             const string MutexName = "Y0KAI Task Scheduler";
@@ -40,7 +40,7 @@ namespace Thesis_LIPX05
 
                     if (runningProc is not null && runningProc.MainWindowHandle != nint.Zero)
                     {
-                        MessageBox.Show("Another instance of Y0KAI Task Scheduler is already running. Bringing the existing instance to the foreground.",
+                        MessageBox.Show("Another instance of Y0KAI Task Scheduler is already running. Bringing the existing instance to the foreground...",
                             "Instance Already Running", MessageBoxButton.OK, MessageBoxImage.Information);
                         // Ensure the window is restored before bringing to foreground
                         ShowWindow(runningProc.MainWindowHandle, 9); // 9 -> SW_RESTORE
@@ -53,7 +53,7 @@ namespace Thesis_LIPX05
 
                 base.OnStartup(e);
                 ShutdownMode = ShutdownMode.OnLastWindowClose;
-                Dispatcher.BeginInvoke(new Action(() => ApplicationStartupLogic(e)), DispatcherPriority.Loaded);
+                Dispatcher.BeginInvoke(new Action(ApplicationStartupLogic), DispatcherPriority.Loaded);
             }
             catch (Exception ex)
             {
@@ -66,19 +66,27 @@ namespace Thesis_LIPX05
         // Clean up the mutex on application exit
         protected override void OnExit(ExitEventArgs e)
         {
-            AppMTX?.ReleaseMutex();
-            AppMTX?.Dispose();
-            base.OnExit(e);
+            try
+            {
+                AppMTX?.ReleaseMutex();
+            }
+            catch (ApplicationException appEx) when (appEx.Message.Contains("unsynchronized block")) {}
+            catch (SynchronizationLockException) {}
+            finally
+            {
+                AppMTX?.Dispose();
+                base.OnExit(e);
+            }
         }
 
         // The main entry point for the application
-        private async void ApplicationStartupLogic(StartupEventArgs e)
+        private async void ApplicationStartupLogic()
         {
             LoadingWindow loading = new();
             loading.Show();
 
             // Simulate loading progress by updating the loading window's progress text
-            for (int i = 1; i <= 100; i++)
+            for (uint i = 1; i <= 100; i++)
             {
                 switch (DecideRang(i))
                 {
@@ -104,8 +112,6 @@ namespace Thesis_LIPX05
 
             // Show the main window and close the loading window
             LaunchMainWindowAsync(loading);
-
-            e.Equals(null);
         }
 
         // Launches the main application window asynchronously (in maximized state)
@@ -123,7 +129,7 @@ namespace Thesis_LIPX05
 
 
         // Decides the loading status based on the given integer value
-        private static LoadingStatusHelper DecideRang(int i)
+        private static LoadingStatusHelper DecideRang(uint i)
         {
             if (i <= 20) return LoadingStatusHelper.FIRST;
             else if (i <= 40) return LoadingStatusHelper.SECOND;

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Y0KAI_BnB")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+68407ec0e8c4179d1a0dd82a8cc78815eafd5c67")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e98faef2d367ae9ff308afecb14169fa11c544b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Y0KAI_BnB")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Y0KAI_BnB")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

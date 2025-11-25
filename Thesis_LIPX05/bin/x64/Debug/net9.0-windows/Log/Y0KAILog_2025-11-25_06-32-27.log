@@ -1,0 +1,40 @@
+﻿11/25/2025 06:32 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 06:32 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 06:32 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 06:32 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 06:32 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 06:32 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 06:32 // INFO // [LOAD] // Open file dialog initiated...
+11/25/2025 06:32 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 06:32 // INFO // [LOAD] // XML element established!
+11/25/2025 06:32 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/25/2025 06:32 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/25/2025 06:32 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/25/2025 06:32 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/25/2025 06:32 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 06:32 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/25/2025 06:32 // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/25/2025 06:32 // WARNING // [CLOSE] // Attempting to close file with unsaved changes; prompting user!
+11/25/2025 06:32 // INFO // [MODIFY] // Master REcipe Header synced to XML.
+11/25/2025 06:32 // INFO // [MODIFY] // Master REcipe Header synced to XML.
+11/25/2025 06:32 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J1_Module
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 06:32 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J2_Module
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 06:32 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J3_Module
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 06:32 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J4_Module
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/25/2025 06:32 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 06:32 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 06:32 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 06:32 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 06:32 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 06:32 // WARNING // [SAVE] // SaveFileDialog cancelled by user. Aborting file closure!
+11/25/2025 06:33 // WARNING // [CLOSE] // Attempting to close file with unsaved changes; prompting user!
+11/25/2025 06:33 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/25/2025 06:33 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/25/2025 06:33 // WARNING // [SAVE] // SaveFileDialog cancelled by user. Aborting file closure!

@@ -57,7 +57,7 @@ namespace Thesis_LIPX05
             IsFileLoaded = false,
             IsFileModified = false,
             IsFullScreen = false,
-            SGraphExists = false,
+            PrecedenceGraphExists = false,
             GanttExists = false;
         private string CurrFilePath = string.Empty;
         private int InitialCustomSolverCount = 0;
@@ -88,6 +88,8 @@ namespace Thesis_LIPX05
             LogGeneralActivity(LogSeverity.INFO,
                 "Beginning initialization...", GeneralLogContext.INITIALIZATION);
 
+            KeyUp += MainWindow_KeyUp;
+
             MasterRecipe = new("MasterRecipe");
             batchML = XNamespace.Get("http://www.wbf.org/xml/BatchML-V02");
             customNS = XNamespace.Get("http://lipx05.y0kai.com/batchml/custom");
@@ -95,6 +97,8 @@ namespace Thesis_LIPX05
             FlowShopMasterTable = new(MasterRecipeTableName);
             FlowShopRecipeElementTable = new(RecipeElementsTableName);
             FlowShopStepTable = new(StepsTableName);
+
+            TesterStopwatch = new();
 
             GanttData = [];
             ZoomValue = 1;
@@ -108,13 +112,8 @@ namespace Thesis_LIPX05
 
             LoadCustomSolversFromJSON();
             BuildSolverMenu(SolverMenu);
-
             ManageFileHandlers();
             ManageSolutionDataTableCreator();
-
-            TesterStopwatch = new();
-
-            KeyUp += MainWindow_KeyUp;
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Initialization complete!", GeneralLogContext.INITIALIZATION);
@@ -126,7 +125,7 @@ namespace Thesis_LIPX05
             foreach (MenuItem menuItem in new[] { SaveFileMenuItem, CloseFileMenuItem })
                 menuItem.IsEnabled = IsFileLoaded;
 
-            ExportCanvasMenuItem.IsEnabled = GanttCanvas.Children.Count is not 0 || SGraphCanvas.Children.Count is not 0;
+            ExportCanvasMenuItem.IsEnabled = GanttCanvas.Children.Count is not 0 || PrecedenceGraphCanvas.Children.Count is not 0;
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Saving and closing are disabled for as long as there are no files opened.", GeneralLogContext.CONSTRAINT);
@@ -137,20 +136,6 @@ namespace Thesis_LIPX05
         // Initializes the mappings for XML elements to DataTable columns
         private static Dictionary<string, TableMapper> InitMappings() => new(StringComparer.OrdinalIgnoreCase)
             {
-                {
-                    "Links", new()
-                    {
-                        ParentElement = "Link",
-                        KeyCols = ["ID"],
-                        Col2El = new()
-                        {
-                            { "ID", "ID" },
-                            { "From", "FromIDValue" },
-                            { "To", "ToIDValue" },
-                            { "Duration", "Duration" }
-                        }
-                    }
-                },
                 {
                     "Steps", new()
                     {
@@ -195,7 +180,7 @@ namespace Thesis_LIPX05
                     {
                         Header = solver,
                         Tag = solver,
-                        IsEnabled = SGraphExists
+                        IsEnabled = PrecedenceGraphExists
                     };
                     item.Click += SolveClick;
                     solverMenu.Items.Add(item);
@@ -241,10 +226,9 @@ namespace Thesis_LIPX05
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "App is about to be shut down with unsaved changes! Prompting user to save before exiting!", GeneralLogContext.EXITUS);
-                MessageBoxResult res = MessageBox.Show("Do you wish to save changes before exiting?",
-                    "Confirm Exit", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
-                switch (res)
+                switch (MessageBox.Show("Do you wish to save the changes made within the datatable(s) before exiting?",
+                    "Confirm Exit", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
                 {
                     case MessageBoxResult.Yes:
                         {
@@ -269,10 +253,8 @@ namespace Thesis_LIPX05
 
             if (shouldClose && isSolverModified)
             {
-                MessageBoxResult solversRes = MessageBox.Show("Do you wish to save your custom solvers?",
-                    "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-                switch (solversRes)
+                switch (MessageBox.Show("Do you wish to save your custom solvers?",
+                    "Confirm Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
                 {
                     case MessageBoxResult.Yes:
                         {
@@ -281,7 +263,7 @@ namespace Thesis_LIPX05
                                 "Custom solvers saved during exit!", GeneralLogContext.EXITUS);
                             break;
                         }
-                        case MessageBoxResult.No:
+                    case MessageBoxResult.No:
                         {
                             LogGeneralActivity(LogSeverity.WARNING,
                                 "Custom solvers not saved during exit!", GeneralLogContext.EXITUS);
@@ -309,7 +291,7 @@ namespace Thesis_LIPX05
         // Event handler for the Exit menu item click event
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            if (IsFileModified && HasUnsavedChanges())
+            if (IsFileLoaded && IsFileModified && HasUnsavedChanges())
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "Unsaved changes detected, prompting user to save before exiting!", GeneralLogContext.EXITUS);
@@ -328,22 +310,11 @@ namespace Thesis_LIPX05
         {
             if (e.Key is Key.F11)
             {
-                if (IsFullScreen)
-                {
-                    WindowStyle = WindowStyle.SingleBorderWindow;
-                    WindowState = WindowState.Normal;
-                    LogGeneralActivity(LogSeverity.INFO,
-                        "Exiting full-screen mode...", GeneralLogContext.MODIFY);
-                    IsFullScreen = false;
-                }
-                else
-                {
-                    WindowStyle = WindowStyle.None;
-                    WindowState = WindowState.Maximized;
-                    LogGeneralActivity(LogSeverity.INFO,
-                        "Entering full-screen mode...", GeneralLogContext.MODIFY);
-                    IsFullScreen = true;
-                }
+                WindowStyle = IsFullScreen ? WindowStyle.SingleBorderWindow : WindowStyle.None;
+                WindowState = IsFullScreen ? WindowState.Normal : WindowState.Maximized;
+                LogGeneralActivity(LogSeverity.INFO,
+                    $"{(IsFullScreen ? "Exiting" : "Entering")} full-screen mode...", GeneralLogContext.MODIFY);
+                IsFullScreen = !IsFullScreen;
             }
         }
 
@@ -383,7 +354,7 @@ namespace Thesis_LIPX05
                     }
             }
 
-            RenderPrecedenceGraph(SGraphCanvas);
+            RenderPrecedenceGraph(PrecedenceGraphCanvas);
         }
 
         private void RenderSchedule(List<Node> optPath, string method)
@@ -418,6 +389,7 @@ namespace Thesis_LIPX05
             LogGeneralActivity(LogSeverity.INFO, $"{method} schedule rendered successfully!", GeneralLogContext.GANTT);
 
             GanttExists = true;
+            ManageFileHandlers();
             ManageSolutionDataTableCreator();
         }
 
@@ -474,7 +446,7 @@ namespace Thesis_LIPX05
             // commencing inquiries and initializing
             string
                 tempDir = FilePath.Combine(Environment.CurrentDirectory, "SolverTemp"),
-                txtName = $"{menuItem?.Tag?.ToString()?.Replace(" ", "").Replace("-", "")}_Solution.txt",
+                txtName = $"{menuItem.Tag.ToString()?.Replace(" ", "").Replace("-", "")}_Solution.txt",
                 tempTxtPath = FilePath.Combine(tempDir, txtName),
                 tempXmlPath = string.Empty; // initializing out variable beyond the try-catch-finally scope
 
@@ -493,7 +465,7 @@ namespace Thesis_LIPX05
             // running the external solver with the prepared arguments
             try
             {
-                WriteSGraph2XML(tempDir, out tempXmlPath);
+                WritePrecedenceGraph2XML(tempDir, out tempXmlPath);
                 List<string> launchArgs = [];
 
                 if (customSolver.TypeID.Equals("Metaheuristic", StringComparison.OrdinalIgnoreCase))
@@ -541,19 +513,15 @@ namespace Thesis_LIPX05
 
                 if (p.ExitCode is not 0)
                 {
+                    TesterStopwatch.Stop();
                     string errMsg = string.IsNullOrEmpty(stdErr)
                         ? $"Solver exited with code {p.ExitCode} (no STDERR output)."
                         : $"Solver failed with code {p.ExitCode}! Error: {stdErr.Trim()}";
-
-                    TesterStopwatch.Stop();
-                    MessageBox.Show($"{customSolver.Name} execution failed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.\n\n{errMsg}",
+                    MessageBox.Show($"{customSolver.Name} execution failed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.\n{errMsg}",
                         "Solver Execution Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                     TesterStopwatch.Reset();
-
                     LogSolverActivity(LogSeverity.ERROR,
                         errMsg, customSolver.Name);
-                    MessageBox.Show(errMsg,
-                        "External Solver Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -566,9 +534,9 @@ namespace Thesis_LIPX05
                     List<Node> path = LoadSolFromTxt(tempTxtPath);
 
                     GetEdges().Clear();
-                    RecreateEdgesFromOptSeq([.. path.Where(n => n.ID.EndsWith("_M1")).Select(n => n.ID[..^3])]);
+                    RecreateEdgesFromOptSeq([.. from n in path where n.ID.EndsWith("_M1") select n.ID[..^3]]);
 
-                    RenderPrecedenceGraph(SGraphCanvas);
+                    RenderPrecedenceGraph(PrecedenceGraphCanvas);
                     RenderSchedule(path, customSolver.Name);
                 }
             }
@@ -579,7 +547,8 @@ namespace Thesis_LIPX05
                 MessageBox.Show($"Error running custom solver: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally // can be commented for debugging
+            // can be commented for debugging the precedence graph within the .xml file
+            finally
             {
                 if (File.Exists(tempXmlPath))
                     File.Delete(tempXmlPath);
@@ -658,7 +627,7 @@ namespace Thesis_LIPX05
             {
                 LogGeneralActivity(LogSeverity.ERROR,
                     $"Error loading solution from file: {ex.Message}", GeneralLogContext.LOAD);
-                MessageBox.Show($"Error loading solution from file: {ex.Message}",
+                MessageBox.Show($"Error loading solution from file: {ex.StackTrace}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return [];
             }
@@ -696,6 +665,7 @@ namespace Thesis_LIPX05
 
         private static bool CheckValParse(string deftemp, string defcool, string defiter, string intemp, string incool, string initer, out double temp, out double cool, out int i)
         {
+            // the first out variable ("temp") is already initialized
             cool = 0;
             i = 0;
 
@@ -714,11 +684,11 @@ namespace Thesis_LIPX05
             if (Application.Current.Windows.OfType<AboutWindow>().Any())
             {
                 LogGeneralActivity(LogSeverity.INFO,
-                    "\"About\" window is already open; focusing on it!", GeneralLogContext.INITIALIZATION);
+                    "\"About\" window is already open; Re-activating first instance!", GeneralLogContext.INITIALIZATION);
                 Application.Current.Windows.OfType<AboutWindow>().First().Activate();
                 return;
             }
-            
+
             new AboutWindow().Show();
             LogGeneralActivity(LogSeverity.INFO,
                 "\"About\" window opened!", GeneralLogContext.INITIALIZATION);
@@ -807,10 +777,9 @@ namespace Thesis_LIPX05
 
         // Helper expression-body method to check for unsaved changes in any of the data tables (dirty flag)
         private bool HasUnsavedChanges() =>
-            IsFileLoaded &&
-            (FlowShopMasterTable.GetChanges() is not null ||
+            FlowShopMasterTable.GetChanges() is not null ||
             FlowShopRecipeElementTable.GetChanges() is not null ||
-            FlowShopStepTable.GetChanges() is not null);
+            FlowShopStepTable.GetChanges() is not null;
 
         // Event handler for opening a file
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -840,9 +809,11 @@ namespace Thesis_LIPX05
 
             LogGeneralActivity(LogSeverity.INFO,
                 "Open file dialog initiated...", GeneralLogContext.LOAD);
+
             OpenFileDialog dlg = new()
             {
                 DefaultExt = ".xml",
+                Title = "Opening BatchML File",
                 Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
             };
 
@@ -870,8 +841,7 @@ namespace Thesis_LIPX05
                     changesStep = FlowShopStepTable.GetChanges();
 
             if (changesMaster is not null)
-                foreach (DataRow dr in changesMaster.Rows)
-                    SyncRow2XML(dr, "MasterRecipe");
+                SyncMasterTable();
 
             if (changesRecipe is not null)
                 foreach (DataRow dr in changesRecipe.Rows)
@@ -889,34 +859,15 @@ namespace Thesis_LIPX05
         // Event handler for saving a file
         private void SaveFile_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsFileLoaded || MasterRecipe is null)
+            if (HasUnsavedChanges())
             {
-                LogGeneralActivity(LogSeverity.WARNING,
-                    "No BatchML file loaded to save!", GeneralLogContext.SAVE);
-                MessageBox.Show("No BatchML file loaded to save!",
-                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (IsFileModified)
-            {
-                string? s = $"{(sender as MenuItem)?.Tag}" ?? string.Empty;
-                if (s.Equals("Exit") is true || s.Equals("Close File") is true)
-                {
-                    LogGeneralActivity(LogSeverity.WARNING,
-                        "Prompting user to save changes before closing either the app or the file!", GeneralLogContext.SAVE);
-                    MessageBox.Show("Please save changes before exiting!",
-                        "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-
-                if (FlowShopMasterTable.GetChanges() is not null)
-                    SyncMasterTable();
-
+                SyncMasterTable();
                 SaveDataTableChanges();
 
                 SaveFileDialog saveDlg = new()
                 {
                     DefaultExt = ".xml",
+                    Title = "Save BatchML File As",
                     Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
                 };
 
@@ -929,6 +880,14 @@ namespace Thesis_LIPX05
                             $"BatchML file successfully saved as {saveDlg.FileName}", GeneralLogContext.SAVE);
                         MessageBox.Show($"BatchML file saved as {saveDlg.FileName}",
                             "Save Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        foreach (DataTable dt in new[]
+                        {
+                            FlowShopMasterTable,
+                            FlowShopRecipeElementTable,
+                            FlowShopStepTable
+                        })
+                            dt.AcceptChanges();
 
                         IsFileModified = false;
                     }
@@ -948,7 +907,7 @@ namespace Thesis_LIPX05
         {
             if (IsFileLoaded)
             {
-                SGraphCanvas.Children.Clear();
+                PrecedenceGraphCanvas.Children.Clear();
                 try
                 {
                     BuildPrecedenceGraphFromXml();
@@ -964,19 +923,22 @@ namespace Thesis_LIPX05
             }
             else
             {
-                MessageBox.Show("No BatchML File loaded! Drawing example graph...",
-                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 LogGeneralActivity(LogSeverity.WARNING,
-                    "No BatchML file loaded, drawing example S-Graph!", GeneralLogContext.S_GRAPH);
-                BuildDemoPrecedenceGraph();
-                ManageFileHandlers();
+                    "User tried to draw a graph with no BatchML file loaded!", GeneralLogContext.S_GRAPH);
+                MessageBoxResult demoGraph = MessageBox.Show("No BatchML File loaded! Would you like to draw the demo precedence graph?",
+                    "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (demoGraph is MessageBoxResult.Yes)
+                {
+                    BuildDemoPrecedenceGraph();
+                    ManageFileHandlers();
+                }
             }
         }
 
         // A helper method to flush the containers and clean the canvases in one go
         private void Purge()
         {
-            foreach (Canvas cv in new[] { SGraphCanvas, GanttCanvas, RulerCanvas, FixedLabelCanvas })
+            foreach (Canvas cv in new[] { PrecedenceGraphCanvas, GanttCanvas, RulerCanvas, FixedLabelCanvas })
             {
                 cv.Children.Clear();
                 LogGeneralActivity(LogSeverity.INFO,
@@ -985,26 +947,24 @@ namespace Thesis_LIPX05
 
             GetNodes().Clear();
             LogGeneralActivity(LogSeverity.INFO,
-                "S-Graph nodes cleared!", GeneralLogContext.CLEAR);
+                "Precedence graph's node container cleared!", GeneralLogContext.CLEAR);
 
             GetEdges().Clear();
             LogGeneralActivity(LogSeverity.INFO,
-                "S-Graph edges cleared!", GeneralLogContext.CLEAR);
+                "Precedence graph's edge container cleared!", GeneralLogContext.CLEAR);
+
+            GanttData.Clear();
+            LogGeneralActivity(LogSeverity.INFO,
+                "Gantt chart data cleared!", GeneralLogContext.CLEAR);
         }
 
         // Clears all data tables
         private void PurgeDataTables()
         {
-            foreach (DataTable dt in new[] { FlowShopMasterTable, FlowShopRecipeElementTable, FlowShopStepTable })
+            foreach (DataTable dt in new[] { FlowShopMasterTable, FlowShopRecipeElementTable, FlowShopStepTable }.Union(SolutionsList))
             {
-                dt.Columns.Clear();
-                dt.Clear();
-                LogGeneralActivity(LogSeverity.INFO,
-                    $"{dt.TableName} datatable purged!", GeneralLogContext.CLEAR);
-            }
-
-            foreach (DataTable dt in SolutionsList)
-            {
+                if (dt.PrimaryKey.Length > 0) dt.PrimaryKey = [];
+                dt.Rows.Clear();
                 dt.Columns.Clear();
                 dt.Clear();
                 LogGeneralActivity(LogSeverity.INFO,
@@ -1013,12 +973,13 @@ namespace Thesis_LIPX05
 
             for (int i = MainTab.Items.Count - 1; i >= 0; i--)
             {
-                if (CheckPresentTabs((MainTab.Items[i] as TabItem)!))
+                if (MainTab.Items[i] is TabItem tabItem && CheckPresentTabs(tabItem))
                 {
-                    MainTab.Items.RemoveAt(i);
+                    tabItem.DataContext = null;
+                    tabItem.Content = null;
                     LogGeneralActivity(LogSeverity.INFO,
-                        $"{(MainTab.Items[i] as TabItem)?.Header} tab removed!", GeneralLogContext.CLEAR);
-                    continue;
+                        $"{tabItem.Header} tab removed!", GeneralLogContext.CLEAR);
+                    MainTab.Items.RemoveAt(i);
                 }
             }
         }
@@ -1028,19 +989,18 @@ namespace Thesis_LIPX05
             tab.Tag.ToString()?.Equals("MasterRecipe") is true ||
             tab.Tag.ToString()?.Equals("RecipeElements") is true ||
             tab.Tag.ToString()?.Equals("Steps") is true ||
-            tab.Tag.ToString()?.Equals("Links") is true ||
             tab.Tag.ToString()?.Contains("Solution") is true;
 
         // A helper method to enable solvers after the initial S-Graph is rendered
         private void EnableSolvers()
         {
-            SGraphExists = true;
+            PrecedenceGraphExists = true;
 
             foreach (object x in SolverMenu.Items)
             {
                 if (x is MenuItem menuItem && !menuItem.Name.Contains("Add new"))
                 {
-                    menuItem.IsEnabled = SGraphExists;
+                    menuItem.IsEnabled = PrecedenceGraphExists;
                     LogGeneralActivity(LogSeverity.INFO,
                         $"{menuItem.Tag} solver enabled!", GeneralLogContext.INITIALIZATION);
                 }
@@ -1051,27 +1011,27 @@ namespace Thesis_LIPX05
         // Draws an example S-Graph with 9 equipment nodes and 3 product nodes (in case no BatchML file is loaded)
         private void BuildDemoPrecedenceGraph()
         {
-            SGraphCanvas.Children.Clear();
+            PrecedenceGraphCanvas.Children.Clear();
             GetNodes().Clear();
             GetEdges().Clear();
 
             // 0.: preparations
-            // an examplary, randomized situation (values are between 1 and 50)
+            // an examplary situation with randomized TimeM1 and TimeM2 values between 1 and 50
             Dictionary<string, (double T1, double T2, string Desc)> demoJobs = new()
             {
-                {"J1", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 1")},
-                {"J2", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 2")},
-                {"J3", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 3")}
+                {"J1", (/*new Random().Next(1, 50)*/17, /*new Random().Next(1, 50)*/47, "Job 1")},
+                {"J2", (/*new Random().Next(1, 50)*/48, /*new Random().Next(1, 50)*/21, "Job 2")},
+                {"J3", (/*new Random().Next(1, 50)*/11, /*new Random().Next(1, 50)*/5, "Job 3")}
             };
 
-            // --- Layout Constants ---
+            // Layout constants
             const double
-                x_mach_def = 100, // Starting X for M1
-                x_delta = 300, // Horizontal spacing between M1 and M2
+                x_mach_def = 100, // starting X for M1
+                x_delta = 300, // hor. spacing between M1 and M2
                 y = 50,
-                vsp = 150; // Vertical spacing
+                vsp = 150; // vert. spacing
 
-            // --- Core Logic ---
+            // Core logic
             int jobIndex = 0;
             foreach (KeyValuePair<string, (double T1, double T2, string Desc)> job in demoJobs)
             {
@@ -1092,7 +1052,7 @@ namespace Thesis_LIPX05
                 double x_prod = x_mach_def + (2 * x_delta); // Place product node after M2
                 AddNode($"P{prodNum}", $"Product - P{prodNum}", new(x_prod, currY), 0.0, 0.0, true);
 
-                // --- 4. Edges ---
+                // 4. Define the edges
 
                 // Technological precedence: M1 -> M2 (Cost = 0.0 for stable scheduling)
                 AddEdge($"{jobID}_M1", $"{jobID}_M2", 0.0);
@@ -1103,16 +1063,16 @@ namespace Thesis_LIPX05
                 jobIndex++;
             }
 
-            // 5. Rendering and menu item management
-            // Note: The sequential edges (J_A_M -> J_B_M) are added by the OPTIMIZER, not the demo builder.
-            RenderPrecedenceGraph(SGraphCanvas);
+            // 5. Rendering and menu item enablement
+            RenderPrecedenceGraph(PrecedenceGraphCanvas);
+            ManageFileHandlers();
             EnableSolvers();
         }
 
         // Builds the S-Graph from the loaded BatchML file
         private void BuildPrecedenceGraphFromXml()
         {
-            SGraphCanvas.Children.Clear();
+            PrecedenceGraphCanvas.Children.Clear();
             GetNodes().Clear();
             GetEdges().Clear();
 
@@ -1124,8 +1084,8 @@ namespace Thesis_LIPX05
                     {
                         ID = x.Element(batchML + "ID")?.Value.Trim(),
                         Desc = x.Element(batchML + "RecipeElementID")?.Value.Trim(),
-                        TimeM1 = int.TryParse(x.Element(batchML + "Extension")?.Element(customNS + "TimeM1")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out int t1) ? t1 : 0,
-                        TimeM2 = int.TryParse(x.Element(batchML + "Extension")?.Element(customNS + "TimeM2")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out int t2) ? t2 : 0
+                        TimeM1 = int.TryParse(x.Element(batchML + "Extension")?.Element(customNS + "TimeM1")?.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int t1) ? t1 : 0,
+                        TimeM2 = int.TryParse(x.Element(batchML + "Extension")?.Element(customNS + "TimeM2")?.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int t2) ? t2 : 0
                     };
                 })
                 .Where(x => !string.IsNullOrEmpty(x.ID) && !string.IsNullOrEmpty(x.Desc))
@@ -1168,9 +1128,10 @@ namespace Thesis_LIPX05
             }
 
             // Render and enablement
-            RenderPrecedenceGraph(SGraphCanvas);
+            RenderPrecedenceGraph(PrecedenceGraphCanvas);
             LogGeneralActivity(LogSeverity.INFO,
                 "Flow Shop S-Graph built from BatchML file!", GeneralLogContext.S_GRAPH);
+            ManageFileHandlers();
             EnableSolvers();
         }
 
@@ -1219,33 +1180,40 @@ namespace Thesis_LIPX05
         // Handler event for closing an opened BatchML file
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            if (IsFileModified && HasUnsavedChanges())
+            if (HasUnsavedChanges())
             {
                 LogGeneralActivity(LogSeverity.WARNING,
                     "Attempting to close file with unsaved changes; prompting user!", GeneralLogContext.CLOSE);
 
-                MessageBoxResult res = MessageBox.Show(
+                switch (MessageBox.Show(
                     "The current BatchML file has unsaved changes. Do you wish to save before closing the file?",
                     "Unsaved changes detected",
                     MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question);
-
-                if (res is MessageBoxResult.Yes)
+                    MessageBoxImage.Question))
                 {
-                    FlowShopMasterTable.AcceptChanges();
-                    FlowShopRecipeElementTable.AcceptChanges();
-                    FlowShopStepTable.AcceptChanges();
-
-                    SaveFile_Click(sender, e);
-                }
-                else if (res is MessageBoxResult.No)
-                    LogGeneralActivity(LogSeverity.INFO,
-                        $"Closing file without saving (file modified: {IsFileModified})", GeneralLogContext.CLOSE);
-                else
-                {
-                    LogGeneralActivity(LogSeverity.INFO,
-                        "Closing file cancelled by user.", GeneralLogContext.CLOSE);
-                    return;
+                    case MessageBoxResult.Yes:
+                        {
+                            SaveFile_Click(sender, e);
+                            if (IsFileModified)
+                            {
+                                LogGeneralActivity(LogSeverity.WARNING,
+                                    "SaveFileDialog cancelled by user. Aborting file closure!", GeneralLogContext.SAVE);
+                                return;
+                            }
+                            break;
+                        }
+                    case MessageBoxResult.No:
+                        {
+                            LogGeneralActivity(LogSeverity.INFO,
+                                $"Closing file without saving (file modified: {IsFileModified})", GeneralLogContext.CLOSE);
+                            break;
+                        }
+                    default:
+                        {
+                            LogGeneralActivity(LogSeverity.INFO,
+                                "Closing file cancelled by user.", GeneralLogContext.CLOSE);
+                            return;
+                        }
                 }
             }
 
@@ -1257,6 +1225,7 @@ namespace Thesis_LIPX05
                 IsFileLoaded = false;
 
                 ManageFileHandlers();
+                ManageSolutionDataTableCreator();
 
                 Title = "Y0KAI Task Scheduler";
 
@@ -1306,16 +1275,16 @@ namespace Thesis_LIPX05
             {
                 default:
                     MessageBox.Show("No content to export as JPEG file!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning); break;
-                case "SGraph":
+                case "PrecGraph":
                     {
-                        if (SGraphCanvas.Children.Count is 0)
+                        if (PrecedenceGraphCanvas.Children.Count is 0)
                         {
-                            MessageBox.Show("No S-Graph to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("No precedence graph to export!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                             return;
                         }
-                        else JPEGExporter.ExportOneCanvas(SGraphCanvas, "S-Graph");
+                        else JPEGExporter.ExportOneCanvas(PrecedenceGraphCanvas, "Precedence graph");
                         LogGeneralActivity(LogSeverity.INFO,
-                            "S-Graph exported as JPEG file!", GeneralLogContext.EXPORT);
+                            "Precedence graph exported as JPEG file!", GeneralLogContext.EXPORT);
                         break;
                     }
                 case "Gantt":
@@ -1341,15 +1310,19 @@ namespace Thesis_LIPX05
             string?
                 id = header?.Element(batchML + "ID")?.Value,
                 ver = header?.Element(batchML + "Version")?.Value,
-                desc = header?.Elements(batchML + "Description").LastOrDefault()?.Value,
-                machineCountStr = header?.Element(batchML + "Extension")?.Element(customNS + "MachineCount")?.Value;
+                desc = header?.Elements(batchML + "Description").LastOrDefault()?.Value;
+
+            string machineCountStr = header?.Element(batchML + "Extension")?.Element(customNS + "MachineCount")?.Value ?? string.Empty;
 
             mdt.Columns.Add("RecipeID");
             mdt.Columns.Add("Version");
             mdt.Columns.Add("Description");
-            mdt.Columns.Add("MachineCount");
+            if (!string.IsNullOrEmpty(machineCountStr))
+                mdt.Columns.Add("MachineCount");
 
-            mdt.Rows.Add(id, ver, desc, machineCountStr);
+            mdt.Rows.Add(id, ver, desc);
+            if (!string.IsNullOrEmpty(machineCountStr))
+                mdt.Rows.Add(machineCountStr);
 
             mdt.RowChanged += (s, e) => IsFileModified = true;
 
@@ -1373,7 +1346,7 @@ namespace Thesis_LIPX05
                 desc = new(batchML + "Description");
                 header?.Add(desc);
             }
-            desc!.Value = $"dr[\"Description\"]" ?? string.Empty;
+            desc!.Value = $"{dr["Description"]}" ?? string.Empty;
 
             header?.Element(batchML + "Extension")?.SetElementValue(customNS + "MachineCount", dr["MachineCount"]);
 
@@ -1384,12 +1357,16 @@ namespace Thesis_LIPX05
         // Displays the recipe element table
         private void DisplayRecipeElementTable(DataTable redt, XNamespace batchML)
         {
-            redt.Columns.Add("InternalKey", typeof(int));
+            DataColumn keyCol = redt.Columns.Add("InternalKey", typeof(int));
+            keyCol.AutoIncrement = true;
+            keyCol.AutoIncrementSeed = 1;
+            keyCol.AutoIncrementStep = 1;
+
+            redt.PrimaryKey = [keyCol];
+
             redt.Columns.Add("ID");
             redt.Columns.Add("Description");
             redt.Columns.Add("Type");
-
-            int keyCounter = 0;
 
             var reList = MasterRecipe.Descendants(batchML + "RecipeElement")
                 .Select(x => new
@@ -1403,16 +1380,19 @@ namespace Thesis_LIPX05
 
             if (reList.Count > 0)
             {
+                int maxKey = 0;
+
                 foreach (var re in reList)
                 {
                     DataRow dr = redt.NewRow();
                     dr["ID"] = re.ID;
                     dr["Description"] = re.Desc;
                     dr["Type"] = re.Type;
-                    dr["InternalKey"] = keyCounter++;
                     redt.Rows.Add(dr);
+                    maxKey++;
                 }
-                redt.PrimaryKey = [redt.Columns["InternalKey"]!];
+
+                keyCol.AutoIncrementSeed = maxKey + 1;
             }
 
             redt.RowChanged += (s, e) => IsFileModified = true;
@@ -1530,9 +1510,7 @@ namespace Thesis_LIPX05
 
             if (dlg.ShowDialog() is true)
             {
-                string solverPath = dlg.FileName;
-
-                string input = Interaction.InputBox("Enter a name for the custom solver:", "Custom Solver Name", FilePath.GetFileNameWithoutExtension(solverPath));
+                string input = Interaction.InputBox("Enter a name for the custom solver:", "Custom Solver Name", FilePath.GetFileNameWithoutExtension(dlg.FileName));
 
                 if (!string.IsNullOrWhiteSpace(input))
                 {
@@ -1556,7 +1534,7 @@ namespace Thesis_LIPX05
                     {
                         Name = input.Trim(),
                         TypeID = typeID,
-                        Path = solverPath,
+                        Path = dlg.FileName,
                         Arguments = []
                     };
                     CustomSolvers.Add(newSolver);
@@ -1574,11 +1552,11 @@ namespace Thesis_LIPX05
             if (Application.Current.Windows.OfType<UserGuideWindow>().Any())
             {
                 LogGeneralActivity(LogSeverity.INFO,
-                    "\"User Guide\" window is already open!", GeneralLogContext.INITIALIZATION);
+                    "\"User Guide\" window is already open! Re-activating first instance!", GeneralLogContext.INITIALIZATION);
                 Application.Current.Windows.OfType<UserGuideWindow>().First().Activate();
                 return;
             }
-            
+
             new UserGuideWindow().Show();
             LogGeneralActivity(LogSeverity.INFO,
                 "New \"User Guide\" window opened!", GeneralLogContext.INITIALIZATION);
@@ -1615,12 +1593,18 @@ namespace Thesis_LIPX05
                         CustomSolvers.Clear();
                         CustomSolvers.AddRange(loaded);
                         InitialCustomSolverCount = CustomSolvers.Count;
+
                         CustomSolvers.Sort((a, b) => string.Compare(a.Name, b.Name));
+
                         foreach (CustomSolver cs in CustomSolvers)
+                        {
                             AddCustomSolverMenuItem(cs);
+                            LogGeneralActivity(LogSeverity.INFO,
+                                $"Custom solver \"{cs.Name}\" ({cs.TypeID}) loaded from JSON file.", GeneralLogContext.LOAD);
+                        }
                     }
                     LogGeneralActivity(LogSeverity.INFO,
-                        "Custom solvers loaded from JSON file!", GeneralLogContext.SAVE);
+                        "Custom solvers loaded from JSON file!", GeneralLogContext.LOAD);
                 }
             }
             catch (Exception ex)
@@ -1633,7 +1617,7 @@ namespace Thesis_LIPX05
 
         // Event handler to focus on the tab's content to be exported
         private void Focus4Export_Click(object sender, RoutedEventArgs e) =>
-            ExportCanvasMenuItem.IsEnabled = (MainTab.SelectedItem as TabItem)?.Tag?.ToString() is "Gantt" or "SGraph";
+            ExportCanvasMenuItem.IsEnabled = (MainTab.SelectedItem as TabItem)?.Tag?.ToString() is "Gantt" or "PrecGraph";
 
         // Adds a custom solver to the Solver menu
         private void AddCustomSolverMenuItem(CustomSolver solver)
@@ -1642,7 +1626,9 @@ namespace Thesis_LIPX05
             {
                 Header = $"{solver.Name} ({solver.TypeID})",
                 Tag = solver.Name,
-                IsEnabled = SGraphExists
+                IsEnabled = PrecedenceGraphExists,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center
             };
             item.Click += SolveClick;
             SolverMenu.Items.Add(item);
@@ -1801,16 +1787,17 @@ namespace Thesis_LIPX05
                 }
 
                 targetElement = new XElement(batchML + map.ParentElement);
-                XElement
-                    insertionPoint = GetInsertionPoint(map.ParentElement),
-                    last = insertionPoint.Elements(batchML + map.ParentElement).LastOrDefault()!;
+                XElement insertionPoint = GetInsertionPoint(map.ParentElement);
+                XElement? last = insertionPoint.Elements(batchML + map.ParentElement).LastOrDefault()!;
 
-                if (last is not null) last.AddAfterSelf(targetElement);
-                else insertionPoint.Add(targetElement);
+                if (last is not null)
+                    last.AddAfterSelf(targetElement);
+                else
+                    insertionPoint.Add(targetElement);
             }
 
             // --- UNIFIED UPDATE LOGIC ---
-            // Update all the fields of "targetElement" with the CURRENT values from the DataRow.
+            // Update all the fields of "targetElement" with the CURRENT values from the DataRow
             foreach (string col in map.Col2El.Keys)
             {
                 string val = dRow[col, DataRowVersion.Current]?.ToString() ?? string.Empty;
@@ -1819,38 +1806,25 @@ namespace Thesis_LIPX05
                 {
                     XElement ext = targetElement.Element(batchML + "Extension") ?? new(batchML + "Extension");
                     if (ext.Parent is null) targetElement.Add(ext);
-
                     XElement timeEl = ext.Element(customNS + col) ?? new(customNS + col);
                     timeEl.Value = val;
                     if (timeEl.Parent is null) ext.Add(timeEl);
                 }
                 else
                 {
-                    if (tableName is "RecipeElements" && col is "Type")
-                        val = string.IsNullOrWhiteSpace(val) ? "UnitProcedure" : val;
+                    if (tableName.Equals("RecipeElements") && col is "Type")
+                        val = string.IsNullOrWhiteSpace(val) ? "UnitProcedure" : val; // Updated default type
 
-                    XElement? child = targetElement.Element(batchML + map.Col2El[col]);
-
-                    if (child is null)
-                    {
-                        child = new(batchML + map.Col2El[col]);
-
-                        if (tableName.Equals("RecipeElements"))
-                        {
-                            if (col is "Description")
-                            {
-                                XElement? typeEl = targetElement.Element(batchML + "RecipeElementType");
-                                if (typeEl is not null) typeEl.AddAfterSelf(child);
-                                else targetElement.Add(child);
-                            }
-                            else if (col is "ID" or "Type") targetElement.AddBeforeSelf(child);
-                            else targetElement.Add(child);
-                        }
-                        else targetElement.Add(child);
-                    }
-
-                    child.Value = val;
+                    // Use SetElementValue to create the child if it doesn't exist, and set its value.
+                    targetElement.SetElementValue(batchML + map.Col2El[col], val);
                 }
+            }
+
+            // Ensure the Description field, which is sometimes tricky, is handled cleanly:
+            if (tableName.Equals("RecipeElements"))
+            {
+                string descVal = dRow["Description", DataRowVersion.Current]?.ToString() ?? string.Empty;
+                targetElement.SetElementValue(batchML + "Description", descVal);
             }
 
             LogGeneralActivity(LogSeverity.INFO, $"Synchronized DataRow to XML for table \"{tableName}\".", GeneralLogContext.SYNC);

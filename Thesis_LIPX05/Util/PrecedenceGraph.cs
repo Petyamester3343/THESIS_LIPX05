@@ -55,7 +55,7 @@ namespace Thesis_LIPX05.Util
         // Writes the graph to a custom XML file
         // The XML structure is as the example follows:
         /*
-         <SGraph>
+         <Graph>
            <Nodes>
              <Node ID="Node1" Desc="Description1" TimeM1 = "10" TimeM2 = "0"/>
              <Node ID="Node2" Desc="Description2" TimeM1 = "0" TimeM2 = "20"/>
@@ -65,12 +65,12 @@ namespace Thesis_LIPX05.Util
              <Edge From="Node1" To="Node2" Cost="10" />
              ...
            </Edges>
-         </SGraph>
+         </Graph>
          */
-        public static void WriteSGraph2XML(string path, out string s)
+        public static void WritePrecedenceGraph2XML(string tempDir, out string tempXmlPath)
         {
             XDocument graph = new();
-            XElement root = new("SGraph");
+            XElement root = new("PrecGraph");
             graph.Add(root);
 
             XElement nodes = new("Nodes");
@@ -90,8 +90,11 @@ namespace Thesis_LIPX05.Util
 
             IEnumerable<Edge> edges2Out = GetEdges().Where(edge =>
             {
+                static bool IsMachine(string id)
+                    => id.EndsWith("_M1") || id.EndsWith("_M2");
+                
                 static string GetBaseID(string id)
-                    => (id.Length >= 3 && (id.EndsWith("_M1") || id.EndsWith("_M2"))) ? id[..^3] : id;
+                    => (id.Length >= 3 && IsMachine(id)) ? id[..^3] : id;
 
                 string
                     baseJobFrom = GetBaseID(edge.From.ID),
@@ -121,24 +124,22 @@ namespace Thesis_LIPX05.Util
 
             try
             {
-                if (!Directory.Exists(path))
+                if (!Directory.Exists(tempDir))
                 {
-                    Directory.CreateDirectory(path);
+                    Directory.CreateDirectory(tempDir);
                     LogGeneralActivity(LogSeverity.INFO,
-                        $"{path} is currently non-existent; (re-)creating...", GeneralLogContext.S_GRAPH);
+                        $"{tempDir} is currently non-existent; (re-)creating...", GeneralLogContext.S_GRAPH);
                 }
                 else LogGeneralActivity(LogSeverity.INFO,
-                    $"{path} successfully discovered!", GeneralLogContext.S_GRAPH);
-
-                string sGraphPath = $"SGraph_{Guid.NewGuid()}.xml";
+                    $"{tempDir} successfully discovered!", GeneralLogContext.S_GRAPH);
 
                 // giving value to out variable based on the existence of the path
-                s = FilePath.Combine(path, sGraphPath);
+                tempXmlPath = FilePath.Combine(tempDir, $"SGraph_{Guid.NewGuid()}.xml");
 
                 // the crucial point
-                graph.Save(s);
+                graph.Save(tempXmlPath);
                 LogGeneralActivity(LogSeverity.INFO,
-                    $"SGraph saved to {s}!", GeneralLogContext.S_GRAPH);
+                    $"SGraph saved to {tempXmlPath}!", GeneralLogContext.S_GRAPH);
             }
             catch (Exception ex)
             {
@@ -146,7 +147,7 @@ namespace Thesis_LIPX05.Util
                     $"Failed to save S-Graph to XML: {ex.Message}", GeneralLogContext.S_GRAPH);
                 MessageBox.Show($"Failed to save S-Graph to XML: {ex.Message}",
                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                s = string.Empty;
+                tempXmlPath = string.Empty;
             }
         }
 
@@ -352,7 +353,7 @@ namespace Thesis_LIPX05.Util
             // Drawing the arrowhead, relying on the geometrically correct 'end' point
             DrawArrowHeadPolygon(control, end, color, cv);
 
-            // Drawing the weight label (if weight gt 0 is true)
+            // Drawing the weight label (if weight > 0 is true)
             if (visualCost > 0)
                 DrawWeightOnPrecedenceEdge(start, control, end, visualCost, cv);
         }
@@ -367,8 +368,12 @@ namespace Thesis_LIPX05.Util
             PathGeometry geo = new();
             geo.Figures.Add(figure);
 
-            ShapePath shapePath = new() { Stroke = color, StrokeThickness = thickness, Data = geo };
-            cv.Children.Add(shapePath);
+            cv.Children.Add(new ShapePath
+            {
+                Stroke = color,
+                StrokeThickness = thickness,
+                Data = geo
+            });
             LogGeneralActivity(LogSeverity.INFO,
                 $"Edge drawn from ({start.X:F1};{start.Y:F1}) to ({end.X:F1};{end.Y:F1})!", GeneralLogContext.S_GRAPH);
         }

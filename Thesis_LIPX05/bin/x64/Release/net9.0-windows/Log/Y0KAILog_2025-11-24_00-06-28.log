@@ -1,0 +1,43 @@
+﻿11/24/2025 00:06 // INFO // [INITIALIZATION] // Beginning initialization...
+11/24/2025 00:06 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/24/2025 00:06 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/24/2025 00:06 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/24/2025 00:06 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 00:06 // INFO // [INITIALIZATION] // Initialization complete!
+11/24/2025 00:06 // INFO // [LOAD] // Open file dialog initiated...
+11/24/2025 00:06 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/24/2025 00:06 // INFO // [LOAD] // XML element established!
+11/24/2025 00:06 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/24/2025 00:06 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/24/2025 00:06 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/24/2025 00:06 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/24/2025 00:06 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 00:06 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test.xml!
+11/24/2025 00:06 // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/24/2025 00:06 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/24/2025 00:06 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/24/2025 00:07 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/24/2025 00:07 // INFO // [MODIFY] // Master REcipe Header synced to XML.
+11/24/2025 00:07 // ERROR // [SYNC] // No mapping found for table "MasterRecipe" or master recipe is null!
+11/24/2025 00:07 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J1_Module
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/24/2025 00:07 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J2_Module
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/24/2025 00:07 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J3_Module
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/24/2025 00:07 // INFO // [SYNC] // Found ecipeElement by BatchML ID: J4_Module
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/24/2025 00:07 // INFO // [SYNC] // No existing XML element found for table "RecipeElements" matching the DataRow keys.
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "RecipeElements".
+11/24/2025 00:07 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/24/2025 00:07 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/24/2025 00:07 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/24/2025 00:07 // INFO // [SYNC] // Found existing XML element for table "Steps" matching the DataRow keys.
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/24/2025 00:07 // INFO // [SYNC] // No existing XML element found for table "Steps" matching the DataRow keys.
+11/24/2025 00:07 // INFO // [SYNC] // Synchronized DataRow to XML for table "Steps".
+11/24/2025 00:07 // INFO // [SAVE] // BatchML file successfully saved as C:\Users\Phant0m\Desktop\THESIS_LIPX05\savingTest.xml
+11/24/2025 00:15 // INFO // [EXITUS] // Shutting down...

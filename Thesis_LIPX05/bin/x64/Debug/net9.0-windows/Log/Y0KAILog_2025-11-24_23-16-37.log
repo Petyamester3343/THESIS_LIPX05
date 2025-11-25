@@ -1,0 +1,21 @@
+﻿11/24/2025 23:16 // INFO // [INITIALIZATION] // Beginning initialization...
+11/24/2025 23:16 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/24/2025 23:16 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/24/2025 23:16 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/24/2025 23:16 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 23:16 // INFO // [INITIALIZATION] // Initialization complete!
+11/24/2025 23:16 // INFO // [LOAD] // Open file dialog initiated...
+11/24/2025 23:16 // INFO // [LOAD] // XML document loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test2.xml!
+11/24/2025 23:16 // INFO // [LOAD] // XML element established!
+11/24/2025 23:16 // INFO // [DATATABLE] // Master Recipe Table datatable displayed in new tab!
+11/24/2025 23:16 // INFO // [DATATABLE] // Recipe Elements Table datatable displayed in new tab!
+11/24/2025 23:16 // INFO // [DATATABLE] // Steps Table datatable displayed in new tab!
+11/24/2025 23:16 // INFO // [LOAD] // BatchML file loaded and data tables populated!
+11/24/2025 23:16 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/24/2025 23:16 // INFO // [LOAD] // BatchML file loaded from C:\Users\Phant0m\Desktop\THESIS_LIPX05\test2.xml!
+11/24/2025 23:16 // WARNING // [DATATABLE] // InternalKey column could not be found in DataGrid for Recipe Elements Table after loading!
+11/24/2025 23:16 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/24/2025 23:16 // INFO // [DATATABLE] // InternalKey column successfully hidden in 'Recipe Elements Table.'
+11/24/2025 23:16 // WARNING // [EXITUS] // App is about to be shut down with unsaved changes! Prompting user to save before exiting!
+11/24/2025 23:23 // WARNING // [EXITUS] // User opted to exit without saving changes in the datatables to the BatchML file before exiting!
+11/24/2025 23:23 // INFO // [EXITUS] // Shutting down...
