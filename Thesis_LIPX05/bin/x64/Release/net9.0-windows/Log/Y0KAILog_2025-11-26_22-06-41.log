@@ -1,0 +1,14 @@
+﻿11/26/2025 22:06 // INFO // [INITIALIZATION] // Beginning initialization...
+11/26/2025 22:06 // INFO // [LOAD] // Custom solver "BnB" (deterministic) loaded from JSON file.
+11/26/2025 22:06 // INFO // [LOAD] // Custom solver "CDS" (deterministic) loaded from JSON file.
+11/26/2025 22:06 // INFO // [LOAD] // Custom solver "Simulated Annealing" (metaheuristic) loaded from JSON file.
+11/26/2025 22:06 // INFO // [LOAD] // Custom solvers loaded from JSON file!
+11/26/2025 22:06 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/26/2025 22:06 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/26/2025 22:06 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/26/2025 22:06 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/26/2025 22:06 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/26/2025 22:06 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/26/2025 22:06 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/26/2025 22:06 // INFO // [INITIALIZATION] // Initialization complete!
+11/26/2025 22:06 // INFO // [EXITUS] // Shutting down...

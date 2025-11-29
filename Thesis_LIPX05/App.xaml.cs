@@ -23,6 +23,15 @@ namespace Thesis_LIPX05
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool ShowWindow(nint hWnd, int nCmdShow);
 
+        private readonly (uint Threshold, string Message)[] LoadingMessages =
+        [
+            (1,     "Starting up application..."),
+            (20,    "Building main window..."),
+            (40,    "Fetching custom solvers and preferences..."),
+            (60,    "Preparing renderers..."),
+            (80,    "Finalizing application environment")
+        ];
+        
         // Ensure single instance application using an instance of mutual exclusion (mutex)
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -84,27 +93,23 @@ namespace Thesis_LIPX05
         {
             LoadingWindow loading = new();
             loading.Show();
+            string last = "";
 
             // Simulate loading progress by updating the loading window's progress text
             for (uint i = 1; i <= 100; i++)
             {
-                switch (DecideRang(i))
+                string curr = last;
+
+                foreach ((uint Threshold, string Message) in LoadingMessages)
                 {
-                    case LoadingStatusHelper.FIRST:
-                        await loading.UpdateProgressAsync("Building window...");
-                        break;
-                    case LoadingStatusHelper.SECOND:
-                        await loading.UpdateProgressAsync("Fetching solvers...");
-                        break;
-                    case LoadingStatusHelper.THIRD:
-                        await loading.UpdateProgressAsync("Remembering task scheduling...");
-                        break;
-                    case LoadingStatusHelper.FOURTH:
-                        await loading.UpdateProgressAsync("Preparing renderers...");
-                        break;
-                    case LoadingStatusHelper.FIFTH:
-                        await loading.UpdateProgressAsync("Finalizing...");
-                        break;
+                    if (i >= Threshold)
+                        curr = Message;
+                }
+
+                if (!string.Equals(curr, last, StringComparison.OrdinalIgnoreCase))
+                {
+                    await loading.UpdateProgressAsync(curr);
+                    last = curr;
                 }
 
                 await Task.Delay(30);
@@ -126,17 +131,6 @@ namespace Thesis_LIPX05
                 ts_app.Activate();
                 shouldBeClosedByNow.Close();
             });
-
-
-        // Decides the loading status based on the given integer value
-        private static LoadingStatusHelper DecideRang(uint i)
-        {
-            if (i <= 20) return LoadingStatusHelper.FIRST;
-            else if (i <= 40) return LoadingStatusHelper.SECOND;
-            else if (i <= 60) return LoadingStatusHelper.THIRD;
-            else if (i <= 80) return LoadingStatusHelper.FOURTH;
-            else return LoadingStatusHelper.FIFTH;
-        }
     }
 
     // The loading status helper enum to determine the current loading stage (through simulation)

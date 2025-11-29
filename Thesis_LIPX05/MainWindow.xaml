@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Title="Y0KAI Task Scheduler"
         Width="1366" Height="768"
+        Icon="/Resources/Y0KAI_icon.ico"
         Closing="MainWindow_Closing"
 >
     

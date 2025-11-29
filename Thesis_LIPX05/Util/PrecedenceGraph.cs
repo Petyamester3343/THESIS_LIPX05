@@ -418,8 +418,7 @@ namespace Thesis_LIPX05.Util
                 normal = new(-line.Y, line.X);
             normal.Normalize();
 
-            double distOff = 10d;
-            WindowPoint lblPos = midCurve + normal * distOff;
+            WindowPoint lblPos = midCurve + normal;
 
             TextBlock weightTXT = new()
             {

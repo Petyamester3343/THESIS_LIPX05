@@ -1,0 +1,44 @@
+﻿11/27/2025 05:06 // INFO // [INITIALIZATION] // Beginning initialization...
+11/27/2025 05:06 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/27/2025 05:06 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/27/2025 05:06 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/27/2025 05:06 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/27/2025 05:06 // INFO // [INITIALIZATION] // Initialization complete!
+11/27/2025 05:49 // WARNING // [S_GRAPH] // User tried to draw a graph with no BatchML file loaded!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node J1_M1 at 100;50
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node J1_M2 at 400;50
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node P1 at 700;50
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node J2_M1 at 100;200
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node J2_M2 at 400;200
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node P2 at 700;200
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node J3_M1 at 100;350
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node J3_M2 at 400;350
+11/27/2025 05:49 // INFO // [S_GRAPH] // Node P3 at 700;350
+11/27/2025 05:49 // INFO // [S_GRAPH] // Curve value of edge (J1_M1 to J1_M2) set to 25,00
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge drawn from (170,0;85,0) to (400,0;85,0)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Weight 17 drawn at (285;97,5)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge from J1_M1 to J1_M2 with cost 0 drawn.
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge drawn from (470,0;85,0) to (700,0;85,0)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Weight 47 drawn at (585;85)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge from J1_M2 to P1 with cost 0 drawn.
+11/27/2025 05:49 // INFO // [S_GRAPH] // Curve value of edge (J2_M1 to J2_M2) set to 25,00
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge drawn from (170,0;235,0) to (400,0;235,0)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Weight 48 drawn at (285;247,5)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge from J2_M1 to J2_M2 with cost 0 drawn.
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge drawn from (470,0;235,0) to (700,0;235,0)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Weight 21 drawn at (585;235)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge from J2_M2 to P2 with cost 0 drawn.
+11/27/2025 05:49 // INFO // [S_GRAPH] // Curve value of edge (J3_M1 to J3_M2) set to 25,00
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge drawn from (170,0;385,0) to (400,0;385,0)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Weight 11 drawn at (285;397,5)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge from J3_M1 to J3_M2 with cost 0 drawn.
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge drawn from (470,0;385,0) to (700,0;385,0)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Weight 5 drawn at (585;385)!
+11/27/2025 05:49 // INFO // [S_GRAPH] // Edge from J3_M2 to P3 with cost 0 drawn.
+11/27/2025 05:49 // INFO // [S_GRAPH] // Canvas resized to 820x470!
+11/27/2025 05:49 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/27/2025 05:49 // INFO // [INITIALIZATION] // Johnson's Rule solver enabled!
+11/27/2025 05:49 // INFO // [INITIALIZATION] // List Scheduling solver enabled!
+11/27/2025 05:49 // INFO // [INITIALIZATION] //  solver enabled!
+11/27/2025 05:49 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/27/2025 05:55 // INFO // [EXITUS] // Shutting down...

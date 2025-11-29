@@ -506,14 +506,16 @@ namespace Thesis_LIPX05
                     }
                 };
 
+
                 TesterStopwatch.Start();
                 p.Start();
                 string stdErr = p.StandardError.ReadToEnd();
                 p.WaitForExit();
+                TesterStopwatch.Stop();
+
 
                 if (p.ExitCode is not 0)
                 {
-                    TesterStopwatch.Stop();
                     string errMsg = string.IsNullOrEmpty(stdErr)
                         ? $"Solver exited with code {p.ExitCode} (no STDERR output)."
                         : $"Solver failed with code {p.ExitCode}! Error: {stdErr.Trim()}";
@@ -525,7 +527,6 @@ namespace Thesis_LIPX05
                 }
                 else
                 {
-                    TesterStopwatch.Stop();
                     MessageBox.Show($"{customSolver.Name} execution completed in {TesterStopwatch.Elapsed.TotalSeconds:F4} seconds.",
                         "Solver Execution Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     TesterStopwatch.Reset();
@@ -1019,9 +1020,9 @@ namespace Thesis_LIPX05
             // an examplary situation with randomized TimeM1 and TimeM2 values between 1 and 50
             Dictionary<string, (double T1, double T2, string Desc)> demoJobs = new()
             {
-                {"J1", (/*new Random().Next(1, 50)*/17, /*new Random().Next(1, 50)*/47, "Job 1")},
-                {"J2", (/*new Random().Next(1, 50)*/48, /*new Random().Next(1, 50)*/21, "Job 2")},
-                {"J3", (/*new Random().Next(1, 50)*/11, /*new Random().Next(1, 50)*/5, "Job 3")}
+                {"J1", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 1")},
+                {"J2", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 2")},
+                {"J3", (new Random().Next(1, 50), new Random().Next(1, 50), "Job 3")}
             };
 
             // Layout constants
@@ -1102,7 +1103,7 @@ namespace Thesis_LIPX05
             const double
                 x_mach_def = 100,
                 x_delta = 200,
-                y = 70,
+                y = 50,
                 vsp = 150;
 
             int i = 0;

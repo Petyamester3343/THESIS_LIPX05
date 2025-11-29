@@ -10,4 +10,12 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\Y0KAI_icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Y0KAI_icon.ico" />
+  </ItemGroup>
+
 </Project>

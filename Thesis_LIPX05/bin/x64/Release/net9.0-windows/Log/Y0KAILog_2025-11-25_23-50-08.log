@@ -1,0 +1,24 @@
+﻿11/25/2025 23:50 // INFO // [INITIALIZATION] // Beginning initialization...
+11/25/2025 23:50 // INFO // [LOAD] // Custom solver "Simulated Annealing" (metaheuristic) loaded from JSON file.
+11/25/2025 23:50 // INFO // [LOAD] // Custom solvers loaded from JSON file!
+11/25/2025 23:50 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 23:50 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 23:50 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/25/2025 23:50 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/25/2025 23:50 // INFO // [CONSTRAINT] // Saving and closing are disabled for as long as there are no files opened.
+11/25/2025 23:50 // INFO // [INITIALIZATION] // Initialization complete!
+11/25/2025 23:56 // INFO // [EXTERN_SOLVER] // Custom deterministic solver "CDS" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_CDS\bin\Release\net9.0\Y0KAI_CDS.exe
+11/25/2025 23:56 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/25/2025 23:56 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/25/2025 23:56 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/25/2025 23:56 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/25/2025 23:56 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/26/2025 00:42 // INFO // [EXTERN_SOLVER] // Custom deterministic solver "BnB" added with path: C:\Users\Phant0m\Desktop\THESIS_LIPX05\Y0KAI_BnB\bin\Release\net9.0\Y0KAI_BnB.exe
+11/26/2025 00:42 // INFO // [INITIALIZATION] // Johnson's Rule solver added!
+11/26/2025 00:42 // INFO // [INITIALIZATION] // List Scheduling solver added!
+11/26/2025 00:42 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/26/2025 00:42 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/26/2025 00:42 // INFO // [INITIALIZATION] // {cs.Name} ({cs.TypeID} type) solver added!
+11/26/2025 00:42 // INFO // [INITIALIZATION] // Solver menu successfully built!
+11/26/2025 00:42 // WARNING // [EXITUS] // Custom solvers not saved during exit!
+11/26/2025 00:42 // INFO // [EXITUS] // Shutting down...
